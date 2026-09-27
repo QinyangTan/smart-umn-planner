@@ -13,7 +13,7 @@ A remaining APAS node can authorize a course only when its course-choice semanti
 - exact selectable courses;
 - APAS level wildcards such as `5XXX`;
 - unions of explicit selectable courses/ranges;
-- explicit exclusions (`notcourses`);
+- explicit structured exclusions (`notcourses`), including labels that say `except` when the excluded course list is machine-readable;
 - structurally proven required course counts;
 - structurally proven required credit totals;
 - requirement GPA wrappers when a course pool is also proven;
@@ -28,7 +28,7 @@ These forms are department-agnostic. Regression fixtures cover examples from psy
 When APAS exposes an explicit course pool but the quantitative policy is not fully modeled, Smart UMN keeps the pool as a **candidate route**. Candidate routes may personalize Explore, but they do not certify degree completion and do not become strict solver allocation targets. Examples include:
 
 - `up to` / `no more than` caps;
-- compound exceptions;
+- prose-only or otherwise unstructured compound exceptions;
 - qualified Liberal Education labels where an additional lab/field condition remains;
 - other explicit pools whose count/credit semantics are not proven.
 

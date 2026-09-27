@@ -23,6 +23,16 @@ test('explicit APAS pool remains discoverable when cap semantics are intentional
  dom.window.close();
 });
 
+test('structured APAS notcourses exclusion remains strict even when the label says except',()=>{
+ const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_NO" rname="EX" rqdsubreq="1"><div class="reqTitle">One EXCL 3xxx course except EXCL 3202</div><table class="selectcourses"><tbody><tr><td><span class="course" department="1EXCL" number="3XXX"></span></td></tr></tbody></table><table class="notcourses"><tbody><tr><td><span class="course" department="1EXCL" number="3202"></span></td></tr></tbody></table></div></div></body>';
+ const dom=new JSDOM(html),p=parseAPAS(dom.window.document),req=p.requirements[0];
+ assert.equal(req.rule.type,'count');
+ assert.equal(degreeFit(course('EXCL 3201'),p).some(x=>x.requirementId===req.id&&x.result==='yes'),true);
+ assert.equal(degreeFit(course('EXCL 3202'),p).some(x=>x.requirementId===req.id&&x.result==='yes'),false);
+ assert.equal(degreeCandidateFit(course('EXCL 3202'),p).some(x=>x.requirementId===req.id&&x.result==='yes'),false);
+ dom.window.close();
+});
+
 test('APAS Needs count creates a strict count rule for an explicit selectable route',()=>{
  const html=['<body><div id="audit"><div class="card-header"><h2>Example Minor</h2></div>',
  '<div class="requirement Status_NO" rname="MINOR"><div class="reqTitle">Minor Requirements</div><div class="reqBody"><div class="auditSubrequirements">',

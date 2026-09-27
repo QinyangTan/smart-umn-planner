@@ -1,6 +1,6 @@
 import {APAS_CAMPUS_DIGITS,courseCode,finite,parseCampusCourseCode,unknownRule} from '../schemas/index.ts';
 import type {StudentAcademicProfile,StudentCourse,DegreeRequirement,RequirementRule,AcademicProgramRoute} from '../schemas/index.ts';
-export const PARSER_VERSION='0.4.1';
+export const PARSER_VERSION='0.4.2';
 const text=(n:Element|null):string=>{if(!n)return'';const clone=n.cloneNode(true) as Element;clone.querySelectorAll('br').forEach(b=>b.replaceWith(' '));return(clone.textContent||'').replace(/\s+/g,' ').trim();};
 const num=(n:Element|null)=>finite(text(n));
 function status(el:Element):DegreeRequirement['status'] {const s=el.matches('.requirement')?el.className:el.querySelector('.subreqPretext .status')?.className||el.className;return /Status_OK/.test(s)?'complete':/Status_IP/.test(s)?'in_progress':/Status_NO\b/.test(s)?'incomplete':/Status_NONE/.test(s)?'informational':'unknown';}
@@ -34,7 +34,8 @@ function parseRule(el:Element,label:string):RequirementRule {
  const base=selectableRule(el)||deterministicLabelRule(label);if(!base)return unknownRule(label,'No explicit selectable course rule');
  // Explicit pools with caps/exceptions are exposed as candidate routes separately,
  // but are not promoted to completion rules until their quantitative semantics are proven.
- if(/\b(note:|combined|except|permission|approval|0-2|up to|not count more|no more than)\b/i.test(label))return unknownRule(label,'Compound cap or exception needs a richer rule');
+ const unresolvedCompound=/\b(note:|combined|permission|approval|0-2|up to|not count more|no more than)\b/i.test(label)||(/\bexcept\b/i.test(label)&&base.type!=='exclude');
+ if(unresolvedCompound)return unknownRule(label,'Compound cap or exception needs a richer rule');
  let rule:RequirementRule=base;const hours=finite(el.getAttribute('rqdhours')),requiredCount=finite(el.getAttribute('rqdcount'))||finite(el.getAttribute('rqdsubreq')),needsCount=num(direct(el,'.reqNeeds .count,.subreqNeeds .count')),max=finite(el.getAttribute('maxhours'));
  if(rule.type==='credits'||rule.type==='count'||rule.type==='gpa')return rule;
  if(hours&&hours>0)rule={type:'credits',minimum:hours,...(max!==undefined&&max<999?{maximum:max}:{}),rule};
