@@ -15,6 +15,7 @@
   "verify:live": "node scripts/verify-live.ts",
   "verify:majors": "node scripts/verify-majors.ts",
   "verify:browser": "node scripts/verify-browser.ts",
+  "report:apas-compatibility": "node scripts/report-apas-compatibility.ts",
   "worker": "node apps/worker/cli.ts"
  },
  "devDependencies": {

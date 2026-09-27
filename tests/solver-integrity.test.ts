@@ -54,6 +54,33 @@ test('one generated schedule never combines mutually equivalent courses',()=>{
  assert.equal(result.schedules.length,0,'equivalent courses cannot be combined to reach the credit target');
 });
 
+test('latest-class preference rejects sections ending too late',()=>{
+ const c=context('CSCI 5302','mon','late');c.sections.data![0].meetings[0].startTime='18:00';c.sections.data![0].meetings[0].endTime='19:15';
+ assert.equal(generateSchedules([c],profile,{minCredits:3,maxCredits:3,latestTime:'18:30'}).schedules.length,0);
+ assert.equal(generateSchedules([c],profile,{minCredits:3,maxCredits:3,latestTime:'20:00'}).schedules.length,1);
+});
+
+test('different-location transition buffer rejects unrealistic back-to-back travel',()=>{
+ const a=context('CSCI 5302','mon','walk-a'),b=context('CSCI 5421','mon','walk-b');
+ a.sections.data![0].meetings[0]={...a.sections.data![0].meetings[0],startTime:'09:00',endTime:'10:00',location:'Keller Hall'};
+ b.sections.data![0].meetings[0]={...b.sections.data![0].meetings[0],startTime:'10:10',endTime:'11:00',location:'West Bank'};
+ assert.equal(generateSchedules([a,b],profile,{minCredits:6,maxCredits:6,minimumTransitionMinutes:15}).schedules.length,0);
+ assert.equal(generateSchedules([a,b],profile,{minCredits:6,maxCredits:6,minimumTransitionMinutes:10}).schedules.length,1);
+});
+
+test('campus-day cap is enforced after a valid combination is built',()=>{
+ const a=context('CSCI 5302','mon','days-a'),b=context('CSCI 5421','tue','days-b');
+ assert.equal(generateSchedules([a,b],profile,{minCredits:6,maxCredits:6,maxCampusDays:1}).schedules.length,0);
+ assert.equal(generateSchedules([a,b],profile,{minCredits:6,maxCredits:6,maxCampusDays:2}).schedules.length,1);
+});
+
+test('waitlist-only sections are opt-in and remain explicitly labeled',()=>{
+ const c=context('CSCI 5302','mon','wait');const s=c.sections.data![0];s.capacity=10;s.enrolled=10;s.open=false;s.waitlistCapacity=20;s.waitlistTotal=2;
+ assert.equal(generateSchedules([c],profile,{minCredits:3,maxCredits:3}).schedules.length,0);
+ const result=generateSchedules([c],profile,{minCredits:3,maxCredits:3,allowWaitlist:true});
+ assert.equal(result.schedules.length,1);assert.match(result.schedules[0].explanations.join(' '),/waitlist-only/);
+});
+
 test('different semesters cannot be combined into one plan',()=>{
  const a=context('CSCI 5302','mon','1'),b=context('CSCI 5421','tue','2');b.course.data!.term='1275';b.sections.data![0].term='1275';
  assert.throws(()=>generateSchedules([a,b],profile,{minCredits:6,maxCredits:6}),/same term and campus/);

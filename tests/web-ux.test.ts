@@ -41,8 +41,9 @@ test('Folwell-aligned visual contract avoids generic gradient-card styling',()=>
 
 test('onboarding has one connection action and no decorative fake dashboard',()=>{
  assert.match(app,/Your APAS becomes the filter/);
- assert.match(app,/Import APAS/);
- assert.match(app,/See what fits/);
- assert.match(app,/Build one plan/);
+ assert.match(app,/Connect APAS/);
+ assert.match(app,/Verify what fits/);
+ assert.match(app,/Build \+ hand off/);
+ assert.match(app,/does not ask an AI model whether a course counts/);
  assert.doesNotMatch(app,/mock-week|onboarding-visual/);
 });
