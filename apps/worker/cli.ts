@@ -41,8 +41,12 @@ async function collect(kind:Kind,entity:string,url:string){
 try{
  if(action==='import-link'){
   const[entity,url,title]=args;const r=makeReference(entity,title,url,'',undefined,'manual-link',campus);store.reference(r);console.log(JSON.stringify({stored:r.id,url:r.url,entityType:r.entityType,mode:'link-only'}));
+ }else if(action==='import-reviewed-link'){
+  const[entity,url,title,excerpt,publishedAt]=args;if(!excerpt?.trim()||!publishedAt||!/^\d{4}-\d{2}-\d{2}/.test(publishedAt))throw Error('Reviewed link requires excerpt and published date');const r=makeReference(entity,title,url,excerpt,publishedAt,'reviewed-summary',campus);store.reference(r);console.log(JSON.stringify({stored:r.id,url:r.url,entityType:r.entityType,mode:'reviewed-manual-excerpt',topics:r.topics}));
  }else if(action==='import-instructor-link'){
   const[name,url,title]=args;const r=makeInstructorReference(name,title,url,'',undefined,'manual-link',campus);store.reference(r);console.log(JSON.stringify({stored:r.id,url:r.url,entityType:r.entityType,entityId:r.entityId,mode:'link-only'}));
+ }else if(action==='import-reviewed-instructor-link'){
+  const[name,url,title,excerpt,publishedAt]=args;if(!excerpt?.trim()||!publishedAt||!/^\d{4}-\d{2}-\d{2}/.test(publishedAt))throw Error('Reviewed instructor link requires excerpt and published date');const r=makeInstructorReference(name,title,url,excerpt,publishedAt,'reviewed-summary',campus);store.reference(r);console.log(JSON.stringify({stored:r.id,url:r.url,entityType:r.entityType,entityId:r.entityId,mode:'reviewed-manual-excerpt',topics:r.topics}));
  }else if(action==='collect'){
   await collect('course',args[0],args[1]);
  }else if(action==='collect-instructor'){
@@ -50,6 +54,6 @@ try{
  }else if(action==='status'){
   console.log(JSON.stringify(store.db.prepare('SELECT * FROM crawl_jobs').all()));
  }else{
-  console.log('Usage: npm run worker -- import-link "PSY 1001" <original-url> <verified-title> [--campus=UMNTC|UMNDL|UMNCR|UMNMO|UMNRO] | import-instructor-link <name> <original-url> <verified-title> [--campus=...] | collect <course> <original-url> [--campus=...] | collect-instructor <name> <original-url> [--campus=...] | status');
+  console.log('Usage: npm run worker -- import-link "PSY 1001" <original-url> <verified-title> | import-reviewed-link "PSY 1001" <original-url> <verified-title> <manual-excerpt> <published-at> | import-instructor-link <name> <original-url> <verified-title> | import-reviewed-instructor-link <name> <original-url> <verified-title> <manual-excerpt> <published-at> | collect <course> <original-url> | collect-instructor <name> <original-url> | status [--campus=...]');
  }
 }catch(e){console.error(e instanceof Error?e.message:'Collector error');process.exitCode=1;}finally{store.close();}

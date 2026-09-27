@@ -20,7 +20,7 @@ function context(code='CSCI 5302'):CourseContext{
    stale:false,provenance:{source:'umn-schedule-builder',retrievedAt:now,period:'1273'},health:{source:'umn-schedule-builder',status:'healthy',checkedAt:now}
   },
   grades:{
-   data:{courseCode:code,totalStudents:812,grades:{A:240,'A-':180,'B+':142,B:110,C:65,F:20,W:55},distributions:[{instructorName:'Example Instructor',term:'1269',students:120,grades:{A:50,B:40,C:20,F:10}}]},
+   data:{courseCode:code,totalStudents:812,grades:{A:240,'A-':180,'B+':142,B:110,C:65,F:20,W:55},instructorRatings:[{instructorName:'Example Instructor',professorId:123456,quality:4.4,via:'gophergrades',source:'ratemyprofessors'}],distributions:[{instructorName:'Example Instructor',term:'1259',students:110,grades:{A:44,B:40,C:18,F:8}},{instructorName:'Example Instructor',term:'1269',students:120,grades:{A:50,B:40,C:20,F:10}}]},
    stale:false,provenance:{source:'gophergrades',retrievedAt:now,period:'1239–1263',sampleSize:812},health:{source:'gophergrades',status:'healthy',checkedAt:now}
   },
   feedback:{data:null,stale:false,provenance:{source:'umn-srt',retrievedAt:now,period:'Unavailable'},health:{source:'umn-srt',status:'down',checkedAt:now,message:'Not configured'}},
@@ -52,17 +52,19 @@ test('Schedule Builder renders a compact value-add insight rail without repeatin
  assert.equal(host.querySelector('button'),null,'controls remain isolated in Shadow DOM');
  const shadow=host.shadowRoot!;
  assert.match(shadow.textContent||'',/CS Technical Electives/);
- assert.match(shadow.textContent||'',/Course grades/);assert.match(shadow.textContent||'',/3\.37 GPA/);assert.match(shadow.textContent||'',/812 students/);
- assert.match(shadow.textContent||'',/Instructor history/);assert.match(shadow.textContent||'',/Example Instructor · 3\.00 GPA/);
+ assert.match(shadow.textContent||'',/Grade history/);assert.match(shadow.textContent||'',/3\.37 GPA/);assert.match(shadow.textContent||'',/812 students/);
+ assert.match(shadow.textContent||'',/Professor/);assert.match(shadow.textContent||'',/4\.4\/5 RMP/);assert.match(shadow.textContent||'',/Student voices/);assert.match(shadow.textContent||'',/Themes: projects · workload/);assert.match(shadow.textContent||'',/Offering history/);
  assert.doesNotMatch(shadow.textContent||'',/A current UMN course description/);assert.doesNotMatch(shadow.textContent||'',/9 seats/);assert.doesNotMatch(shadow.textContent||'',/Keller 3-210/);assert.doesNotMatch(shadow.textContent||'',/LEC 001/);
  const direct=shadow.querySelector<HTMLAnchorElement>('.source-links .source-link');
  assert.equal(direct?.href,'https://www.reddit.com/r/uofmn/comments/example');assert.equal(direct?.target,'_blank');
  const community=shadow.querySelector<HTMLButtonElement>('[data-insight="references"] .more-link')!;
  community.click();
  assert.equal(shadow.querySelector('.body')?.getAttribute('data-active-tab'),'Community');
- assert.match(shadow.querySelector('.body')?.textContent||'',/source material only/i);
+ assert.match(shadow.querySelector('.body')?.textContent||'',/curated source material only/i);assert.match(shadow.querySelector('.body')?.textContent||'',/workload/i);assert.match(shadow.querySelector('.body')?.textContent||'',/projects/i);
  assert.match(shadow.querySelector('.body')?.textContent||'',/weekly workload and project structure/i);
  assert.equal(shadow.querySelector<HTMLAnchorElement>('.body a.reference-title')?.href,'https://www.reddit.com/r/uofmn/comments/example');
+ (shadow.querySelector('[data-insight="course-grades"]')as HTMLButtonElement).click();assert.equal(shadow.querySelector('.body')?.getAttribute('data-active-tab'),'Grades');assert.match(shadow.querySelector('.body')?.textContent||'',/Historical GPA trend/);assert.ok(shadow.querySelector('.trend svg'));
+ (shadow.querySelector('[data-insight="offering-history"]')as HTMLButtonElement).click();assert.equal(shadow.querySelector('.body')?.getAttribute('data-active-tab'),'Offering');assert.match(shadow.querySelector('.body')?.textContent||'',/Observed offering history/);assert.match(shadow.querySelector('.body')?.textContent||'',/Fall terms observed/);
  app.scan();await tick();assert.equal(dom.window.document.querySelectorAll('smart-umn-insight').length,1);
  host.remove();app.scan();await tick();assert.equal(dom.window.document.querySelectorAll('smart-umn-insight').length,1);
  assert.equal(batchCalls,1,'rerender reuses public course cache');assert.equal(fitCalls,1,'rerender reuses APAS fit cache');
@@ -92,7 +94,7 @@ test('current instructor references are visible immediately without opening dupl
  const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
  const c=context();c.community.push({id:'rmp-1',source:'ratemyprofessor',entityType:'instructor',entityId:'instructor:example instructor',title:'Example Instructor at University of Minnesota - Twin Cities',url:'https://www.ratemyprofessors.com/professor/123456',topics:[],discoveredAt:now,provenance:{source:'ratemyprofessor:manual-link',retrievedAt:now,period:'Publication date not supplied'}});
  const app=installEnhancements(dom.window.document,{batch:async()=>[c],fit:async courses=>fitFor(courses.map(x=>x.code)),connect:async()=>{}});await tick();const shadow=dom.window.document.querySelector('smart-umn-insight')!.shadowRoot!;
- const prof=[...shadow.querySelectorAll<HTMLAnchorElement>('.source-links .source-link')].find(a=>a.href.includes('ratemyprofessors.com'));assert.ok(prof);assert.match(prof!.textContent||'',/RMP · Example Instructor/);assert.equal(prof!.target,'_blank');assert.equal(shadow.querySelectorAll('[data-insight="instructor-grades"]').length,1);
+ const professor=shadow.querySelector<HTMLElement>('[data-insight="instructor-intelligence"]')!;assert.ok(professor);assert.match(professor.textContent||'',/4\.4\/5 RMP/);assert.match(professor.textContent||'',/RMP count unavailable/);assert.equal(shadow.querySelectorAll('[data-insight="offering-history"]').length,1);
  app.disconnect();dom.window.close();
 });
 
@@ -108,7 +110,7 @@ test('missing APAS keeps course evidence inline and offers Connect UMN inside th
  const degree=shadow.querySelector<HTMLButtonElement>('button[data-insight="degree"]')!;degree.click();
  assert.match(shadow.querySelector('.body')?.textContent||'',/Connect UMN to show how this course fits/i);
  (shadow.querySelector('.body .link-button')as HTMLButtonElement).click();assert.equal(connects,1);
- assert.match(shadow.textContent||'',/Reddit · Course/i,'community source remains visible without APAS');
+ assert.match(shadow.textContent||'',/(Excerpt|Reddit).*Course/i,'community source remains visible without APAS');
  app.disconnect();dom.window.close();
 });
 

@@ -5,7 +5,7 @@ import{makeReference,makeInstructorReference}from'../packages/community/index.ts
 import{instructorEntityKey}from'../packages/schemas/index.ts';
 import{Store}from'../packages/providers/store.ts';
 import{ContextService}from'../packages/providers/index.ts';
-import{currentInstructorGradeHistory,gradesHTML,referenceEntityLabel}from'../packages/ui/index.ts';
+import{communityTopicSummary,currentInstructorGradeHistory,gradeTermTrend,gradesHTML,referenceEntityLabel}from'../packages/ui/index.ts';
 
 const now='2026-09-27T00:00:00.000Z';
 const prov=(source:string,period='1273')=>({source,retrievedAt:now,period});
@@ -44,6 +44,8 @@ test('shared web/extension grade view model aggregates only current instructors'
  const h=currentInstructorGradeHistory(c);assert.equal(h.length,1);assert.equal(h[0].name,'Daniel Boley');assert.equal(referenceEntityLabel(c,'instructor','instructor:daniel boley'),'Daniel Boley');assert.equal(referenceEntityLabel(c,'course','CSCI 5302'),'Course');assert.equal(h[0].students,75);assert.deepEqual(h[0].terms,['1253','1263']);assert.deepEqual(h[0].grades,{A:37,B:29,F:9});
  const html=gradesHTML(c);assert.match(html,/Current instructor historical records/);assert.match(html,/Daniel Boley/);assert.match(html,/75 historical students/);assert.doesNotMatch(html,/Other Person/);
 });
+
+test('course-intelligence view models aggregate term trends and neutral discussion themes without sentiment',()=>{const c:any={course:{data:{code:'CSCI 5302'},stale:false,provenance:prov('umn-schedule-builder'),health:health('umn-schedule-builder')},sections:{data:[],stale:false,provenance:prov('umn-schedule-builder'),health:health('umn-schedule-builder')},grades:{data:{courseCode:'CSCI 5302',totalStudents:70,grades:{A:40,B:30},distributions:[{instructorName:'A',term:'1259',students:30,grades:{A:20,B:10}},{instructorName:'B',term:'1259',students:10,grades:{A:5,B:5}},{instructorName:'A',term:'1263',students:30,grades:{A:15,B:15}}]},stale:false,provenance:prov('gophergrades'),health:health('gophergrades')},feedback:{data:null,stale:false,provenance:prov('umn-srt'),health:health('umn-srt')},community:[makeReference('CSCI 5302','CSCI 5302 workload and projects','https://www.reddit.com/r/uofmn/comments/aaa111/','Weekly workload and projects come up often','2026-09-01'),makeReference('CSCI 5302','CSCI 5302 exam discussion','https://www.reddit.com/r/uofmn/comments/bbb222/','Exam workload discussion','2026-09-02')]};const trend=gradeTermTrend(c);assert.deepEqual(trend.map(x=>[x.term,x.students]),[['1259',40],['1263',30]]);assert.ok(trend.every(x=>typeof x.gpa==='number'));assert.deepEqual(communityTopicSummary(c).slice(0,3),[{topic:'workload',count:2},{topic:'exam',count:1},{topic:'projects',count:1}]);});
 
 test('course context merges only exact current-section instructor references with course references',async()=>{
  const store=new Store(':memory:');

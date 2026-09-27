@@ -7,6 +7,8 @@ export type ReviewGuidance={kind:'prerequisite'|'capacity'|'policy'|'stale'|'res
 export type RoadmapSemester={term:string;label:string;targetCredits:number;courseCodes:string[];note:string};
 export type GraduationRoadmap={headline:string;estimatedGraduation:string;semesters:RoadmapSemester[];bottlenecks:string[];reviewItems:string[];confidence:'strong'|'bounded'|'review';remainingCredits:number};
 export type WhatIfScenario={primaryOnly?:boolean;includeSummer?:boolean;creditsPerTerm?:number;dropCourseCode?:string};
+export type AdvisorDecision={kind:'register'|'bottleneck'|'review'|'roadmap';title:string;detail:string;courseCode?:string};
+export type AdvisorBrief={status:'ready'|'attention'|'build';headline:string;summary:string;nextDecisions:AdvisorDecision[];reviewCount:number;estimatedGraduation:string};
 
 const seasons:Record<string,TermSeason>={'3':'Spring','5':'Summer','9':'Fall'};
 export function termSeason(term:string):TermSeason{const s=seasons[term.at(-1)||''];if(!s)throw new Error('Unsupported UMN term');return s;}
@@ -91,6 +93,21 @@ export function buildGraduationRoadmap(profile:StudentAcademicProfile,currentTer
  const confidence=coverage.unknownUnroutedRequirements?'review':coverage.policyConstraints||coverage.candidateRouteSupportedRequirements?'bounded':'strong';
  const headline=remainingCredits<=0?'Current plan reaches the recorded degree-credit total.':`About ${Math.max(1,semesters.length)} planning term${semesters.length===1?'':'s'} to the recorded degree-credit total at up to ${creditsPerTerm} credits/term.`;
  return{headline,estimatedGraduation:estimated,semesters,bottlenecks:[...new Set(bottlenecks)],reviewItems:[...new Set(reviewItems)].slice(0,8),confidence,remainingCredits};
+}
+
+export function buildAdvisorBrief(profile:StudentAcademicProfile,currentTerm:string,currentSchedule:Schedule|undefined,contexts:CourseContext[],prefs:Preferences,scenario:WhatIfScenario={}):AdvisorBrief{
+ const road=buildGraduationRoadmap(profile,currentTerm,currentSchedule,contexts,prefs,scenario),coverage=analyzeRequirementRouteCoverage(roadmapProfile(profile,scenario)).overall;
+ const reviewCount=road.reviewItems.length+coverage.policyConstraints+coverage.candidateRouteSupportedRequirements;
+ const status:AdvisorBrief['status']=!currentSchedule?'build':reviewCount?'attention':'ready';
+ const headline=!currentSchedule?'Let’s choose the next registration move.':road.confidence==='strong'?`Current evidence supports a path through ${road.estimatedGraduation}.`:`Current evidence points to ${road.estimatedGraduation}, with a few items to confirm.`;
+ const summary=!currentSchedule?`${coverage.strictSupportedRequirements} proven course route${coverage.strictSupportedRequirements===1?'':'s'} can be used automatically; ${reviewCount} item${reviewCount===1?'':'s'} still need review.`:`${currentSchedule.credits} credits are planned this term across ${currentSchedule.campusDays} campus day${currentSchedule.campusDays===1?'':'s'}. ${reviewCount?`${reviewCount} review item${reviewCount===1?'':'s'} remain outside automatic authority.`:'No current review-only item blocks this generated option.'}`;
+ const nextDecisions:AdvisorDecision[]=[];
+ if(currentSchedule){const narrow=currentSchedule.courses.map(c=>({c,p:contexts.find(x=>x.course.data?.code===c.code)})).map(x=>({c:x.c,p:x.p?offeringPattern(x.p):undefined})).find(x=>x.p&&x.p.confidence!=='unknown'&&x.p.seasons.length<3);if(narrow?.p)nextDecisions.push({kind:'bottleneck',title:`Protect ${narrow.c.code} in this plan`,detail:`${narrow.p.label}. Keeping it now reduces future offering risk.`,courseCode:narrow.c.code});nextDecisions.push({kind:'register',title:`Prepare ${currentSchedule.courses.length} course${currentSchedule.courses.length===1?'':'s'} for registration`,detail:'Review the generated class numbers, refresh live seats, then finish enrollment in official UMN systems.'});}
+ else nextDecisions.push({kind:'register',title:'Build this semester first',detail:'Smart UMN will match current offerings only to course-authorizing APAS rules with verified prerequisites.'});
+ if(road.bottlenecks.length)nextDecisions.push({kind:'bottleneck',title:'Watch the graduation bottleneck',detail:road.bottlenecks[0]});
+ if(road.reviewItems.length)nextDecisions.push({kind:'review',title:'Use an advisor only where policy judgment is still needed',detail:road.reviewItems[0]});else if(coverage.policyConstraints)nextDecisions.push({kind:'review',title:'Confirm degree-wide policy constraints',detail:`${coverage.policyConstraints} APAS policy/accounting constraint${coverage.policyConstraints===1?'':'s'} remain visible but do not authorize courses automatically.`});
+ nextDecisions.push({kind:'roadmap',title:`Keep ${road.estimatedGraduation} as the current planning horizon`,detail:'This is a deterministic estimate from recorded credits, supported requirements, prerequisite order and observed offering patterns — not a graduation guarantee.'});
+ return{status,headline,summary,nextDecisions:nextDecisions.slice(0,4),reviewCount,estimatedGraduation:road.estimatedGraduation};
 }
 
 export function whyThisPlan(schedule:Schedule,prefs:Preferences,contexts:CourseContext[]=[]):string[]{

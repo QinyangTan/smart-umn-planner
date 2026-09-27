@@ -1,15 +1,15 @@
-# Web UI contract
+# Web Advisor UI contract
 
-Smart UMN is an independent student tool, not an official University website. The web app borrows the University's public visual language without using official marks or implying endorsement.
+Smart UMN is an independent student tool, not an official University website. The web product is deliberately the **low-information-density registration-advisor surface**: answer the student's next decision first, then let them inspect APAS proof, schedule math and policy boundaries on demand. The app borrows the University's public visual language without using official marks or implying endorsement.
 
 ## Information architecture
 
 There are only two primary destinations:
 
-- **Plan** — import/use APAS, tune a small set of semester preferences, and build one schedule at a time.
-- **Explore** — browse the complete current Twin Cities Schedule Builder subject directory and see personalized APAS fit inline.
+- **Plan** — show a concise advisor brief (what to do next, current graduation horizon, bottlenecks, and what truly needs an advisor), then build one registration option at a time. Roadmap mechanics and tuning are progressive disclosures.
+- **Explore** — browse the complete current Twin Cities Schedule Builder subject directory with APAS relevance, but keep professor/community/grade intelligence secondary to the extension.
 
-Connection/privacy, detailed APAS requirements, saved plans, course evidence, and candidate-course tuning are secondary panels or progressive disclosures. They are not competing top-level pages.
+Connection/privacy, detailed APAS requirements, saved plans, course-experience evidence, graduation-roadmap mechanics, what-if controls, and candidate-course tuning are secondary panels or progressive disclosures. They are not competing top-level pages. The first fold should read more like an advisor conversation than an analytics dashboard.
 
 ## Personalization without setup fatigue
 
