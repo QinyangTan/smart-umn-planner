@@ -53,9 +53,13 @@ test('successful Plan build saves a snapshot and updates the footer count immedi
  const dom=setup(activeCourse,activeSection);
  try{
   const doc=dom.window.document;
+  assert.match(doc.querySelector('h1')?.textContent||'',/What should you do next\?/);
+  assert.match(doc.querySelector('.advisor-brief')?.textContent||'',/YOUR REGISTRATION ADVISOR/);
+  const roadmap=doc.querySelector('.roadmap');assert.equal(roadmap?.tagName,'DETAILS');assert.equal(roadmap?.hasAttribute('open'),false,'roadmap mechanics stay secondary until the student opens them');
   (doc.querySelector('#autobuild') as HTMLElement).click();
   await waitFor(()=>doc.querySelector('.schedule')!==null&&doc.querySelector('#autobuild')?.textContent?.includes('Rebuild my plan')===true);
   assert.match(doc.querySelector('.schedule')?.textContent||'',/CSCI 5123/);
+  assert.match(doc.querySelector('.advisor-brief')?.textContent||'',/Prepare 1 course for registration/);
   assert.equal(doc.querySelector('[data-panel="saved"]')?.textContent?.trim(),'Saved plans');
   (doc.querySelector('[data-save="0"]') as HTMLElement).click();
   assert.equal(doc.querySelector('[data-panel="saved"]')?.textContent?.trim(),'Saved plans (1)');
