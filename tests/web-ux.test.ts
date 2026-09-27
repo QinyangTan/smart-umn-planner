@@ -4,6 +4,7 @@ import{readFileSync}from'node:fs';
 
 const app=readFileSync(new URL('../apps/web/app.ts',import.meta.url),'utf8');
 const css=readFileSync(new URL('../apps/web/style.css',import.meta.url),'utf8');
+const readme=readFileSync(new URL('../README.md',import.meta.url),'utf8');
 
 test('web information architecture exposes only Plan and Explore as primary navigation',()=>{
  const nav=app.match(/\['Plan','Explore'\]\.map/);
@@ -48,4 +49,6 @@ test('onboarding has one connection action and no decorative fake dashboard',()=
  assert.match(app,/Build \+ hand off/);
  assert.match(app,/does not ask an AI model whether a course counts/);
  assert.doesNotMatch(app,/mock-week|onboarding-visual/);
+ assert.match(readme,/docs\/demos\/smart-umn-readme-demo\.gif/,'README opens with an inline autoplaying demo rather than requiring a video click');
+ assert.doesNotMatch(readme,/Three synthetic-profile screen-recorded demos are checked into GitHub/,'README should not lead with a file-list style demo section');
 });

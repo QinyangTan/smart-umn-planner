@@ -1,6 +1,8 @@
 # Smart UMN v0.7.x demos
 
-All demo recordings use a synthetic academic profile plus public UMN course data. They do not contain raw APAS HTML, student identity, credentials, cookies, Duo/SAML material, or a real student's course history.
+![Smart UMN combined demo](demos/smart-umn-readme-demo.gif)
+
+The combined GIF above is the lightweight autoplaying README showcase. All demo recordings use a synthetic academic profile plus public UMN course data. They do not contain raw APAS HTML, student identity, credentials, cookies, Duo/SAML material, or a real student's course history.
 
 ## 1. Plan → graduation roadmap → registration handoff
 

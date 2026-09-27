@@ -2,13 +2,17 @@
 
 A working local-first academic-planning vertical slice for University of Minnesota Twin Cities students across majors, colleges, second majors, minors and certificates. Browser-owned UMN authentication, semantic APAS parsing for degree / major / minor / certificate routes, live Schedule Builder sections, historical GopherGrades evidence, original community links, a deterministic conservative solver, a web workspace and a Chrome extension that renders course context directly inside Schedule Builder.
 
+![Smart UMN Planner — Plan, what-if graduation planning, and Schedule Builder extension demo](docs/demos/smart-umn-readme-demo.gif)
+
+*Plan → graduation roadmap → what-if planning → live Schedule Builder extension. Synthetic academic profile; public UMN course data.*
+
 **Status:** v0.7.1 local release candidate for the Twin Cities planning scope. The current build passes its automated, live-provider, APAS-coverage, and isolated-browser acceptance gates, but it is not an official UMN graduation audit or registration authority. See [v0.7 product acceptance](docs/V0_7_PRODUCT_ACCEPTANCE.md), [APAS coverage](docs/APAS_COVERAGE.md), [verification](docs/VERIFICATION.md), [web UI contract](docs/WEB_UI.md), and [limitations](docs/LIMITATIONS.md). No LLM is required. No credentials or API keys are required.
 
 ## v0.7.x product direction
 
 Plan now combines the current semester with a deterministic **graduation roadmap**, historical offering signals, prerequisite-order projection, explicit bottlenecks/review items, **Why this plan?**, richer timing/travel/waitlist constraints, persistent what-if planning, and a class-number handoff back to official UMN registration tools. Explore remains the full official catalog ordered by APAS relevance rather than filtered by it. Real APAS expansion uses an anonymous compatibility passport so private audit HTML does not need to leave the tester's machine.
 
-Three synthetic-profile screen-recorded demos are checked into GitHub: [Plan → roadmap → registration](docs/demos/01-plan-roadmap-registration.mp4), [what-if graduation planning](docs/demos/02-what-if-graduation.mp4), and [Schedule Builder inline extension](docs/demos/03-schedulebuilder-extension.mp4). See [demo notes and thumbnails](docs/DEMOS.md).
+The animated demo above is the README-first showcase. Full-resolution recordings, individual flows, and privacy notes are in the [demo gallery](docs/DEMOS.md).
 
 ## Run
 
