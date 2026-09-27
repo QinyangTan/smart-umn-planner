@@ -17,6 +17,8 @@ test('Plan keeps one primary planning action and hides tuning behind disclosure'
  assert.equal((app.match(/id="autobuild"/g)||[]).length,1);
  assert.equal((app.match(/id="discover"/g)||[]).length,0,'discovery is an implementation step, not a competing visible CTA');
  assert.match(app,/<details id="preferences"/);
+ assert.match(app,/whatIfOpen/,'what-if disclosure state survives preference rerenders');
+ assert.match(app,/whatIfDetails\.ontoggle/,'what-if disclosure records its open state');
  assert.match(app,/Adjust candidate courses/);
  assert.match(app,/Build my plan/);
 });

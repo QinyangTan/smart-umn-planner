@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+const root=process.cwd(),dist=path.join(root,'dist/extension'),outDir=path.join(root,'release');
+const manifest=JSON.parse(fs.readFileSync(path.join(dist,'manifest.json'),'utf8'));
+fs.mkdirSync(outDir,{recursive:true});
+const out=path.join(outDir,`smart-umn-planner-extension-v${manifest.version}.zip`);
+fs.rmSync(out,{force:true});
+const result=spawnSync('zip',['-qr',out,'.'],{cwd:dist,stdio:'inherit'});
+if(result.status!==0)throw new Error('zip failed');
+const size=fs.statSync(out).size;
+if(size>10_000_000)throw new Error(`Extension package unexpectedly large: ${size} bytes`);
+console.log(JSON.stringify({out:path.relative(root,out),version:manifest.version,bytes:size},null,2));

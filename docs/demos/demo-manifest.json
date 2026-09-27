@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-09-27T22:39:45.924Z",
+  "profile": "synthetic demo only",
+  "privacy": "No raw APAS HTML, student identity, credentials, cookies, Duo/SAML data, or personal course history is recorded.",
+  "videos": [
+    {
+      "file": "docs/demos/01-plan-roadmap-registration.mp4",
+      "bytes": 401557
+    },
+    {
+      "file": "docs/demos/02-what-if-graduation.mp4",
+      "bytes": 1661992
+    },
+    {
+      "file": "docs/demos/03-schedulebuilder-extension.mp4",
+      "bytes": 85363
+    }
+  ]
+}
