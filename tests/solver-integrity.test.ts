@@ -40,6 +40,20 @@ for(const kind of ['invalid timestamp','future timestamp','old nested section','
   assert.equal(result.rejected.length,1);
  });
 }
+test('equivalent-course metadata alone does not make an otherwise valid course unschedulable',()=>{
+ const c=context('CSCI 5302','mon','eq-single');
+ c.course.data!.equivalents=['CSCI 5421'];
+ assert.equal(generateSchedules([c],profile,prefs).schedules.length,1);
+});
+
+test('one generated schedule never combines mutually equivalent courses',()=>{
+ const a=context('CSCI 5302','mon','eq-a'),b=context('CSCI 5421','tue','eq-b');
+ a.course.data!.equivalents=['CSCI 5421'];b.course.data!.equivalents=['CSCI 5302'];
+ const result=generateSchedules([a,b],profile,{minCredits:6,maxCredits:6});
+ assert.equal(result.rejected.length,0,'each course is individually eligible');
+ assert.equal(result.schedules.length,0,'equivalent courses cannot be combined to reach the credit target');
+});
+
 test('different semesters cannot be combined into one plan',()=>{
  const a=context('CSCI 5302','mon','1'),b=context('CSCI 5421','tue','2');b.course.data!.term='1275';b.sections.data![0].term='1275';
  assert.throws(()=>generateSchedules([a,b],profile,{minCredits:6,maxCredits:6}),/same term and campus/);

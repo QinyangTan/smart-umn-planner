@@ -239,9 +239,10 @@ export function installEnhancements(doc:Document,client:Client){
    const context=el(doc,'span','context',connected?(status||'APAS connected'):'APAS not connected');top.append(context,planner);wrap.append(top);
    const rail=el(doc,'div','rail'),toggle=(tab:Tab)=>()=>{active=active===tab?undefined:tab;render();};
    const yes=fit?.matches.find(m=>m.result==='yes'),route=fit?.routes?.find(m=>m.result==='yes'&&!m.strict);
-   const degreeValue=!connected?'Connect UMN':yes?`✓ ${short(yes.label,34)}`:route?`◇ ${short(route.label,34)}`:fit?.eligibility.result==='no'?'Not eligible now':'Needs review';
-   const degreeSub=!connected?'See personalized APAS fit + prerequisite status':yes?(fit?.eligibility.result==='yes'?'Prerequisites verified from completed courses':fit?.eligibility.reason||'Personalized APAS check'):route?'Candidate route · caps/conditions need review':fit?.eligibility.reason||'Personalized APAS check';
-   const degreeTone=connected&&yes?'good':connected&&(route||fit?.eligibility.result==='unknown')?'warn':'neutral';
+   const eligibility=fit?.eligibility.result;
+   const degreeValue=!connected?'Connect UMN':eligibility==='no'?'Not eligible now':yes?`✓ ${short(yes.label,34)}`:route?`◇ ${short(route.label,34)}`:'Needs review';
+   const degreeSub=!connected?'See personalized APAS fit + prerequisite status':eligibility==='no'?(fit?.eligibility.reason||'Not eligible now'):yes?(eligibility==='yes'?(fit?.eligibility.reason||'Prerequisites verified'):(fit?.eligibility.reason||'Prerequisite conditions need review')):route?'Candidate route · caps/conditions need review':fit?.eligibility.reason||'Personalized APAS check';
+   const degreeTone=connected&&yes&&eligibility==='yes'?'good':connected&&(yes||route||eligibility==='unknown'||eligibility==='no')?'warn':'neutral';
    const degree=insightButton(doc,'APAS fit',degreeValue,degreeSub,degreeTone,'Degree',active,toggle('Degree'));degree.setAttribute('data-insight','degree');rail.append(degree);
    if(c.grades.data){
     const g=c.grades.data,summary=gradeDistributionSummary(g.grades),value=summary.gpa!==undefined?`${summary.averageLetter||''} avg · ${summary.gpa.toFixed(2)} GPA`:'Historical grades';

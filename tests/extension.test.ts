@@ -70,6 +70,24 @@ test('Schedule Builder renders a compact value-add insight rail without repeatin
  app.disconnect();dom.window.close();
 });
 
+test('Schedule Builder APAS summary prioritizes current eligibility over a raw requirement match',async()=>{
+ const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
+ const app=installEnhancements(dom.window.document,{
+  batch:async()=>[context()],
+  fit:async courses=>({connected:true,status:'UMN Connected',items:courses.map(c=>({code:c.code,eligibility:{result:'no' as const,reason:'Already completed; duplicate credit excluded'},matches:[{requirementId:'r1',label:'CS Technical Electives',result:'yes' as const}]}))}),
+  connect:async()=>{}
+ });
+ await tick();
+ const shadow=dom.window.document.querySelector('smart-umn-insight')!.shadowRoot!,degree=shadow.querySelector<HTMLButtonElement>('[data-insight="degree"]')!;
+ assert.match(degree.textContent||'',/Not eligible now/);
+ assert.match(degree.textContent||'',/Already completed; duplicate credit excluded/);
+ assert.doesNotMatch(degree.textContent||'',/✓ CS Technical Electives/,'green requirement-match summary must not override ineligibility');
+ degree.click();
+ assert.match(shadow.querySelector('.body')?.textContent||'',/Already completed; duplicate credit excluded/);
+ assert.match(shadow.querySelector('.body')?.textContent||'',/Matches remaining APAS requirements/,'detail may still explain why the course structurally matches APAS');
+ app.disconnect();dom.window.close();
+});
+
 test('current instructor references are visible immediately without opening duplicate section details',async()=>{
  const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
  const c=context();c.community.push({id:'rmp-1',source:'ratemyprofessor',entityType:'instructor',entityId:'instructor:example instructor',title:'Example Instructor at University of Minnesota - Twin Cities',url:'https://www.ratemyprofessors.com/professor/123456',topics:[],discoveredAt:now,provenance:{source:'ratemyprofessor:manual-link',retrievedAt:now,period:'Publication date not supplied'}});

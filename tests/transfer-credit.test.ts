@@ -79,6 +79,15 @@ test('APAS-awarded AP credit blocks duplicate enrollment in the mapped UMN cours
  }finally{dom.window.close();}
 });
 
+test('APAS-awarded equivalent credit blocks enrollment in the other equivalent course',()=>{
+ const prior:StudentCourse={courseCode:'CSCI 1133H',campus:'UMNTC',subject:'CSCI',number:'1133H',credits:4,grade:'',status:'transfer',transferSource:'Advanced Placement / articulated honors equivalent'};
+ const target=course('CSCI 1133');target.equivalents=['CSCI 1133H'];
+ assert.deepEqual(eligibility(target,profile([prior])),{
+  result:'no',
+  reason:'Equivalent course CSCI 1133H already completed; duplicate credit excluded'
+ });
+});
+
 test('blank-grade transfer rows require positive awarded credit and an explicit source',()=>{
  const base:StudentCourse={courseCode:'MATH 1271',campus:'UMNTC',subject:'MATH',number:'1271',grade:'',status:'transfer'};
  assert.equal(passed({...base,credits:4,transferSource:'Advanced Placement / Calculus BC'}),true);

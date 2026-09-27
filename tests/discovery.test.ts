@@ -3,7 +3,7 @@ import assert from'node:assert/strict';
 import{JSDOM}from'jsdom';
 import{Store}from'../packages/providers/store.ts';
 import{ScheduleBuilderProvider}from'../packages/providers/index.ts';
-import{degreeDiscoveryPlan,discoverDegreeCandidates,sortCoursesForProfile}from'../packages/core/rules.ts';
+import{degreeDiscoveryPlan,discoverDegreeCandidates,eligibility,sortCoursesForProfile}from'../packages/core/rules.ts';
 import{parseAPAS}from'../packages/apas-parser/index.ts';
 import{subjectCode}from'../packages/schemas/index.ts';
 import type{Course,StudentAcademicProfile}from'../packages/schemas/index.ts';
@@ -28,6 +28,11 @@ test('degree discovery expands supported APAS range rules locally without sendin
  assert.deepEqual(plan,{explicitCodes:['MATH 4242'],subjects:['CSCI'],attributes:[]});
  const found=discoverDegreeCandidates([course('CSCI 5302'),course('CSCI 4041'),course('CSCI 2033'),course('MATH 4242')],profile);
  assert.deepEqual(found.map(c=>c.code),['MATH 4242','CSCI 5302']);
+});
+
+test('courses with an empty proven prerequisite rule say No prerequisites',()=>{
+ const c=course('CSCI 1133');
+ assert.deepEqual(eligibility(c,profile),{result:'yes',reason:'No prerequisites'});
 });
 
 test('Explore sorts each subject through the imported APAS without hiding unrelated courses',()=>{
@@ -60,6 +65,19 @@ test('Schedule Builder subject discovery uses official wildcard and bulk course 
  }finally{store.close();}
 });
 
+
+test('Schedule Builder normalizes structured equivalent courses to canonical UMN codes',()=>{
+ const store=new Store(':memory:');
+ try{
+  const provider=new ScheduleBuilderProvider(store);
+  const normalized=provider.normalize({
+   complete:true,valid:true,id:21,institution:'UMNTC',campus:'UMNTC',term:1273,subject:'CSCI',catalog_nbr:'1133',
+   title:'Introduction to Computing and Programming Concepts',description:['Intro.','prereq: none'],credits:'4.00',min_credits:'4.00',max_credits:'4.00',
+   attributes:[],sections:[10001],equivalents:[{id:811072,subject:'CSCI',catalog_nbr:'1133H',visible:true,title:'Honors Introduction to Computing and Programming Concepts'}]
+  },'UMNTC');
+  assert.deepEqual(normalized.equivalents,['CSCI 1133H']);
+ }finally{store.close();}
+});
 
 test('large exact APAS pools use bounded subject catalogs before loading course context',async()=>{
  const {degreeDiscoverySubjects}=await import('../packages/core/rules.ts');

@@ -20,7 +20,7 @@ Those fields may still exist in the provider model because the planner/solver ne
 
 The inline rail is reserved for information Schedule Builder does not natively present in the same place:
 
-1. **APAS fit** — personalized Twin Cities remaining-requirement match across imported degree / major / minor / certificate program routes plus a derived prerequisite verdict. Candidate-only routes use a warning state instead of a checkmark.
+1. **APAS fit** — personalized Twin Cities remaining-requirement match across imported degree / major / minor / certificate program routes plus a derived eligibility/prerequisite verdict. Current eligibility takes precedence in the summary: an already-completed/in-progress course or a course with unmet prerequisites must say **Not eligible now** even when it structurally matches a remaining requirement. Only an eligible strict match gets the positive checkmark treatment; candidate-only or prerequisite-review routes use a warning state.
 2. **Course grades** — Twin Cities historical GPA summary, most-common grade, sample size, and a compact distribution sparkline from GopherGrades.
 3. **Instructor history** — the same Twin Cities historical summary for the instructor(s) teaching the current section when exact identity evidence exists.
 4. **References** — original Reddit / RateMyProfessors / other reviewed links for human context only; no Smart UMN sentiment, difficulty, or professor-quality score.
