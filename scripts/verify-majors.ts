@@ -26,7 +26,11 @@ function structuralAudit(program:string){
  <div class="requirement Status_IP" rname="LEVEL"><div class="reqTitle">4xxx/5xxx-level GEN coursework</div><div class="reqBody"></div></div>
  <div class="requirement Status_IP" rname="DESIGNATOR"><div class="reqTitle">6 credits must have a GEN designator.</div><div class="reqBody"></div></div>
  <div class="requirement Status_NO" rname="CAP" rqdhours="12" maxhours="9"><div class="reqTitle">Take up to 9 credits from the following list. Note: cap applies.</div><table class="selectcourses"><tbody><tr><td><span class="course" department="1GEN" number="3001"></span><span class="course" department="1GEN" number="3002"></span></td></tr></tbody></table></div>
+ <div class="requirement Status_NO" rname="EXCLUDE" rqdsubreq="1"><div class="reqTitle">Approved course with exclusion</div><table class="selectcourses"><tbody><tr><td><span class="course" department="1GEN" number="3201"></span></td></tr></tbody></table><table class="notcourses"><tbody><tr><td><span class="course" department="1GEN" number="3202"></span></td></tr></tbody></table></div>
+ <div class="requirement Status_NO" rname="GPA" rqdhours="3" rqdgpa="2.0"><div class="reqTitle">GEN GPA route</div><table class="selectcourses"><tbody><tr><td><span class="course" department="1GEN" number="4001"></span></td></tr></tbody></table></div>
+ <div class="requirement Status_NO" rname="NEEDS"><div class="reqTitle">Choose one approved GEN course</div><div class="reqNeeds"><span class="count">1</span></div><table class="selectcourses"><tbody><tr><td><span class="course" department="1GEN" number="4101"></span><span class="course" department="1GEN" number="4102"></span></td></tr></tbody></table></div>
  <div class="requirement Status_NO category_Total_Hours" rname="TOTAL" rqdhours="120"><div class="reqTitle">Minimum total degree credits</div><div class="reqBody"></div></div>
+ <div class="requirement Status_NO" rname="RESIDENCY"><div class="reqTitle">Residency policy requires institutional review</div><div class="reqBody"></div></div>
  </div></body>`;
 }
 
@@ -37,11 +41,11 @@ function structuralPass(name:string):boolean{
   const summary=analyzeRequirementRouteCoverage(profile).overall;
   const discovery=degreeDiscoveryPlan(profile,'UMNTC');
   return profile.program.name===name
-   &&summary.totalActiveRemainingRequirements===6
-   &&summary.strictSupportedRequirements===4
+   &&summary.totalActiveRemainingRequirements===10
+   &&summary.strictSupportedRequirements===7
    &&summary.candidateRouteSupportedRequirements===1
    &&summary.policyConstraints===1
-   &&summary.unknownUnroutedRequirements===0
+   &&summary.unknownUnroutedRequirements===1
    &&discovery.explicitCodes.includes('GEN 1001')
    &&discovery.subjects.includes('GEN');
  }finally{dom.window.close();}
@@ -137,7 +141,7 @@ const report={
   currentProgramTitlesChecked:livePrograms.length,
   programStructuralPasses:perProgram.filter(x=>x.genericAPASStructuralMatrix==='pass').length,
   programStructuralFailures:programFailures.length,
-  structuralRequirementShape:{total:6,strict:4,candidate:1,policy:1,unknown:0},
+  structuralRequirementShape:{total:10,strict:7,candidate:1,policy:1,unknown:1},
   realAuditSamples:{
    count:realProgramMatch?1:0,
    matchedMajor:realMajorMatch||null,
@@ -153,7 +157,7 @@ const report={
  interpretation:[
   'CAPE Major Profiles supplies the current major-name inventory; Twin Cities Sample Plans supplies degree/program identities that more closely resemble APAS program headings.',
   'Every current official major name and every current official program-degree title is exercised through the same APAS parser; there is no program-name or college allowlist.',
-  'The synthetic structural matrix proves title independence across supported APAS rule families. It does not prove that every real major-specific APAS policy has been observed.',
+  'The synthetic structural matrix proves title independence across supported APAS rule families, including explicit exclusions, GPA wrappers, APAS Needs counts, candidate-only caps, policy constraints and a deliberately unsupported fail-closed route. It does not prove that every real major-specific APAS policy has been observed.',
   'A major/program is marked real+synthetic only when a saved real APAS sample exists locally; all others remain explicitly synthetic-structural-only until a real or anonymized audit sample is available.'
  ],
  failures:{majors:majorFailures,programs:programFailures},
@@ -167,7 +171,7 @@ const md:string[]=[
  `- **CAPE Major Profiles** for current major names: **${report.officialMajorInventory.liveMajors} majors**.`,
  `- **Twin Cities Sample Plans** for degree/program identities that more closely resemble APAS program headings: **${report.officialProgramInventory.liveRows} program-degree rows across ${report.officialProgramInventory.collegeCount} colleges/schools**.`,'',
  '## What a PASS means','',
- 'Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a six-shape synthetic structural audit: four strict course-authorizing forms, one candidate-only capped pool, and one policy/accounting constraint. A PASS proves that the title/college does not require a hardcoded allowlist and that the core APAS route families survive for that identity.','',
+ 'Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a ten-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, one policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that both supported routing and unsupported-rule containment survive for that identity.','',
  'It does **not** prove that every real, major-specific APAS policy for that program has been observed. Only identities with a locally saved real audit are labeled `real+synthetic`; every other identity remains `synthetic-structural-only` until a real or anonymized audit sample is available.','',
  `Current result: **${report.verification.majorStructuralPasses}/${report.verification.currentMajorNamesChecked} majors PASS** and **${report.verification.programStructuralPasses}/${report.verification.currentProgramTitlesChecked} program-degree identities PASS**, with zero structural failures. Major inventory drift: ${report.officialMajorInventory.drift.added.length} added / ${report.officialMajorInventory.drift.removed.length} removed / ${report.officialMajorInventory.drift.duplicateCount} duplicates. Program inventory drift: ${report.officialProgramInventory.drift.added.length} added / ${report.officialProgramInventory.drift.removed.length} removed / ${report.officialProgramInventory.drift.duplicateCount} duplicates.`,'',
  '## College/school program-degree inventory','',

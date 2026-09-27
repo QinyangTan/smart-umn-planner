@@ -2,6 +2,9 @@ node_modules/
 dist/
 var/
 .runtime/
+docs/evidence/
+docs/CHECKPOINT-*.md
+docs/STATE_FOLLOWUP_*.md
 *.log
 .env*
 .DS_Store
