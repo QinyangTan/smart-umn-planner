@@ -1,6 +1,6 @@
 import {APAS_CAMPUS_DIGITS,courseCode,finite,parseCampusCourseCode,unknownRule} from '../schemas/index.ts';
 import type {StudentAcademicProfile,StudentCourse,DegreeRequirement,RequirementRule,AcademicProgramRoute} from '../schemas/index.ts';
-export const PARSER_VERSION='0.4.2';
+export const PARSER_VERSION='0.4.3';
 const text=(n:Element|null):string=>{if(!n)return'';const clone=n.cloneNode(true) as Element;clone.querySelectorAll('br').forEach(b=>b.replaceWith(' '));return(clone.textContent||'').replace(/\s+/g,' ').trim();};
 const num=(n:Element|null)=>finite(text(n));
 function status(el:Element):DegreeRequirement['status'] {const s=el.matches('.requirement')?el.className:el.querySelector('.subreqPretext .status')?.className||el.className;return /Status_OK/.test(s)?'complete':/Status_IP/.test(s)?'in_progress':/Status_NO\b/.test(s)?'incomplete':/Status_NONE/.test(s)?'informational':'unknown';}
@@ -25,12 +25,15 @@ function selectableRule(el:Element):RequirementRule|undefined{
  let rule:RequirementRule=selected.length===1?selected[0]:{type:'anyOf',rules:selected};
  const excluded=[...el.querySelectorAll('.notcourses .course[department][number]')].filter(n=>n.closest('.subrequirement,.requirement')===el).map(courseRule).filter(r=>r.type!=='unknown');if(excluded.length)rule={type:'exclude',rule,excluded};return rule;
 }
+function scopedDesignatorConstraint(label:string):boolean{return /\bof\s+the(?:\s+\d+(?:\.\d+)?)?\s+credits?\b[\s\S]*\b(?:required|needed)\b[\s\S]*\bmust\s+have\s+(?:an?\s+)?[A-Z]{2,8}\s+designator\b/i.test(label);}
 function deterministicLabelRule(label:string):RequirementRule|undefined{
  const level=/^(\d)xxx\/(\d)xxx-level\s+([A-Z]{2,8})\s+coursework$/i.exec(label.trim());if(level){const subject=level[3].toUpperCase();return{type:'anyOf',rules:[{type:'range',subject,min:Number(level[1])*1000,max:Number(level[1])*1000+999,campus:'UMNTC'},{type:'range',subject,min:Number(level[2])*1000,max:Number(level[2])*1000+999,campus:'UMNTC'}]};}
+ if(scopedDesignatorConstraint(label))return;
  const designator=/\b(\d+(?:\.\d+)?)\s+(?:credits?\s+)?must\s+have\s+(?:an?\s+)?([A-Z]{2,8})\s+designator\b/i.exec(label);if(designator)return{type:'credits',minimum:Number(designator[1]),rule:{type:'range',subject:designator[2].toUpperCase(),min:0,max:9999,campus:'UMNTC'}};
  return;
 }
 function parseRule(el:Element,label:string):RequirementRule {
+ if(scopedDesignatorConstraint(label)&&!selectableRule(el))return unknownRule(label,'Designator-credit constraint is scoped to another requirement and cannot independently authorize courses');
  const base=selectableRule(el)||deterministicLabelRule(label);if(!base)return unknownRule(label,'No explicit selectable course rule');
  // Explicit pools with caps/exceptions are exposed as candidate routes separately,
  // but are not promoted to completion rules until their quantitative semantics are proven.

@@ -75,9 +75,19 @@ test('an unfamiliar Twin Cities degree title remains importable instead of depen
  const dom=new JSDOM(html),p=parseAPAS(dom.window.document);assert.equal(p.program.kind,'degree');assert.equal(p.program.name,'Landscape Architecture BLA');dom.window.close();
 });
 
-test('explicit APAS designator-credit prose becomes a generic subject route',()=>{
- const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_IP" rname="DES"><div class="reqTitle">Of the credits required for this program, 11 must have a JOUR designator.</div><div class="reqBody"></div></div></div></body>';
+test('standalone APAS designator-credit prose becomes a generic subject route',()=>{
+ const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_IP" rname="DES"><div class="reqTitle">11 credits must have a JOUR designator.</div><div class="reqBody"></div></div></div></body>';
  const dom=new JSDOM(html),p=parseAPAS(dom.window.document),r=flattenRequirements(p.requirements)[0];assert.equal(r.rule.type,'credits');assert.equal(degreeFit(course('JOUR 3004'),p).some(x=>x.result==='yes'),true);assert.equal(degreeFit(course('PSY 3004'),p).some(x=>x.result==='yes'),false);dom.window.close();
+});
+
+test('designator credit scoped to another requirement never independently authorizes arbitrary subject courses',()=>{
+ const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_IP" rname="DES" rqdhours="11"><div class="reqTitle">Of the 23 credits required for the Technical Electives and Math Requirement, 11 must have a CSCI designator.</div><div class="reqBody"></div></div></div></body>';
+ const dom=new JSDOM(html),p=parseAPAS(dom.window.document),r=flattenRequirements(p.requirements)[0];assert.equal(r.rule.type,'unknown');assert.match(r.rule.type==='unknown'?r.rule.reason:'',/scoped to another requirement/);assert.equal(r.candidateRule,undefined);assert.equal(degreeFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);assert.equal(degreeCandidateFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);dom.window.close();
+});
+
+test('designator credits needed to fulfill a parent requirement stay non-authorizing',()=>{
+ const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_NO" rname="TECH"><div class="reqTitle">Technical Electives</div><div class="subrequirement Status_IP" rqdhours="11"><div class="subreqTitle">Of the 23 credits needed to fulfill this requirement 11 must have a CSCI designator.</div></div></div></div></body>';
+ const dom=new JSDOM(html),p=parseAPAS(dom.window.document),all=flattenRequirements(p.requirements),child=all.find(x=>/needed to fulfill/.test(x.label))!;assert.equal(child.rule.type,'unknown');assert.equal(child.candidateRule,undefined);assert.equal(degreeCandidateFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);dom.window.close();
 });
 
 test('generic APAS route parsing is department-agnostic across Twin Cities colleges',()=>{

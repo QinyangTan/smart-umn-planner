@@ -18,7 +18,7 @@ A remaining APAS node can authorize a course only when its course-choice semanti
 - structurally proven required credit totals;
 - requirement GPA wrappers when a course pool is also proven;
 - deterministic subject-level labels such as `4xxx/5xxx-level <SUBJECT> coursework`;
-- explicit designator-credit rules such as `11 credits must have a JOUR designator`;
+- standalone designator-credit rules such as `11 credits must have a JOUR designator`; designator constraints explicitly scoped to credits required by another requirement stay policy/review-only unless that parent scope is machine-readable;
 - exact official Twin Cities Liberal Education categories from current Schedule Builder metadata.
 
 These forms are department-agnostic. Regression fixtures cover examples from psychology, statistics, history, biology, marketing, graphic design, nursing, food science, educational psychology, and computer science.
