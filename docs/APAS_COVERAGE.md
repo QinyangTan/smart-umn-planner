@@ -56,6 +56,14 @@ A nested rule counts as strict-supported only when it can actually authorize at 
 
 When no active remaining requirements exist, the denominator-free strict/useful coverage values are reported as 100%, while the active requirement count remains zero.
 
+## AP / IB / transfer credit
+
+Smart UMN does not maintain a separate per-major AP-equivalency table. Instead, it trusts the student's browser-authenticated APAS course history after UMN has already articulated the external credit to a UMN-equivalent course.
+
+An AP, IB, test-credit, or other transfer row can satisfy prerequisites and prevent duplicate enrollment when APAS provides a mapped UMN course, a positive awarded credit amount, and an explicit transfer source. A blank letter-grade field does not invalidate that already-awarded transfer credit. Zero-credit rows or blank-grade rows without an explicit source remain non-passing.
+
+This keeps AP/IB handling program-agnostic across Twin Cities majors and avoids predicting credit that UMN has not actually posted. Smart UMN does not infer future AP awards from an exam name or score alone; APAS remains the authority for whether and how the credit applies.
+
 ## Explore personalization
 
 Explore loads the complete current Twin Cities Schedule Builder subject directory. For a selected subject, it preserves the official course result set and only changes ordering:

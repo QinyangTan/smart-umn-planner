@@ -3,7 +3,15 @@ import type {RequirementRule,Truth,StudentCourse,Course,DegreeRequirement,Studen
 export const and=(v:Truth[]):Truth=>v.includes('no')?'no':v.includes('unknown')?'unknown':'yes';
 export const or=(v:Truth[]):Truth=>v.includes('yes')?'yes':v.includes('unknown')?'unknown':'no';
 const grades:Record<string,number>={'A+':4,A:4,'A-':3.67,'B+':3.33,B:3,'B-':2.67,'C+':2.33,C:2,'C-':1.67,'D+':1.33,D:1,F:0};
-export function passed(c:StudentCourse):boolean{return ['completed','transfer'].includes(c.status)&&!!c.grade&&(c.grade in grades?grades[c.grade]>0:/^(S|P|T[0-9A-Z+-]*)$/.test(c.grade));}
+export function passed(c:StudentCourse):boolean{
+ if(!['completed','transfer'].includes(c.status))return false;
+ const grade=(c.grade||'').trim().toUpperCase();
+ if(grade)return grade in grades?grades[grade]>0:/^(S|P|T[0-9A-Z+-]*)$/.test(grade);
+ // AP/IB/test or other transfer credit already articulated by APAS may not carry
+ // a letter/transfer grade. A positive-credit mapped transfer row is still
+ // authoritative evidence that UMN awarded the equivalent course credit.
+ return c.status==='transfer'&&!!c.transferSource&&typeof c.credits==='number'&&c.credits>0;
+}
 type MatchCourse=Pick<Course,'code'|'subject'|'catalogNumber'> & Partial<Pick<Course,'campus'|'attributes'>>;
 function campusMatch(ruleCampus:UMNCampus|undefined,campus:UMNCampus|undefined):Truth{return!ruleCampus?'yes':!campus?'unknown':ruleCampus===campus?'yes':'no';}
 export function courseAttributePairs(attributes:string[]|undefined):{attribute:string;value:string;name?:string}[]{const out:{attribute:string;value:string;name?:string}[]=[];for(const raw of attributes||[]){try{const a=JSON.parse(raw);if(a&&typeof a==='object'&&typeof a.attribute==='string'&&typeof a.attribute_value==='string')out.push({attribute:a.attribute,value:a.attribute_value,name:typeof a.name==='string'?a.name:undefined});}catch{}}return out;}
