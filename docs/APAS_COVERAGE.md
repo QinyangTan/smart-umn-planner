@@ -1,0 +1,73 @@
+# APAS coverage contract
+
+Smart UMN is scoped to **University of Minnesota Twin Cities** because the public historical-grade pillar used by the product is Twin-Cities scoped. Within Twin Cities, program support is structural rather than a major allowlist.
+
+## Program identity
+
+The parser accepts any non-empty APAS program title. It does not require `CS`, `CSE`, `BSCompSc`, or a curated degree-name table. A connected profile can contain one primary audit plus explicitly imported second majors, minors, and certificates. Additional-program requirement IDs are namespaced by exact program title before they enter matching/allocation.
+
+## Strict course routes
+
+A remaining APAS node can authorize a course only when its course-choice semantics are structurally proven. Current strict forms include:
+
+- exact selectable courses;
+- APAS level wildcards such as `5XXX`;
+- unions of explicit selectable courses/ranges;
+- explicit exclusions (`notcourses`);
+- structurally proven required course counts;
+- structurally proven required credit totals;
+- requirement GPA wrappers when a course pool is also proven;
+- deterministic subject-level labels such as `4xxx/5xxx-level <SUBJECT> coursework`;
+- explicit designator-credit rules such as `11 credits must have a JOUR designator`;
+- exact official Twin Cities Liberal Education categories from current Schedule Builder metadata.
+
+These forms are department-agnostic. Regression fixtures cover examples from psychology, statistics, history, biology, marketing, graphic design, nursing, food science, educational psychology, and computer science.
+
+## Candidate routes
+
+When APAS exposes an explicit course pool but the quantitative policy is not fully modeled, Smart UMN keeps the pool as a **candidate route**. Candidate routes may personalize Explore, but they do not certify degree completion and do not become strict solver allocation targets. Examples include:
+
+- `up to` / `no more than` caps;
+- compound exceptions;
+- qualified Liberal Education labels where an additional lab/field condition remains;
+- other explicit pools whose count/credit semantics are not proven.
+
+## Policy/accounting constraints
+
+Requirements such as total degree credits, institutional residency, final-credit residency, overall/major GPA, total major credits, or upper-division totals may be parsed and shown as policy constraints while remaining non-authorizing for individual course choice. The planner does not invent a course route from those policies.
+
+## Local coverage analyzer
+
+Development and diagnostics use `analyzeRequirementRouteCoverage(profile)` entirely in the browser/local runtime. It never sends the APAS tree, labels, grades, or program history to the public-data API.
+
+For the combined profile and for each imported program separately, the analyzer reports mutually exclusive support buckets, so `strict + candidate + policy + unknown = total`:
+
+- total active remaining requirements;
+- strict-supported requirements;
+- candidate-route-supported requirements;
+- unknown/unrouted requirements;
+- strict coverage percentage;
+- useful-route coverage percentage (strict + candidate);
+- policy/accounting constraints;
+- a deterministic rule-shape breakdown for exact course, subject range, official attribute, credits, count, GPA, exclusions, nested `anyOf/allOf`, candidate-only, and unknown;
+- an unsupported-reason histogram gathered from unresolved rule branches.
+
+A nested rule counts as strict-supported only when it can actually authorize at least one course under three-valued semantics. For example, an `anyOf` with one proven course branch and one unknown branch remains useful because the proven branch can still produce `yes`; an `allOf` with an unresolved branch is not counted as strict-supported. Candidate routes remain separate and never become proven completion claims.
+
+When no active remaining requirements exist, the denominator-free strict/useful coverage values are reported as 100%, while the active requirement count remains zero.
+
+## Explore personalization
+
+Explore loads the complete current Twin Cities Schedule Builder subject directory. For a selected subject, it preserves the official course result set and only changes ordering:
+
+1. strict APAS matches;
+2. candidate/review routes;
+3. unrelated or currently unproven courses.
+
+Nothing is hidden merely because the parser cannot prove a fit. This allows the same Explore UI to personalize itself for any imported Twin Cities APAS without creating a per-major frontend.
+
+## Verification language
+
+`Supports all Twin Cities majors` means the import/discovery architecture has no program-name or college allowlist and uses generic APAS/Schedule Builder semantics. Two official inventories are checked: CAPE Major Profiles currently contributes 146 major names, and Twin Cities Sample Plans contributes 161 program-degree identities across 13 colleges/schools. All 146/146 major names and all 161/161 program-degree identities pass the same six-shape synthetic APAS structural matrix with zero failures. See `TWIN_CITIES_PROGRAM_COVERAGE.md` and `evidence/twin-cities-program-coverage-20260927.json`.
+
+Those 146/146 and 161/161 results are **architecture/structural verification**, not a claim that a real APAS from every major has been collected. A row is marked `real+synthetic` only when a real saved audit exists locally; all others remain explicitly `synthetic-structural-only`. Therefore this project does **not** claim that every institutional policy in every program has been reduced to an automated graduation-audit rule. Unsupported policy semantics remain visible and review-only.

@@ -1,0 +1,81 @@
+# Verification
+
+This file records the current prototype verification boundary. It is evidence for a local development build, not a production-service certification.
+
+## Automated gate
+
+Run from `outputs/smart-umn-planner`:
+
+```sh
+npm run typecheck
+npm test
+npm run build
+```
+
+The current gate passes with 70 tests. Coverage includes community source/entity boundaries, current-instructor grade aggregation, compact inline Schedule Builder rendering, missing-APAS behavior, batching, personalization refresh, Twin Cities-only extension fail-closed behavior, explicit APAS course pools, APAS count/credit semantics, candidate routes for unresolved caps, exact official Liberal Education enrichment, generic subject/designator routes across multiple colleges, multi-program degree/minor/certificate import, newest-audit-per-program selection, APAS-personalized Explore ordering without catalog filtering, mutually exclusive strict/candidate/policy/unknown coverage accounting, the representative cross-major synthetic APAS matrix, the official 161-program Twin Cities structural matrix, no-double-count allocation, scarcity-aware assignment, balanced bounded candidate selection, allocation-aware schedule ranking, and the two-destination / Folwell-aligned web-UX contract.
+
+## Live source / UI checks
+
+Verified on 2026-09-26/27 against the current local build:
+
+- Loopback API `GET /api/health` reports the Schedule Builder and GopherGrades adapters healthy.
+- Scope verification came first: live GopherGrades probes for branch-campus-only examples (`CS 1411`, `ACCT 2101`, `CSCI 1302`, `BIOL 2331`) returned no public class record, while Twin Cities `PSY 1001` returned healthy data. The current public GopherGrades frontend source also hard-codes `UMNTC` in class/distribution/search/department/instructor-class queries. Smart UMN therefore deliberately scopes the public product to Twin Cities.
+- `npm run verify:live` now verifies the live Twin Cities subject directory (330 current subject codes in the latest run), representative Spring 2027 catalogs across multiple colleges/domains (CSCI, PSY, BIOL, ACCT, GDES, JOUR, NURS, FSCN, EPSY, PUBH), the current Twin Cities Liberal Education metadata, and GopherGrades historical evidence.
+- The public API and Chrome extension reject / ignore non-Twin-Cities planning rather than silently dropping the historical-evidence pillar.
+- A browser E2E fixture with a remaining CSCI 5000–5999 APAS rule used **Build schedules from APAS** to discover the currently offered, prerequisite-eligible CSCI 5302 and produce a valid 3-credit, two-campus-day schedule without sending the synthetic APAS rule to the API.
+- A second browser E2E fixture with overlapping requirements (exact `CSCI 5302` plus a broad CSCI 5000-level elective) generated eight live Spring 2027 schedule options. The leading options displayed **Degree allocation** with `CSCI 5302 → Numerical Algorithms requirement` and a different current course such as `CSCI 5103 → Advanced CSCI elective`, proving the same course was not double-counted across both targets.
+- The real Chrome profile renders the redesigned Smart UMN value-add rail directly inside Twin Cities Schedule Builder pages. The personalized block is labeled APAS fit; non-Twin-Cities Schedule Builder pages receive no Smart UMN injection.
+- The default rail shows a personalized APAS fit verdict, historical course GPA/distribution, instructor-specific GopherGrades history, and direct RateMyProfessors/Reddit source links. A strict APAS match gets a checkmark; an explicit but quantitatively unresolved APAS course pool gets a candidate-route warning instead. The removed generic Details/Overview panel no longer repeats native description, section, seat, meeting-time, or location content.
+- References are visible without an extra tab click and the expanded Community view remains available for source notes. Reddit and RateMyProfessors remain references only.
+- The web workspace course row renders current instructor, live open-section count, historical sample size, and direct third-party source links from the same `CourseContext`.
+- The extension manifest/build contains no Side Panel permission or Side Panel bundle.
+
+## Requirement-route verification boundary
+
+The parser now separates **strict completion routes**, **candidate routes**, and **policy/accounting constraints**. Exact selectable-course rules, proven count/credit semantics, exact Twin Cities Liberal Education categories, and deterministic labels such as `4xxx/5xxx-level <SUBJECT> coursework` may become strict. Explicit APAS pools containing unresolved caps/exceptions remain candidate-only. The current saved real audit demonstrates strict routes for Writing Intensive, the Upper Division Math Oriented selectable list, 4xxx/5xxx-level CSCI coursework, and the explicit CSCI-designator credit rule, plus candidate routes for Biological Sciences with lab/field experience and Technical Electives. In the latest parse, all 19 open nodes are classified as strict route, candidate route, or policy/accounting constraint; none are silently dropped as an unclassified rule. The remaining open nodes are primarily degree-credit, GPA, residency, major-credit, upper-division, or other policy/accounting constraints and are not misrepresented as ordinary course-choice routes.
+
+A primary APAS program can retain additional explicitly imported program audits such as a second major, minor, or certificate. Requirement IDs are namespaced by program; the primary audit is never silently replaced or all historical/what-if audits automatically merged.
+
+## Community verification boundary
+
+Reddit and RateMyProfessors are currently configured as `link-only` in `config/community-policy.json`. Their original URLs can be attached to verified course or instructor entities. Automated browser collection is disabled for those hosts under the current policy review. No RMP rating, difficulty, sentiment, or professor-quality score enters the normalized evidence or planner solver.
+
+## Privacy checks
+
+The extension does not request cookies, debugger, webRequest, identity, history, or Side Panel permissions. UMN username/password, Duo prompts, cookies, SAML assertions, and raw authenticated audit HTML are not sent to the local public-evidence API. Normalized academic state is kept in browser-local storage and only derived prerequisite/degree-fit results are exposed to Schedule Builder content scripts.
+
+## Re-run after changes
+
+After any source/UI change:
+
+1. run the automated gate above;
+2. reload the unpacked extension;
+3. reload a real Schedule Builder course page;
+4. confirm inline rendering, source labels, direct links, and degree-fit refresh;
+5. for web changes, load the localhost planner and verify the corresponding course row/detail view.
+
+## Checkpoint hardening — 2026-09-27
+
+Re-ran the 36-test baseline before edits. Added adversarial solver tests; 11 initially failed (invalid/future evidence timestamps, stale nested sections, mismatched course/campus, reversed meeting times/dates, empty meetings, invalid credits, negative seats and mixed-term batches). The solver now rejects these cases while retaining fresh valid schedules. An additional candidate-pool regression reproduced unknown-prerequisite courses displacing a proven eligible course; discovery now prioritizes strict, prerequisite-proven candidates before balancing review-only routes into spare slots.
+
+The final automated gate passes 70 tests, type checking and both web/inline-extension builds. `npm run verify:live` also passes against the current Twin Cities Schedule Builder subject directory/catalogs, Liberal Education metadata, and GopherGrades. `npm run verify:majors` refetches two official inventories and currently verifies 146/146 CAPE major names plus 161/161 Sample Plans program-degree/APAS identities across 13 colleges/schools, with zero inventory drift and zero structural failures. Scope remains Twin Cities; no Side Panel was restored.
+
+Live public-source check at 2026-09-27T07:33Z: the Twin Cities subject directory returned 330 subject codes. Representative Spring 2027 catalogs returned CSCI 84, PSY 52, BIOL 43, ACCT 23, GDES 28, JOUR 68, NURS 104, FSCN 35, EPSY 94 and PUBH 169 records; 13 Liberal Education categories. GopherGrades PSY 1001 returned 19,704 historical students over terms 1175–1263. Counts describe retrieved catalog records, not guaranteed open or eligible courses.
+
+Reparsed the previously saved authentic audit and Course History locally with parser 0.3.0 (22 completed/transfer records with known campus identity). Current public sections for CSCI 5302 and CSCI 5421 produced three schedules, including their nonoverlapping 6-credit combination. See `evidence/checkpoint-20260927-live-plan.json`; this check uses saved audit HTML, not a fresh authenticated audit fetch.
+
+Chrome then performed a new official UMN/APAS sync. Without reloading the planner, its connection panel advanced from Sep 26 7:58 PM to Sep 27 12:27 AM, confirming the normalized-state push reached the page. No login credentials or cookie values were accessed.
+
+### Deployment identity
+
+The source authority remains the Hermes workspace (`outputs/smart-umn-planner`). Version 0.6.0 was built and copied to Chrome's existing unpacked installation target under the Documents/Codex deliverable; source and installed-target manifests both report 0.6.0 with only `storage`/`alarms` permissions and Twin-Cities Schedule Builder/APAS/loopback host access. The Computer Use / Playwright MCP bridge was unavailable during the final 0.6.0 pass, so this checkpoint does **not** claim a fresh visible click on Chrome's Reload control. Reload the unpacked extension before judging an already-open Schedule Builder tab; rebuilding the Hermes folder alone does not refresh a running extension service worker.
+
+The real APAS discovery plan expanded to 176 exact course IDs. The old web flow fetched full context (including grades and sections) for all IDs before keeping 16, causing long loading and unnecessary public-provider calls. Discovery now loads at most 12 subject catalogs (including subjects derived from explicit course IDs) and 12 attribute catalogs, filters locally, then loads full context only for the selected pool of at most 16 courses. The omitted-subject and additional-match counts remain visible in the page instead of only a transient toast. A regression verifies subject prioritization, deduplication and omission counts.
+
+Earlier real-Chrome acceptance after the v0.4.0 reload and fresh APAS sync at 00:43 displayed 8 schedules by the observation 28 seconds after clicking. That historical evidence remains in `CHECKPOINT-20260927.md` and `evidence/checkpoint-20260927-live-schedule.png`.
+
+Final v0.6.0 isolated-Chrome acceptance on 2026-09-27 loaded the current unpacked extension and observed its MV3 service-worker target, then parsed the saved real APAS locally, rendered only **Plan** and **Explore** as primary destinations, and completed **Build my plan** against live Spring 2027 evidence. It produced 8 schedule options; the leading option was 9 credits over 2 campus days and allocated CSCI 5302 to the Upper Division Math Oriented target without double-counting CSCI 5103/5143. Explore then loaded all 84 current CSCI catalog rows. The current extension manifest reports v0.6.0 with only `alarms` and `storage` permissions plus the required APAS / Schedule Builder / loopback hosts. See `evidence/final-browser-acceptance-20260927.json`, `evidence/final-browser-plan-20260927.png`, and `evidence/final-browser-explore-20260927.png`.
+
+The final APAS coverage report is `evidence/apas-coverage-20260927.json`. Its 13 representative synthetic program fixtures span degree, major, minor and certificate routes with 12 strict-supported fixtures, one candidate-only cap fixture and zero unknown/unrouted fixtures. The broader official-inventory verification is `evidence/twin-cities-program-coverage-20260927.json`: the live and saved CAPE inventory both contain 146 current majors, while the live and saved Twin Cities Sample Plans inventory both contain 161 program-degree rows across 13 colleges/schools. All 146 major names and all 161 program-degree identities pass the same six-shape structural APAS matrix, with zero added/removed/duplicate entries relative to either saved snapshot. `TWIN_CITIES_PROGRAM_COVERAGE.md` exposes the status row by row.
+
+The saved real Computer Science APAS has 19 active remaining nodes classified mutually exclusively as 3 strict course routes, 1 candidate route, 15 policy/accounting constraints and 0 unknown/unrouted nodes. It is currently the only matched major and program-degree identity labeled `real+synthetic`; the other 145 major names and 160 program-degree identities are intentionally labeled `synthetic-structural-only`. Coverage percentages intentionally count only course-authorizing strict/candidate routes; policy constraints stay visible but do not authorize arbitrary courses.
