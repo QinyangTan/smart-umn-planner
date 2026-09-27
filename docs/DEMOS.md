@@ -1,4 +1,4 @@
-# Smart UMN v0.7.0 demos
+# Smart UMN v0.7.x demos
 
 All demo recordings use a synthetic academic profile plus public UMN course data. They do not contain raw APAS HTML, student identity, credentials, cookies, Duo/SAML material, or a real student's course history.
 

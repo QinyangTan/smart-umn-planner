@@ -5,6 +5,7 @@ import {parsePrerequisites} from '../core/rules.ts';
 import {Store} from './store.ts';
 import {instructorEntityKey} from '../schemas/index.ts';
 const iso=()=>new Date().toISOString();
+class ProviderHttpError extends Error{status:number;constructor(status:number){super(`HTTP ${status}`);this.status=status;}}
 const provenance=(source:string,url:string,period:string):Provenance=>({source,url,retrievedAt:iso(),period});
 export function resolveInstructor(name:string,internetId?:string):Instructor{return{id:internetId?`umn:${internetId.toLowerCase()}`:`unresolved:${name.trim().toLowerCase()}`,name,internetId,aliases:[name]};}
 export class CachedProvider {
@@ -18,8 +19,8 @@ export class CachedProvider {
  // Reserve one request slot per provider; no bursts when a batch arrives.
  const start=Math.max(Date.now(),this.lastRequest+350);this.lastRequest=start;await new Promise(r=>setTimeout(r,Math.max(0,start-Date.now())));
  const response=await this.fetcher(url,{signal:AbortSignal.timeout(12000),headers:{accept:'application/json'},redirect:'error'});
- if(!response.ok)throw new Error(`HTTP ${response.status}`);const raw=await response.text();if(raw.length>8_000_000)throw new Error('Response too large');const data=normalize(JSON.parse(raw));const retrievedAt=iso();this.store.put(key,this.source,data,retrievedAt);const health:ProviderHealth={source:this.source,status:'healthy',checkedAt:retrievedAt};this.store.health(health);return{data,stale:false,provenance:{...provenance(this.source,url,period),retrievedAt},health};
- }catch(e){const health:ProviderHealth={source:this.source,status:cached?'degraded':'down',checkedAt:iso(),message:e instanceof Error?e.message:'Provider unavailable'};this.store.health(health);return{data:cached?.data||null,stale:!!cached,provenance:{...provenance(this.source,url,period),retrievedAt:cached?.retrievedAt||iso()},health};}})();this.pending.set(key,job);try{return await job;}finally{this.pending.delete(key);}
+ if(!response.ok)throw new ProviderHttpError(response.status);const raw=await response.text();if(raw.length>8_000_000)throw new Error('Response too large');const data=normalize(JSON.parse(raw));const retrievedAt=iso();this.store.put(key,this.source,data,retrievedAt);const health:ProviderHealth={source:this.source,status:'healthy',checkedAt:retrievedAt};this.store.health(health);return{data,stale:false,provenance:{...provenance(this.source,url,period),retrievedAt},health};
+ }catch(e){const health:ProviderHealth={source:this.source,status:cached?'degraded':'down',checkedAt:iso(),message:e instanceof Error?e.message:'Provider unavailable'};const recordLevelNotFound=e instanceof ProviderHttpError&&e.status===404;if(!recordLevelNotFound)this.store.health(health);return{data:cached?.data||null,stale:!!cached,provenance:{...provenance(this.source,url,period),retrievedAt:cached?.retrievedAt||iso()},health};}})();this.pending.set(key,job);try{return await job;}finally{this.pending.delete(key);}
  }
 }
 function sbUrl(type:string,term:string,campus:UMNCampus,params:Record<string,string>){const c=campusContext(campus);return'https://schedulebuilder.umn.edu/api.php?'+new URLSearchParams({type,institution:c.institution,campus:c.campus,term:termCode(term),...params});}
@@ -89,14 +90,14 @@ export class ScheduleBuilderProvider extends CachedProvider {
   return{classNumber:String(r.id),sectionNumber:r.section_number,courseCode:code,institution:cfg.institution,campus,term,component:String(r.component_short||r.component),credits:finite(r.credits),instructors:[...new Map(teachers.map(i=>[i.id,i])).values()],meetings,capacity:finite(r.capacity),enrolled:finite(r.enrolled_total),waitlistCapacity:finite(r.waitlist_capacity),waitlistTotal:finite(r.waitlist_total),open:r.open===true&&!r.canceled,enrollable:r.enrollable===true,instructionMode,restrictions,prerequisiteRule:parsePrerequisites(r.requirements.length?r.requirements.map((x:any)=>x.description).join(' AND '):'No prerequisites',campus),linkedClassNumbers:linked,unresolvedLinks:r.links.length>0||auto.length!==linked.length,scheduleKnown:known,provenance:provenance(this.source,sbUrl('sections',term,campus,{class_nbrs:String(r.id)}),term)};
  });}
  fetchSections(ids:string[],term:string,campus:UMNCampus='UMNTC'):Promise<Evidence<Section[]>>{const c=campusCode(campus),t=termCode(term);if(!ids.length)return Promise.resolve({data:[],stale:false,provenance:provenance(this.source,'https://schedulebuilder.umn.edu',t),health:{source:this.source,status:'healthy',checkedAt:iso()}});if(ids.length>100||ids.some(i=>!/^\d+$/.test(i)))throw new Error('Invalid class numbers');return this.request('sections:'+c+':'+t+':'+[...ids].sort().join(','),sbUrl('sections',t,c,{class_nbrs:ids.join(',')}),t,r=>this.normalizeSections(r,t,c));}
- async healthCheck(){return(await this.fetchCourse('CSCI 4041','1269','UMNTC')).health;}
+ async healthCheck(){const health=(await this.fetchCourse('CSCI 4041','1269','UMNTC')).health;this.store.health(health);return health;}
 }
 export class GopherGradesProvider extends CachedProvider {
  constructor(store:Store,fetcher=fetch){super('gophergrades',store,86400000,fetcher);}
  validate(raw:unknown){try{this.normalize(raw);return true;}catch{return false;}}
  normalize(raw:unknown):GradeEvidence{const outer=record(raw),r=record(outer.data);if(outer.success!==true||typeof r.total_students!=='number'||!Array.isArray(r.distributions))throw new Error('GopherGrades schema changed');const counts=(v:unknown)=>{const c=record(v);if(Object.values(c).some(n=>typeof n!=='number'||n<0||!Number.isInteger(n)))throw new Error('Grade counts invalid');return c as Record<string,number>;};return{instructorRatings:normalizeInstructorRatings(r.distributions),courseCode:courseCode(r.dept_abbr+' '+r.course_num),totalStudents:r.total_students,grades:counts(r.total_grades),distributions:r.distributions.flatMap((d:any)=>(Array.isArray(d.terms)?d.terms:[d]).map((t:any)=>{if(!Number.isInteger(t.students)||t.students<0||!/^1\d{2}[359]$/.test(String(t.term)))throw new Error('Historical term schema changed');return{instructorName:typeof d.professor_name==='string'?d.professor_name:undefined,term:String(t.term),students:t.students,grades:counts(t.grades)};}))};}
  async fetch(code:string){const c=courseCode(code);const result=await this.request(`grades:v2:${c}`,'https://umn.lol/api/class/'+c.replace(' ',''),'Historical reported terms',r=>this.normalize(r));if(result.data){const terms=result.data.distributions.map(d=>d.term).sort();result.provenance.sampleSize=result.data.totalStudents;result.provenance.period=`${terms[0]}–${terms.at(-1)}`;}return result;}
- async healthCheck(){return(await this.fetch('CSCI 4041')).health;}
+ async healthCheck(){const health=(await this.fetch('PSY 1001')).health;this.store.health(health);return health;}
 }
 export class UMNSRTProvider {
  validate(raw:unknown){return false;}

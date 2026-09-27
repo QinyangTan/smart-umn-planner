@@ -10,7 +10,7 @@ export const server=createServer(async(req,res)=>{res.setHeader('X-Content-Type-
  if(from)res.setHeader('Access-Control-Allow-Origin',from);res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Headers','Content-Type');res.setHeader('Access-Control-Allow-Methods','GET,POST,OPTIONS');
  if(req.method==='OPTIONS'){res.writeHead(204);res.end();return;}
  const u=new URL(req.url||'/',origin);const term=()=>termCode(u.searchParams.get('term')||'1273'),campus=()=>{const c=campusCode(u.searchParams.get('campus')||'UMNTC');if(c!=='UMNTC')throw Error('Smart UMN currently supports Twin Cities Schedule Builder only');return c;};
- if(req.method==='GET'&&u.pathname==='/api/health')return send(200,{status:'running',localOnly:true,providers:store.healthList()});
+ if(req.method==='GET'&&u.pathname==='/api/health'){const providers=await Promise.all([context.sb.healthCheck(),context.gg.healthCheck()]);return send(200,{status:'running',localOnly:true,providers});}
  if(req.method==='GET'&&u.pathname==='/api/subjects')return send(200,await context.sb.fetchSubjects(campus()));
  const catalog=/^\/api\/catalog\/([^/]+)$/.exec(u.pathname);if(req.method==='GET'&&catalog){const subject=subjectCode(decodeURIComponent(catalog[1]));return send(200,await context.sb.fetchSubjectCourses(subject,term(),campus()));}
  const attribute=/^\/api\/attributes\/([^/]+)\/([^/]+)$/.exec(u.pathname);if(req.method==='GET'&&attribute){return send(200,await context.sb.fetchAttributeCourses(decodeURIComponent(attribute[1]),decodeURIComponent(attribute[2]),term(),campus()));}
