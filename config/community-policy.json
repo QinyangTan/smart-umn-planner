@@ -1,0 +1,20 @@
+{
+  "www.reddit.com": {
+    "mode": "link-only",
+    "reviewedAt": "2026-09-27T01:02:00.000Z",
+    "basisUrl": "https://support.reddithelp.com/hc/en-us/articles/360043512931-Don-t-break-the-site",
+    "note": "Current Reddit policy prohibits scraping without an authorized agreement. Keep original-link references only unless permission changes."
+  },
+  "reddit.com": {
+    "mode": "link-only",
+    "reviewedAt": "2026-09-27T01:02:00.000Z",
+    "basisUrl": "https://support.reddithelp.com/hc/en-us/articles/360043512931-Don-t-break-the-site",
+    "note": "Canonicalized to www.reddit.com; retained here so policy checks fail closed if host behavior changes."
+  },
+  "www.ratemyprofessors.com": {
+    "mode": "link-only",
+    "reviewedAt": "2026-09-27T01:02:00.000Z",
+    "basisUrl": "https://www.ratemyprofessors.com/terms-of-use",
+    "note": "Current Terms prohibit scraping/crawling without prior permission. Keep original professor links only unless explicit permission is obtained."
+  }
+}

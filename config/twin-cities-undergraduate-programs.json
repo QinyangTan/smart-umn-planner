@@ -1,0 +1,652 @@
+{
+  "source": "https://sampleplan.umn.edu/tc-sample-plans",
+  "sourceLabel": "University of Minnesota Twin Cities Sample Plans",
+  "fetchedAt": "2026-09-27",
+  "rowCount": 161,
+  "programs": [
+    {
+      "college": "Carlson School of Management",
+      "program": "Accounting B.S.B."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Acting B.F.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Aerospace Engineering and Mechanics B.A.E.M."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "African American and African Studies B.A."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Agricultural and Food Business Management B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Agricultural Communication and Marketing B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Agricultural Education B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "American Indian Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "American Studies B.A."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Animal Science B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Anthropology B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Anthropology B.S."
+    },
+    {
+      "college": "College of Design",
+      "program": "Apparel Design B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Applied Economics B.S."
+    },
+    {
+      "college": "College of Design",
+      "program": "Architecture B.D.A."
+    },
+    {
+      "college": "College of Design",
+      "program": "Architecture B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Art B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Art B.F.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Art History B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Arts Education B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Asian and Middle Eastern Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Astrophysics B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Astrophysics B.S.Astrop."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Bachelor of Individualized Studies B.I.S."
+    },
+    {
+      "college": "College of Design",
+      "program": "Bachelor of Landscape Architecture"
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Biochemistry B.S."
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Biology B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Biology, Society, and Environment B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Biomedical Engineering B.Bm.E."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Bioproducts and Biosystems Engineering B.B.B.E."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Business Analytics B.S.B"
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Business and Marketing Education B.S."
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Cellular and Organismal Physiology B.S."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Chemical Engineering B.Ch.E."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Chemistry B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Chemistry B.S.Chem."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Chicano-Latino Studies B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Civil Engineering B.C.E."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Classical and Near Eastern Religions and Cultures B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Communication Studies B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Computer Engineering B.Comp.E."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Computer Science B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Computer Science B.S. Comp.Sc."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Construction Management B.A.Sc."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Cultural Studies and Comparative Literature B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Dakota Language B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Dance B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Dance B.F.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Data Science B S D S"
+    },
+    {
+      "college": "School of Dentistry",
+      "program": "Dental Hygiene B.S.D.H."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Developmental Psychology B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Developmental Psychology B.S."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Early Childhood B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Earth Sciences B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Earth Sciences B.S. Earth Sciences"
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Ecology, Evolution, and Behavior B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Economics - Quantitative Emphasis B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Economics B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Economics B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Economics-Business Economics Emphasis B.A."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Educational Psychology B.S."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Electrical Engineering B.E.E."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Elementary Education: Foundations B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "English B.A."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Entrepreneurial Management B.S.B."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Environmental Engineering B.Env.E"
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Environmental Geosciences B S E G"
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Environmental Geosciences BA"
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Environmental Sciences, Policy and Management B.S."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Family Social Science B.S."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Finance & Risk Management Insurance B.S.B."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Finance B.S.B."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Fisheries, Wildlife, and Conservation Biology B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Food Science B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Forest and Natural Resource Management B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "French and Italian Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "French Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Gender, Women and Sexuality Studies B.A."
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Genetics, Cell Biology, and Development B.S."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Geoengineering B.GeoE."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Geography B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Geography B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "German, Scandinavian, Dutch B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Global Studies B.A."
+    },
+    {
+      "college": "College of Design",
+      "program": "Graphic Design B.F.A."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Health and Wellbeing Sciences B.S."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Healthcare Management B.A.Sc."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "History B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Human Physiology B.A."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Human Resource Development B.S."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Human Resources and Industrial Relations B.S.B."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Individually Designed Interdepartmental B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Industrial and Systems Engineering B.I.Sy.E."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Information Technology Infrastructure B.A.Sc."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Integrated Degree Program B.S."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Inter-College Program B.A."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Inter-College Program B.S."
+    },
+    {
+      "college": "College of Design",
+      "program": "Interior Design B.S."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "International Business B.S.B."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Italian Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Jewish Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Journalism B.A."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Kinesiology B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Linguistics B.A."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Management Information Systems B.S.B."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Marketing B.S.B."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Materials Science and Engineering B.Mat.S.E."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Mathematics B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Mathematics B.S.Math."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Mechanical Engineering B.M.E."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Media and Information B.A."
+    },
+    {
+      "college": "College of Pharmacy",
+      "program": "Medical Laboratory Sciences B.S."
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Microbiology B.S."
+    },
+    {
+      "college": "Medical School",
+      "program": "Mortuary Science B.S."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Multidisciplinary Studies B.A."
+    },
+    {
+      "college": "College of Continuing and Professional Studies",
+      "program": "Multidisciplinary Studies B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Music B. Mus."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Music B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Music Education B. Mus"
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Music Therapy B. Mus."
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Neuroscience B.S."
+    },
+    {
+      "college": "School of Nursing",
+      "program": "Nursing B.S.N."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Nutrition B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Ojibwe Language B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Philosophy B.A."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Physical Activity and Health Promotion B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Physics B.A."
+    },
+    {
+      "college": "College of Science and Engineering",
+      "program": "Physics B.S. Phys."
+    },
+    {
+      "college": "College of Biological Sciences",
+      "program": "Plant and Microbial Biology B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Plant Science B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Political Science B.A."
+    },
+    {
+      "college": "College of Design",
+      "program": "Product Design"
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Psychology B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Psychology B.S."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Public & Nonprofit Management B.S.B"
+    },
+    {
+      "college": "School of Public Health",
+      "program": "Public Health B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Religious Studies B.A."
+    },
+    {
+      "college": "College of Design",
+      "program": "Retail and Consumer Studies B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Russian B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Sociology B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Sociology B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Sociology of Law, Criminology, and Justice B. S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Sociology of Law, Criminology, and Justice B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Spanish and Portuguese Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Spanish Studies B.A."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Special Education B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Speech-Language-Hearing Sciences B.A."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Sport Management B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Statistical Practice B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Statistical Science B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Strategic Communication: Advertising and Public Relations B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Studies in Cinema and Media Culture B.A."
+    },
+    {
+      "college": "Carlson School of Management",
+      "program": "Supply Chain & Operations Management B.S.B."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Sustainable Agriculture and Food Systems B.S."
+    },
+    {
+      "college": "College of Food, Agricultural and Natural Resource Sciences",
+      "program": "Sustainable Systems Management B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Technical Writing and Communication B.S."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Theatre Arts B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Urban Studies B.A."
+    },
+    {
+      "college": "College of Liberal Arts",
+      "program": "Urban Studies B.S."
+    },
+    {
+      "college": "College of Design",
+      "program": "User Experience Design B.S."
+    },
+    {
+      "college": "College of Education and Human Development",
+      "program": "Youth Studies B.S."
+    }
+  ]
+}

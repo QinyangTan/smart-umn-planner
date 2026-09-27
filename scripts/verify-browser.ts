@@ -1,0 +1,71 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {JSDOM} from 'jsdom';
+import {parseAPAS} from '../packages/apas-parser/index.ts';
+
+const port=Number(process.env.SMART_UMN_CDP_PORT||9360);
+const base=`http://127.0.0.1:${port}`;
+const root=process.cwd();
+const evidenceDir=path.join(root,'docs/evidence');
+fs.mkdirSync(evidenceDir,{recursive:true});
+
+type Target={id:string;type:string;url:string;title:string;webSocketDebuggerUrl:string};
+async function targets():Promise<Target[]>{const r=await fetch(`${base}/json/list`);if(!r.ok)throw Error(`CDP target list failed: ${r.status}`);return await r.json() as Target[];}
+async function call(target:Target,method:string,params:Record<string,unknown>={}):Promise<any>{return await new Promise((resolve,reject)=>{const ws=new WebSocket(target.webSocketDebuggerUrl);const timer=setTimeout(()=>{try{ws.close();}catch{}reject(Error(`CDP timeout: ${method}`));},15000);ws.onopen=()=>ws.send(JSON.stringify({id:1,method,params}));ws.onmessage=event=>{const msg=JSON.parse(String(event.data));if(msg.id!==1)return;clearTimeout(timer);ws.close();if(msg.error)reject(Error(JSON.stringify(msg.error)));else resolve(msg.result);};ws.onerror=()=>{clearTimeout(timer);reject(Error(`CDP socket failed: ${method}`));};});}
+async function page():Promise<Target>{const p=(await targets()).find(t=>t.type==='page'&&t.url.startsWith('http://127.0.0.1:4317/'));if(!p)throw Error('Smart UMN planner page not found in CDP target list');return p;}
+async function evaluate(expression:string):Promise<any>{const p=await page();const r=await call(p,'Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(`Runtime.evaluate failed: ${JSON.stringify(r.exceptionDetails)}`);return r.result?.value;}
+async function screenshot(filename:string){const p=await page();await call(p,'Input.dispatchMouseEvent',{type:'mouseMoved',x:2,y:2,buttons:0});await call(p,'Runtime.evaluate',{expression:`(()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();document.querySelectorAll('[title]').forEach(el=>el.removeAttribute('title'));const toast=document.querySelector('#toast');if(toast)toast.textContent='';window.getSelection()?.removeAllRanges();return true})()`,returnByValue:true});await new Promise(r=>setTimeout(r,700));const shot=await call(p,'Page.captureScreenshot',{format:'png',captureBeyondViewport:true,fromSurface:true});fs.writeFileSync(path.join(evidenceDir,filename),Buffer.from(shot.data,'base64'));}
+async function waitFor(expression:string,timeoutMs:number,intervalMs=1000){const deadline=Date.now()+timeoutMs;let last:any;while(Date.now()<deadline){last=await evaluate(expression);if(last)return last;await new Promise(r=>setTimeout(r,intervalMs));}throw Error(`Timed out waiting for ${expression}; last=${JSON.stringify(last)}`);}
+async function smartManifest(){const manifest=JSON.parse(fs.readFileSync(path.join(root,'dist/extension/manifest.json'),'utf8'));const deadline=Date.now()+8000;while(Date.now()<deadline){const worker=(await targets()).find(t=>t.type==='service_worker'&&/^chrome-extension:\/\/[^/]+\/service_worker\.js$/.test(t.url));if(worker)return{target:worker.url,manifest};await new Promise(r=>setTimeout(r,100));}throw Error('Smart UMN Planner extension service-worker target was not observed');}
+
+const extension=await smartManifest();
+const savedAudit=path.join(root,'.runtime/private-audit.html');
+if(!fs.existsSync(savedAudit))throw Error('Saved real APAS fixture is unavailable at .runtime/private-audit.html');
+const dom=new JSDOM(fs.readFileSync(savedAudit,'utf8'));
+const profile=parseAPAS(dom.window.document);
+dom.window.close();
+
+await evaluate(`(()=>{localStorage.setItem('umn.profile',${JSON.stringify(JSON.stringify(profile))});localStorage.setItem('umn.term','1273');localStorage.setItem('umn.preferences',JSON.stringify({minCredits:3,maxCredits:9,fewestDays:true}));location.hash='Plan';location.reload();return true})()`);
+await new Promise(r=>setTimeout(r,1200));
+const initial=JSON.parse(await evaluate(`JSON.stringify({title:document.title,heading:document.querySelector('h1')?.textContent?.trim(),program:document.querySelector('.degree-name h2')?.textContent?.trim(),nav:[...document.querySelectorAll('[data-nav]')].map(x=>x.textContent?.trim()),connection:document.querySelector('#connection')?.textContent?.trim(),autobuild:document.querySelector('#autobuild')?.textContent?.trim()})`));
+if(JSON.stringify(initial.nav)!==JSON.stringify(['Plan','Explore']))throw Error(`Unexpected primary nav: ${JSON.stringify(initial.nav)}`);
+if(initial.program!==profile.program.name)throw Error(`Program identity mismatch: ${initial.program} vs ${profile.program.name}`);
+if(!/APAS connected/i.test(initial.connection||''))throw Error(`Planner did not recognize local APAS profile: ${initial.connection}`);
+
+const clicked=await evaluate(`(()=>{const b=document.querySelector('#autobuild');if(!b)return false;b.click();return true})()`);
+if(!clicked)throw Error('Build my plan button missing');
+let scheduleState:any;
+try{
+ await waitFor(`(()=>document.querySelector('.schedule')?JSON.stringify({done:true,text:document.querySelector('.schedule')?.textContent?.replace(/\\s+/g,' ').trim(),notes:document.querySelector('.run-notes')?.textContent?.replace(/\\s+/g,' ').trim(),toast:document.querySelector('#toast')?.textContent?.trim()}):false)()`,90000,1500);
+ scheduleState=JSON.parse(await evaluate(`JSON.stringify({countText:document.querySelector('.option-picker')?.textContent?.replace(/\\s+/g,' ').trim(),stats:document.querySelector('.schedule-stat')?.textContent?.trim(),notes:document.querySelector('.run-notes')?.textContent?.replace(/\\s+/g,' ').trim(),allocation:document.querySelector('.allocation-details')?.textContent?.replace(/\\s+/g,' ').trim(),registration:[...document.querySelectorAll('.registration-links a')].map(a=>a.textContent?.trim())})`));
+}catch(error){
+ const failure=await evaluate(`JSON.stringify({toast:document.querySelector('#toast')?.textContent?.trim(),loading:!!document.querySelector('.loading'),notes:document.querySelector('.run-notes')?.textContent?.replace(/\\s+/g,' ').trim(),candidates:document.querySelectorAll('.course-row').length,selected:document.querySelectorAll('[data-select]:checked').length,html:document.querySelector('#schedule-results')?.textContent?.replace(/\\s+/g,' ').trim()})`);
+ throw Error(`${error instanceof Error?error.message:error}; planner=${failure}`);
+}
+await screenshot('final-browser-plan-20260927.png');
+
+await evaluate(`(()=>{const b=document.querySelector('[data-nav="Explore"]');if(!b)return false;b.click();return true})()`);
+await waitFor(`document.querySelector('#subject') && document.querySelectorAll('#subject option').length>50`,20000,500);
+const picked=await evaluate(`(()=>{const s=document.querySelector('#subject');if(!s)return false;s.value='CSCI';s.dispatchEvent(new Event('change',{bubbles:true}));return true})()`);
+if(!picked)throw Error('Explore subject selector missing');
+await waitFor(`document.querySelectorAll('.catalog-row').length>0`,30000,750);
+const explore=JSON.parse(await evaluate(`JSON.stringify({heading:document.querySelector('h1')?.textContent?.trim(),subject:document.querySelector('#subject')?.value,count:document.querySelectorAll('.catalog-row').length,rows:[...document.querySelectorAll('.catalog-row')].slice(0,8).map(r=>({code:r.querySelector('.course-code')?.textContent?.trim(),title:r.querySelector('.title')?.textContent?.trim(),fit:r.querySelector('.fit-label')?.textContent?.trim()})),nav:[...document.querySelectorAll('[data-nav]')].map(x=>({label:x.textContent?.trim(),current:x.getAttribute('aria-current')}))})`));
+if(explore.subject!=='CSCI'||explore.count<1)throw Error(`Explore did not load CSCI: ${JSON.stringify(explore)}`);
+await screenshot('final-browser-explore-20260927.png');
+
+if(extension.manifest.version!=='0.6.0')throw Error(`Unexpected extension version: ${extension.manifest.version}`);
+const permissions=[...(extension.manifest.permissions||[])].sort();
+if(JSON.stringify(permissions)!==JSON.stringify(['alarms','storage']))throw Error(`Unexpected extension permissions: ${JSON.stringify(permissions)}`);
+
+const report={
+ checkedAt:new Date().toISOString(),
+ browser:'isolated Google Chrome profile via CDP',
+ cdpPort:port,
+ page:{initial,schedule:scheduleState,explore},
+ extension:{name:extension.manifest.name,version:extension.manifest.version,permissions,hostPermissions:extension.manifest.host_permissions||[],serviceWorkerLoaded:true},
+ screenshots:['docs/evidence/final-browser-plan-20260927.png','docs/evidence/final-browser-explore-20260927.png'],
+ sourceFixture:{kind:'saved real APAS HTML parsed locally',program:profile.program.name,parserVersion:profile.parserVersion},
+ privacy:'No raw APAS HTML, credentials, cookies, Duo data, or SAML material is stored in this evidence file.'
+};
+fs.writeFileSync(path.join(evidenceDir,'final-browser-acceptance-20260927.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report,null,2));
