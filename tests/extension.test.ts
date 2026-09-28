@@ -106,6 +106,36 @@ test('current instructor references are visible immediately without opening dupl
  app.disconnect();dom.window.close();
 });
 
+test('Schedule Builder shows each listed professor with only their own rating and grade history',async()=>{
+ const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
+ const c=context(),second={id:'umn:second',name:'Second Professor',internetId:'second',aliases:['Second Professor']};
+ c.sections.data![0].instructors.push(second);
+ c.sections.data!.push({...c.sections.data![0],classNumber:'10002',sectionNumber:'002',instructors:[second]});
+ c.grades.data!.instructorRatings!.push({instructorName:'Second Professor',professorId:234567,quality:3.2,via:'gophergrades',source:'ratemyprofessors'});
+ c.grades.data!.distributions.push({instructorName:'Second Professor',term:'1269',students:25,grades:{A:5,B:15,F:5}});
+ const app=installEnhancements(dom.window.document,{batch:async()=>[c],fit:async courses=>fitFor(courses.map(x=>x.code)),connect:async()=>{}});
+ await tick();const shadow=dom.window.document.querySelector('smart-umn-insight')!.shadowRoot!;
+ const rows=[...shadow.querySelectorAll<HTMLElement>('[data-insight="instructor-intelligence"] .professor-row')];
+ assert.equal(rows.length,2,'the same instructor in multiple sections appears once');
+ assert.match(rows[0].textContent||'',/Example Instructor.*4\.4\/5 RMP.*230 students/);
+ assert.match(rows[1].textContent||'',/Second Professor.*3\.2\/5 RMP.*25 students/);
+ assert.doesNotMatch(rows[1].textContent||'',/230 students/);
+ (shadow.querySelector('[data-insight="course-grades"]')as HTMLButtonElement).click();
+ assert.match(shadow.querySelector('.body')?.textContent||'',/Second Professor · 25 historical students/);
+ app.disconnect();dom.window.close();
+});
+
+test('a second instructor without matched evidence is shown without borrowing another rating or grades',async()=>{
+ const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
+ const c=context();c.sections.data![0].instructors.push({id:'umn:unknown',name:'Unrated Professor',aliases:['Unrated Professor']});
+ const app=installEnhancements(dom.window.document,{batch:async()=>[c],fit:async courses=>fitFor(courses.map(x=>x.code)),connect:async()=>{}});
+ await tick();const shadow=dom.window.document.querySelector('smart-umn-insight')!.shadowRoot!;
+ const unknown=shadow.querySelector<HTMLElement>('[data-instructor="instructor:unrated professor"]')!;
+ assert.match(unknown.textContent||'',/Unrated Professor.*RMP unavailable.*Grades unavailable/);
+ assert.doesNotMatch(unknown.textContent||'',/4\.4\/5|230 students/);
+ app.disconnect();dom.window.close();
+});
+
 test('missing APAS keeps course evidence inline and offers Connect UMN inside the course card',async()=>{
  const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
  let connects=0;

@@ -1,4 +1,4 @@
-import {createServer} from 'node:http';import{readFile}from'node:fs/promises';import{resolve,extname}from'node:path';import{fileURLToPath}from'node:url';
+import {createServer} from 'node:http';import{readFile}from'node:fs/promises';import{resolve,extname,sep}from'node:path';import{fileURLToPath}from'node:url';
 import{Store}from'../../packages/providers/store.ts';import{ContextService}from'../../packages/providers/index.ts';import{campusCode,courseCode,subjectCode,termCode,record}from'../../packages/schemas/index.ts';import{createPolicyRetriever,policyDocumentsFromSnapshots}from'../../packages/retrieval/registry.ts';import{HybridPolicyRetriever,MiniLMEmbedder}from'../../packages/retrieval/policy.ts';
 const ROOT=resolve(fileURLToPath(new URL('../..',import.meta.url)));const store=new Store(process.env.PLANNER_DB||resolve(ROOT,'var/planner.sqlite'));const context=new ContextService(store);const embeddingMode=process.env.SMART_UMN_EMBEDDINGS||'auto',policyEmbedder=embeddingMode==='off'?undefined:new MiniLMEmbedder(undefined,embeddingMode==='download'),policyClassifier=createPolicyRetriever([],policyEmbedder);let policySignature='',policyEvidence=new HybridPolicyRetriever([],policyEmbedder);function currentPolicyEvidence(){const snaps=store.policySnapshots(),sig=snaps.map(s=>String(s.sourceHash||s.url||'')).sort().join('|');if(sig!==policySignature){policySignature=sig;policyEvidence=new HybridPolicyRetriever(policyDocumentsFromSnapshots(snaps),policyEmbedder);}return policyEvidence;}const port=Number(process.env.PORT||4317);const origin=`http://127.0.0.1:${port}`;
 const mime:Record<string,string>={'.html':'text/html; charset=utf-8','.js':'application/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'};
@@ -25,7 +25,7 @@ export const server=createServer(async(req,res)=>{res.setHeader('X-Content-Type-
  }
  if(req.method!=='GET')return send(405,{error:'Method not allowed'});
  if(u.pathname.startsWith('/api/'))return send(404,{error:'Unknown endpoint'});
- const path=u.pathname==='/'?'index.html':decodeURIComponent(u.pathname).slice(1);const target=resolve(ROOT,'dist/web',path);if(!target.startsWith(resolve(ROOT,'dist/web')+'/'))return send(403,{error:'Invalid path'});
+ const path=u.pathname==='/'?'index.html':decodeURIComponent(u.pathname).slice(1);const target=resolve(ROOT,'dist/web',path);if(!target.startsWith(resolve(ROOT,'dist/web')+sep))return send(403,{error:'Invalid path'});
  res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
  const data=await readFile(target);res.writeHead(200,{'Content-Type':mime[extname(target)]||'application/octet-stream'});res.end(data);
  }catch(e){if((e as any)?.code==='ENOENT')return send(404,{error:'Not found'});send(400,{error:e instanceof Error?e.message:'Invalid request'});}

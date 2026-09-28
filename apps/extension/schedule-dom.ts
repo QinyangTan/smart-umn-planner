@@ -1,6 +1,6 @@
 import{currentInstructorSignals,redditCourseSearch}from'../../packages/community/signals.ts';
 import{communityHTML}from'../../packages/ui/index.ts';
-import{campusCode,courseCode,UMN_CAMPUSES}from'../../packages/schemas/index.ts';
+import{campusCode,courseCode,instructorEntityKey,UMN_CAMPUSES}from'../../packages/schemas/index.ts';
 import type{Course,CourseContext,Truth,UMNCampus}from'../../packages/schemas/index.ts';
 import{communityTopicSummary,currentInstructorGradeHistory,gradeDistributionSummary,gradeTermTrend,referenceEntityLabel,termLabel}from'../../packages/ui/index.ts';
 import{offeringPattern}from'../../packages/core/planning.ts';
@@ -41,6 +41,7 @@ button.insight:hover,button.insight[aria-expanded="true"]{background:#fafafa;box
 .spark{height:13px;display:flex;gap:2px;align-items:flex-end;margin-top:4px}
 .spark i{display:block;flex:1;min-width:2px;border-radius:2px 2px 0 0;background:#d8d8d8;opacity:.9}
 .spark i.a{background:#5e9b68}.spark i.b{background:#c2a638}.spark i.c{background:#c77c36}.spark i.d,.spark i.f{background:#b95c61}
+.professor-list{display:grid;gap:4px;margin-top:7px}.professor-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:baseline;border-top:1px solid #eee;padding-top:4px;font-size:10px}.professor-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:650}.professor-rating{color:#7a0019;white-space:nowrap}.professor-grade{color:#666;white-space:nowrap}
 .source-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:5px}
 .source-link{display:inline-flex;align-items:center;max-width:100%;padding:0;border:0;border-radius:0;color:#6b2232;text-decoration:none;background:transparent;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .source-link:hover{text-decoration:underline}
@@ -259,8 +260,26 @@ export function installEnhancements(doc:Document,client:Client){
     const trend=gradeTermTrend(c),latest=trend.filter(x=>x.gpa!==undefined).at(-1),sub=latest?.gpa!==undefined?`${g.totalStudents.toLocaleString()} students · latest term ${latest.gpa.toFixed(2)} GPA`:summary.mostCommon?`${summary.mostCommon} most common · ${summary.mostCommonPercent}% · ${g.totalStudents.toLocaleString()} students`:`${g.totalStudents.toLocaleString()} historical students`;
     const grades=insightButton(doc,'Grade history',value,sub,'neutral','Grades',active,toggle('Grades'));grades.setAttribute('data-insight','course-grades');grades.append(gradeSpark(doc,g.grades));rail.append(grades);
    }else{const unavailable=insightButton(doc,'Grade history','No verified history',`${UMN_CAMPUSES[c.course.data?.campus||campus].name} · historical source not substituted`,'neutral','Grades',active,toggle('Grades'));unavailable.setAttribute('data-insight','course-grades-unavailable');rail.append(unavailable);}
-   const histories=currentInstructorGradeHistory(c),signals=currentInstructorSignals(c),leadSignal=signals.find(s=>s.rating)||signals[0];
-   if(histories.length||leadSignal){const h=histories[0],summary=h?gradeDistributionSummary(h.grades):undefined,value=leadSignal?.rating?`${leadSignal.rating.quality.toFixed(1)}/5 RMP · ${leadSignal.instructor.name}`:h?.name||leadSignal?.instructor.name||'Instructor context',sub=leadSignal?.rating?`${h?.students.toLocaleString()||'No'} grade-history students · RMP count unavailable`:h?`${summary?.gpa?.toFixed(2)||'—'} historical GPA · ${h.students.toLocaleString()} students`:'Current instructor · no matched rating';const instructor=insightButton(doc,'Professor',short(value,40),sub,'neutral','Community',active,toggle('Community'));instructor.setAttribute('data-insight','instructor-intelligence');if(h)instructor.append(gradeSpark(doc,h.grades));rail.append(instructor);}
+   const histories=currentInstructorGradeHistory(c),signals=currentInstructorSignals(c);
+   if(signals.length){
+    const lead=signals[0],leadHistory=histories.find(h=>instructorEntityKey(h.name)===lead.key);
+    const value=signals.length===1?(lead.rating?`${lead.rating.quality.toFixed(1)}/5 RMP · ${lead.instructor.name}`:lead.instructor.name):`${signals.length} listed instructors`;
+    const sub=signals.length===1?(lead.rating?`${leadHistory?.students.toLocaleString()||'No'} grade-history students · RMP count unavailable`:leadHistory?`${gradeDistributionSummary(leadHistory.grades).gpa?.toFixed(2)||'—'} historical GPA · ${leadHistory.students.toLocaleString()} students`:'Current instructor · no matched rating'):'RMP quality and course grade history by instructor';
+    const instructor=insightButton(doc,signals.length===1?'Professor':'Professors',short(value,40),sub,'neutral','Community',active,toggle('Community'));
+    instructor.setAttribute('data-insight','instructor-intelligence');
+    if(signals.length===1){if(leadHistory)instructor.append(gradeSpark(doc,leadHistory.grades));}
+    else{
+     const list=el(doc,'div','professor-list');
+     for(const signal of signals){
+      const history=histories.find(h=>instructorEntityKey(h.name)===signal.key),gpa=history?gradeDistributionSummary(history.grades).gpa:undefined;
+      const row=el(doc,'div','professor-row');row.setAttribute('data-instructor',signal.key);
+      row.append(el(doc,'span','professor-name',signal.instructor.name),el(doc,'span','professor-rating',signal.rating?`${signal.rating.quality.toFixed(1)}/5 RMP`:'RMP unavailable'),el(doc,'span','professor-grade',history?`${gpa?.toFixed(2)||'—'} GPA · ${history.students.toLocaleString()} students`:'Grades unavailable'));
+      list.append(row);
+     }
+     instructor.append(list);
+    }
+    rail.append(instructor);
+   }
    const refs=newestReferences(c),topics=communityTopicSummary(c),redditRefs=refs.filter(r=>r.source==='reddit');
    {const sources=el(doc,'div','insight neutral');sources.setAttribute('data-insight','references');sources.append(el(doc,'span','kicker','Student voices'),el(doc,'span','value',redditRefs.length?`${redditRefs.length} curated Reddit source${redditRefs.length===1?'':'s'}`:'Reddit context'),el(doc,'span','sub',topics.length?`Themes: ${topics.slice(0,3).map(t=>t.topic).join(' · ')}`:'Search original discussions; no sentiment score'));const links=el(doc,'div','source-links');for(const r of refs.filter(r=>r.source==='reddit').slice(0,2)){const href=safeExternal(r.url);if(!href)continue;const a=el(doc,'a','source-link',`${r.excerpt?'Excerpt':'Reddit'} · ${short(referenceEntityLabel(c,r.entityType,r.entityId),18)} ↗`);a.href=href;a.target='_blank';a.rel='noopener noreferrer';links.append(a);}if(!redditRefs.length){const a=el(doc,'a','source-link','Search Reddit ↗');a.href=redditCourseSearch(code);a.target='_blank';a.rel='noopener noreferrer';links.append(a);}const more=el(doc,'button','more-link','Read context');more.type='button';more.onclick=toggle('Community');links.append(more);sources.append(links);rail.append(sources);}
    {const pattern=offeringPattern(c),value=pattern.confidence==='unknown'?'Limited history':pattern.seasons.length?pattern.seasons.join(' / '):'No observed season',sub=`${pattern.observedTerms.length} observed term${pattern.observedTerms.length===1?'':'s'} · ${pattern.confidence} signal`;const offering=insightButton(doc,'Offering history',short(value,38),sub,pattern.confidence==='strong'?'good':'neutral','Offering',active,toggle('Offering'));offering.setAttribute('data-insight','offering-history');rail.append(offering);}
