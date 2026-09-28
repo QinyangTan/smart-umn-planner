@@ -49,6 +49,15 @@ This deliberately incomplete synthetic audit demonstrates an important behavior:
 
 [Explore the recorded workflow demos](docs/DEMOS.md): registration advice, what-if preferences and expandable course evidence. Earlier recordings are labeled separately from the current production screenshots.
 
+<details>
+<summary>Earlier animated walkthrough (historical UI)</summary>
+
+![Earlier Smart UMN workflow demo; predates v0.10.4](docs/demos/smart-umn-readme-demo.gif)
+
+This recording uses synthetic academic data and predates the current release. Use the current screenshots and live site above to evaluate today's product.
+
+</details>
+
 ## What makes it different
 
 ### Personalized by your audit
