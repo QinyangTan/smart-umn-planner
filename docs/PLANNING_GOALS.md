@@ -1,6 +1,6 @@
 # Planning goals and academic exploration
 
-## Shipped in this branch
+## Current behavior
 
 Plan now asks what matters most before **Build my plan**. The selection is local to the browser and defaults to the existing degree-progress behavior.
 
