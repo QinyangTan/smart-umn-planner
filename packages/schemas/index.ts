@@ -8,9 +8,12 @@ export type ProviderHealth = {source:string; status:'healthy'|'degraded'|'down';
 export type Evidence<T> = {data:T|null; provenance:Provenance; health:ProviderHealth; stale:boolean};
 export type PolicyRuleFamily='degree-credits'|'institutional-gpa'|'residency-credits'|'final-residency-credits'|'major-credits'|'upper-division-major-credits'|'designator-scope'|'qualified-attribute'|'degree-application-scope';
 export type PolicyRuleParameter=string|number|boolean|string[];
+export const PREREQUISITE_CONDITION_FAMILIES=['consent','standing','program-membership','audition','honors','placement','concurrent-registration','minimum-earned-credits','application-approval'] as const;
+export type PrerequisiteConditionFamily=typeof PREREQUISITE_CONDITION_FAMILIES[number];
 export type RequirementRule =
  | {type:'unknown'; sourceText:string; reason:string}
  | {type:'policy'; family:PolicyRuleFamily; sourceText:string; reason:string; parameters:Record<string,PolicyRuleParameter>}
+ | {type:'condition'; family:PrerequisiteConditionFamily; sourceText:string; parameters:Record<string,PolicyRuleParameter>}
  | {type:'course'; code:string; campus?:UMNCampus; minimumGrade?:string}
  | {type:'range'; subject:string; min:number; max:number; suffix?:string; campus?:UMNCampus}
  | {type:'attribute'; attribute:string; value:string; name?:string; campus?:UMNCampus}

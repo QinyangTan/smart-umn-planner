@@ -1,5 +1,5 @@
 import{test}from'node:test';import assert from'node:assert/strict';
-import{parsePrerequisites,prerequisiteRuleCoverage}from'../packages/core/rules.ts';
+import{parsePrerequisites,prerequisiteReviewSummary,prerequisiteRuleCoverage}from'../packages/core/rules.ts';
 
 test('same-subject omitted prerequisite number uses explicit current-course subject context',()=>{
  const r=parsePrerequisites('prereq: 8201','UMNTC','AEM');
@@ -46,9 +46,9 @@ test('mixed course and consent conditions remain partially structured, never ful
  assert.equal(prerequisiteRuleCoverage(r),'partial');
 });
 
-test('pure consent remains review-only',()=>{
+test('pure consent becomes a typed review-only condition',()=>{
  const r=parsePrerequisites('prereq: instr consent','UMNTC','CSCI');
- assert.equal(r.type,'unknown');
+ assert.equal(r.type,'condition');if(r.type==='condition'){assert.equal(r.family,'consent');assert.deepEqual(r.parameters.authorities,['instructor']);}
  assert.equal(prerequisiteRuleCoverage(r),'review');
 });
 
@@ -74,3 +74,15 @@ test('a semicolon-delimited recommendation does not block a proven required prer
 test('historical previous-course annotation is not interpreted as a second prerequisite',()=>{const r=parsePrerequisites('Prereq: MBA 6231 (previously MBA 6230)','UMNTC','FINA');assert.deepEqual(r,{type:'course',code:'MBA 6231',campus:'UMNTC'});});
 
 test('ambiguous comma-scoped recommendation stays review-only instead of guessing modifier scope',()=>{const r=parsePrerequisites('prereq: 3001, 3006 recommended','UMNTC','APEC');assert.notEqual(prerequisiteRuleCoverage(r),'deterministic');});
+
+test('high-frequency consent and standing phrases become typed non-executable conditions',()=>{const r=parsePrerequisites("prereq: Master's student, adviser and DGS consent",'UMNTC','ANSC');assert.equal(r.type,'allOf');assert.equal(prerequisiteRuleCoverage(r),'review');if(r.type==='allOf')assert.deepEqual(r.rules.map(x=>x.type==='condition'?x.family:x.type),['standing','consent','consent']);assert.match(prerequisiteReviewSummary(r),/Masters standing.*Adviser consent.*DGS consent/);});
+
+test('audition plus department consent stays review-only but becomes explainable',()=>{const r=parsePrerequisites('prereq: Audition, dept consent','UMNTC','MUSA');assert.equal(prerequisiteRuleCoverage(r),'review');assert.match(prerequisiteReviewSummary(r),/Audition required.*Department consent required/);});
+
+test('graduate standing or instructor consent preserves OR semantics',()=>{const r=parsePrerequisites('prereq: Grad student or instr consent','UMNTC','BBE');assert.equal(r.type,'anyOf');assert.equal(prerequisiteRuleCoverage(r),'review');assert.match(prerequisiteReviewSummary(r),/Graduate standing requires confirmation OR Instructor consent required/);});
+
+test('minimum completed-credit threshold is typed but not auto-satisfied',()=>{const r=parsePrerequisites('prereq: 45 cr completed','UMNTC','ABUS');assert.equal(r.type,'condition');if(r.type==='condition'){assert.equal(r.family,'minimum-earned-credits');assert.equal(r.parameters.minimumCredits,45);}assert.equal(prerequisiteRuleCoverage(r),'review');});
+
+test('concurrent registration condition records the same-subject target without auto-satisfying it',()=>{const r=parsePrerequisites('prereq: concurrent registration is required (or allowed) in 4161W','UMNTC','EE');assert.equal(r.type,'condition');if(r.type==='condition'){assert.equal(r.family,'concurrent-registration');assert.equal(r.parameters.course,'EE 4161W');}assert.equal(prerequisiteRuleCoverage(r),'review');assert.match(prerequisiteReviewSummary(r),/Concurrent registration in EE 4161W required/);});
+
+test('program and honors restrictions become typed review conditions',()=>{const program=parsePrerequisites('prereq: Carlson School of Management student','UMNTC','BA'),honors=parsePrerequisites('prereq: Honors student','UMNTC','ARTS');assert.equal(program.type,'condition');assert.equal(honors.type,'condition');if(program.type==='condition')assert.equal(program.family,'program-membership');if(honors.type==='condition')assert.equal(honors.family,'honors');assert.equal(prerequisiteRuleCoverage(program),'review');assert.equal(prerequisiteRuleCoverage(honors),'review');});
