@@ -1,7 +1,7 @@
 {
  "manifest_version":3,
  "name":"Smart UMN Planner",
- "version":"0.9.1",
+ "version":"0.9.2",
  "minimum_chrome_version":"120",
  "description":"Personalized Twin Cities APAS program context and source-labeled insights rendered directly inside UMN Schedule Builder.",
  "permissions":["storage","alarms"],

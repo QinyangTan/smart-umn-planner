@@ -150,7 +150,7 @@ const report={
   currentProgramTitlesChecked:livePrograms.length,
   programStructuralPasses:perProgram.filter(x=>x.genericAPASStructuralMatrix==='pass').length,
   programStructuralFailures:programFailures.length,
-  structuralRequirementShape:{total:17,strict:7,candidate:1,policy:8,recognizedPolicy:7,unclassifiedPolicy:1,unknown:1},
+  structuralRequirementShape:{total:17,strict:7,candidate:1,aggregate:0,policy:8,recognizedPolicy:7,unclassifiedPolicy:1,unknown:1},
   realAuditSamples:{
    count:realProgramMatch?1:0,
    matchedMajor:realMajorMatch||null,
@@ -195,7 +195,7 @@ const md:string[]=[
  '## Current real-audit evidence',''
 ];
 const real=report.verification.realAuditSamples;
-md.push(real.count?`The saved real audit maps to major **${real.matchedMajor}** and program-degree identity **${real.matchedInventoryProgram!.program}** in **${real.matchedInventoryProgram!.college}**. Its active remaining nodes are ${real.coverage!.strictSupportedRequirements} strict routes, ${real.coverage!.candidateRouteSupportedRequirements} candidate routes, ${real.coverage!.policyConstraints} policy constraints (${real.coverage!.recognizedPolicyRules} structured policy rules / ${real.coverage!.unclassifiedPolicyConstraints} still-unclassified policy/accounting constraints), and ${real.coverage!.unknownUnroutedRequirements} unknown/unrouted requirements.`:'No saved real APAS sample was available in this run.');
+md.push(real.count?`The saved real audit maps to major **${real.matchedMajor}** and program-degree identity **${real.matchedInventoryProgram!.program}** in **${real.matchedInventoryProgram!.college}**. Its active remaining nodes are ${real.coverage!.strictSupportedRequirements} strict routes, ${real.coverage!.candidateRouteSupportedRequirements} candidate routes, ${real.coverage!.aggregateContainers} aggregate containers, ${real.coverage!.policyConstraints} policy constraints (${real.coverage!.recognizedPolicyRules} structured policy rules / ${real.coverage!.unclassifiedPolicyConstraints} still-unclassified policy/accounting constraints), and ${real.coverage!.unknownUnroutedRequirements} unknown/unrouted requirements.`:'No saved real APAS sample was available in this run.');
 md.push('','The machine-readable source of truth is `docs/evidence/twin-cities-program-coverage-20260927.json`. Raw private APAS HTML is not copied into either evidence file.','');
 fs.writeFileSync(markdownPath,md.join('\n'));
 console.log(JSON.stringify({
