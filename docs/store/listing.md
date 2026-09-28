@@ -12,7 +12,7 @@ This document is the review authority for the Chrome Web Store listing. Keep the
 - Status (2026-09-28): **uploaded draft**. Chrome Web Store item ID `ocbpkaiefaaboeiliopklleejlfnegbd`. Not yet submitted, approved or published.
 - Chrome Web Store rejects a manifest `key` ("key field is not allowed in manifest"). Upload only the key-free `release/smart-umn-planner-extension-v<version>-webstore.zip`. The direct-download `/smart-umn-extension.zip` keeps `key`, so Developer-mode installs keep ID `cleikpoiflloemienikmmmedkniblobc`.
 - The public API allows exactly these two extension origins (`netlify/functions/api.mts`). Submit for review only after the API that allowlists the Store ID is live, otherwise reviewers would see "Planner data unavailable".
-- The first draft upload was the v0.10.5 Web Store ZIP. v0.10.6 (Store-ID allowlist) is the package to submit.
+- The first draft upload was the v0.10.5 Web Store ZIP. Submit v0.10.6 (`release/smart-umn-planner-extension-v0.10.6-webstore.zip`, SHA-256 `061eddd0c8f388bf87c53c4f64c2f33662d7fafadf074631b619f3cd79db89ab`). Production deploy `6abafacae8b38b6727167aa4` already accepts the Store ID; this was verified live on 2026-09-28.
 - Publisher contact email must be entered and verified by the account owner in Dashboard Settings.
 - Do not store or automate the Google password/2FA response.
 - Do not mark the extension as published until Chrome Web Store review actually completes.
