@@ -1,6 +1,6 @@
 {
  "name": "smart-umn-planner",
- "version": "0.9.4",
+ "version": "0.9.5",
  "private": true,
  "type": "module",
  "engines": {
@@ -17,6 +17,7 @@
   "verify:browser": "node scripts/verify-browser.ts",
   "report:apas-compatibility": "node scripts/report-apas-compatibility.ts",
   "verify:apas-corpus": "node scripts/verify-apas-compatibility-corpus.ts",
+  "report:apas-corpus": "node scripts/report-apas-corpus-coverage.ts",
   "add:apas-corpus": "node scripts/add-apas-compatibility-report.ts",
   "package:extension": "npm run build && node scripts/package-extension.ts",
   "record:demos": "npm run build && node scripts/record-demos.ts",
