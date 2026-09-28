@@ -213,8 +213,9 @@ test('Schedule Builder planner links use the compiled shared Web origin instead 
 test('package and extension manifest versions stay aligned for release artifacts',()=>{const pkg=JSON.parse(readFileSync('package.json','utf8')),m=JSON.parse(readFileSync('apps/extension/manifest.json','utf8'));assert.equal(m.version,pkg.version);});
 
 test('manifest and build are inline-only: no side-panel permission or side-panel bundle',()=>{
- const m=JSON.parse(readFileSync('apps/extension/manifest.json','utf8'));
- assert.ok(!m.permissions.some((s:string)=>['cookies','debugger','webRequest','identity','history','sidePanel'].includes(s)));
+ const rawManifest=readFileSync('apps/extension/manifest.json','utf8'),m=JSON.parse(rawManifest);assert.equal((rawManifest.match(/\"minimum_chrome_version\"/g)||[]).length,1,'manifest keeps one minimum_chrome_version key');
+ assert.ok(!m.permissions.some((s:string)=>['cookies','debugger','webRequest','identity','history','sidePanel'].includes(s)));assert.deepEqual(m.permissions,['storage','alarms']);
+ assert.equal(m.homepage_url,'https://smartumn.qinyangtan.com');assert.equal(m.minimum_chrome_version,'120');assert.deepEqual(m.icons,{'16':'icons/icon16.png','32':'icons/icon32.png','48':'icons/icon48.png','128':'icons/icon128.png'});
  assert.equal(m.side_panel,undefined);
  assert.ok(m.host_permissions.includes('https://schedulebuilder.umn.edu/*'),'background can refresh already-open Twin Cities Schedule Builder tabs after APAS changes');assert.equal(m.host_permissions.some((x:string)=>x.includes('*.schedulebuilder.umn.edu')),false);
  assert.ok(!JSON.stringify(m).includes('<all_urls>'));assert.ok(!JSON.stringify(m).includes('login.umn'));

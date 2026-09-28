@@ -1,13 +1,15 @@
 import{build}from'esbuild';import{mkdir,copyFile,readFile,writeFile,rm}from'node:fs/promises';
-import{plannerOrigin}from'../packages/config/origin.ts';
+import{plannerOrigin}from'../packages/config/origin.ts';import{generateExtensionIcons,generateStorePromo}from'./generate-extension-icons.mjs';
 const origin=plannerOrigin(process.env.PUBLIC_ORIGIN||'http://127.0.0.1:4317');
 const production=process.env.NODE_ENV==='production';
 if(production&&(!process.env.PUBLIC_ORIGIN||!origin.startsWith('https://')))throw Error('Production build requires HTTPS PUBLIC_ORIGIN');
-for(const dir of ['dist/web','dist/extension']){await rm(dir,{recursive:true,force:true});await mkdir(dir,{recursive:true});}
+for(const dir of ['dist/web','dist/extension','dist/store']){await rm(dir,{recursive:true,force:true});await mkdir(dir,{recursive:true});}
 const options={bundle:true,target:'chrome120',sourcemap:!production,minify:production,define:{__SMART_UMN_WEB_ORIGIN__:JSON.stringify(origin)}};
 await build({...options,entryPoints:['apps/web/app.ts'],outfile:'dist/web/app.js',format:'esm'});
-for(const f of ['index.html','style.css','privacy.html'])await copyFile('apps/web/'+f,'dist/web/'+f);
+for(const f of ['index.html','style.css','privacy.html','support.html'])await copyFile('apps/web/'+f,'dist/web/'+f);
 for(const name of ['background','apas','schedule','bridge'])await build({...options,entryPoints:[`apps/extension/${name}.ts`],outfile:`dist/extension/${name}.js`,format:name==='background'?'esm':'iife'});
+await generateExtensionIcons('dist/extension/icons');
+await generateStorePromo('dist/store/promo-small-440x280.png');
 const manifest=JSON.parse(await readFile('apps/extension/manifest.json','utf8'));
 // Chrome match patterns cannot restrict ports; bridge.ts checks the full origin.
 const match=origin.replace(/:\d+$/,'')+'/*';
