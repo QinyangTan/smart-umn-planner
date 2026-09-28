@@ -5,6 +5,7 @@ var/
 docs/evidence/*
 !docs/evidence/apas-compatibility-corpus.json
 !docs/evidence/course-intelligence-coverage.json
+!docs/evidence/production-acceptance-20260928.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md
 *.log

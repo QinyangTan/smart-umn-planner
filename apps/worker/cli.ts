@@ -6,7 +6,7 @@ import{JevBrowser}from'./jev.ts';import{snapshotPolicySource}from'./policy-sourc
 
 // A single bounded process uses its own named persistent browser session. It never
 // joins the ChatGPT supervisor session and never exports browser state or cookies.
-const store=new Store();
+const store=new Store(process.env.PLANNER_DB||'var/planner.sqlite');
 const[action,...rawArgs]=process.argv.slice(2);const campusFlag=rawArgs.find(a=>a.startsWith('--campus=')),args=rawArgs.filter(a=>!a.startsWith('--campus=')),campus=campusFlag?campusCode(campusFlag.slice('--campus='.length)):'UMNTC';
 
 type Kind='course'|'instructor';

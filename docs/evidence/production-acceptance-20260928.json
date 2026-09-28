@@ -1,0 +1,92 @@
+{
+  "kind": "smart-umn-production-acceptance",
+  "date": "2026-09-28",
+  "origin": "https://smartumn.qinyangtan.com",
+  "version": "0.10.0",
+  "privacy": {
+    "academicFixture": "tests/fixtures/apas-acceptance.html",
+    "fixtureClassification": "synthetic only",
+    "realStudentAuditUsed": false,
+    "rawAuthenticatedApasUploaded": false
+  },
+  "automated": {
+    "tests": {
+      "passed": 169,
+      "failed": 0
+    },
+    "typecheck": "pass",
+    "courseCoverage": "pass",
+    "anonymousApasCorpus": "pass",
+    "productionReleaseGate": "pass"
+  },
+  "network": {
+    "httpsHealth": "pass",
+    "providers": [
+      "umn-schedule-builder",
+      "gophergrades"
+    ],
+    "providersHealthy": true,
+    "cloudflareRum": "disabled",
+    "productionConsoleErrors": 0
+  },
+  "web": {
+    "syntheticApasImport": "pass",
+    "missingDegreeCredits": "fail-closed: Not enough evidence",
+    "planningGoalPersistence": "pass: Lightest useful load",
+    "liveSchedule": {
+      "course": "CSCI 5302",
+      "credits": 3,
+      "campusDays": 2,
+      "classNumber": "57085"
+    },
+    "narrowViewport": {
+      "widthPx": 375,
+      "horizontalOverflow": false
+    },
+    "communityUi": {
+      "instructor": "Daniel Boley",
+      "rmpOverallQuality": 2.2,
+      "rmpSource": "GopherGrades public evidence",
+      "originalRmpProfile": "https://www.ratemyprofessors.com/professor/309254",
+      "historicalGradeStudents": 383,
+      "reviewedReddit": "https://www.reddit.com/r/uofmn/comments/kal74z/",
+      "solverAuthority": "none"
+    }
+  },
+  "extension": {
+    "freshProfile": true,
+    "extensionId": "cleikpoiflloemienikmmmedkniblobc",
+    "version": "0.10.0",
+    "scheduleBuilderCourse": "CSCI 5302",
+    "inlinePlacement": "between native description and prerequisite paragraph",
+    "apasFit": "pass",
+    "historicalGpa": 3.37,
+    "rmpOverallQuality": 2.2,
+    "curatedRedditSources": 1,
+    "originalRmpLink": "pass",
+    "originalRedditLink": "pass",
+    "offeringPattern": "Spring",
+    "consoleErrors": 0
+  },
+  "productionPublicCache": {
+    "reviewedImportsTargetConfiguredPlannerDb": true,
+    "workerPlannerDbRegression": "pass",
+    "communityReferences": [
+      {
+        "source": "reddit",
+        "entityType": "course",
+        "entityId": "CSCI 5302",
+        "url": "https://www.reddit.com/r/uofmn/comments/kal74z/",
+        "provenance": "reviewed-summary"
+      },
+      {
+        "source": "ratemyprofessor",
+        "entityType": "instructor",
+        "entityId": "instructor:daniel boley",
+        "url": "https://www.ratemyprofessors.com/professor/309254",
+        "provenance": "manual-link"
+      }
+    ]
+  },
+  "availabilityBoundary": "Stable Cloudflare hostname; laptop-backed origin is not an always-on availability guarantee."
+}

@@ -1,6 +1,9 @@
 import{test}from'node:test';
 import assert from'node:assert/strict';
-import{readFileSync}from'node:fs';
+import{mkdtempSync,readFileSync,rmSync}from'node:fs';
+import{tmpdir}from'node:os';
+import{join}from'node:path';
+import{spawnSync}from'node:child_process';
 import{makeReference,makeInstructorReference}from'../packages/community/index.ts';
 import{instructorEntityKey}from'../packages/schemas/index.ts';
 import{Store}from'../packages/providers/store.ts';
@@ -14,6 +17,15 @@ const health=(source:string)=>({source,status:'healthy' as const,checkedAt:now})
 test('current Reddit and RateMyProfessors policy is explicitly link-only',()=>{
  const policy=JSON.parse(readFileSync('config/community-policy.json','utf8'));assert.equal(policy['www.reddit.com'].mode,'link-only');assert.match(policy['www.reddit.com'].basisUrl,/reddithelp\.com/);assert.equal(policy['www.ratemyprofessors.com'].mode,'link-only');assert.match(policy['www.ratemyprofessors.com'].basisUrl,/ratemyprofessors\.com\/terms-of-use/);
  const worker=readFileSync('apps/worker/cli.ts','utf8');assert.match(worker,/policy\.mode!==\'allow\'/);assert.match(worker,/Automated collection disabled/);
+});
+
+test('worker honors PLANNER_DB so reviewed public references can target the configured production cache',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'smart-umn-worker-db-')),db=join(dir,'planner.sqlite');
+ try{
+  const p=spawnSync(process.execPath,['apps/worker/cli.ts','import-link','CSCI 5302','https://www.reddit.com/r/uofmn/comments/kal74z/','CSCI 5302 with Daniel Boley?'],{cwd:process.cwd(),env:{...process.env,PLANNER_DB:db},encoding:'utf8'});
+  assert.equal(p.status,0,p.stderr||p.stdout);
+  const store=new Store(db);try{assert.equal(store.references('CSCI 5302').length,1);assert.equal(store.references('CSCI 5302')[0]?.url,'https://www.reddit.com/r/uofmn/comments/kal74z/');}finally{store.close();}
+ }finally{rmSync(dir,{recursive:true,force:true});}
 });
 
 test('instructor references are strict identity-linked original sources, not ratings',()=>{

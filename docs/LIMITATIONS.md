@@ -1,6 +1,6 @@
 # Limitations
 
-Smart UMN Planner is currently a local single-user **Twin Cities** prototype.
+Smart UMN Planner is currently a local-first **Twin Cities** prototype with a public Web/public-evidence API deployment. Personalized academic state remains browser-local; the hosted service is not a student-account backend.
 
 ## Data-source boundaries
 
@@ -16,8 +16,9 @@ The rule engine is deliberately conservative. AP/IB/test/transfer credit is reco
 
 ## Product / deployment boundary
 
-- The web app and API bind to localhost and do not provide multi-user authentication, hosted account storage, TLS termination, production CSRF/session handling, or institutional SSO integration.
-- The Chrome extension is currently loaded unpacked in Developer mode.
+- The production Node service binds to loopback behind a named Cloudflare Tunnel at `https://smartumn.qinyangtan.com`; Cloudflare terminates TLS. The backend has no student accounts, hosted academic-state storage, application sessions, or institutional SSO because personalized state intentionally stays in the browser.
+- The current public hostname is stable, but the service is laptop-backed and therefore is **not** an always-on availability guarantee when the host sleeps, disconnects, or is offline.
+- The Chrome extension is currently distributed as a reviewed ZIP / unpacked Developer-mode build rather than through the Chrome Web Store.
 - Academic state is local but not application-level encrypted; software with access to the same machine/browser profile may be able to read browser storage.
 - The extension initiates normal UMN/APAS navigation but never captures credentials, Duo codes, cookies, or SAML material.
 - Community references are displayed for human review and are never converted into a sentiment, difficulty, or professor-quality score.
@@ -25,7 +26,7 @@ The rule engine is deliberately conservative. AP/IB/test/transfer credit is reco
 
 ## Production work still required
 
-A public release would need explicit provider/governance review, production storage/auth design, privacy/legal review, extension-store packaging, monitoring, schema-change alerts, rate limits, stronger migration/versioning, multi-user isolation tests, and a formal accessibility/UX pass.
+The current HTTPS deployment has bounded public API inputs, origin/Host checks, request budgets, provider timeouts, persistent public SQLite storage, schema-version checks, synthetic fresh-browser acceptance, and aggregate health metrics. Broader public-student release still needs an always-on host with monitored restart/backup automation, explicit provider/privacy/legal governance, Chrome Web Store packaging/review, schema-drift alerting, formal accessibility/UX review, and a larger anonymous real-APAS compatibility corpus. Because no hosted student accounts or academic records exist, the remaining isolation work is primarily browser/profile and public-cache hardening rather than a server-side multi-user academic database.
 
 ## Checkpoint deployment note
 
