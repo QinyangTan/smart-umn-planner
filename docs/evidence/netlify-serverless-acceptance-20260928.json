@@ -1,0 +1,110 @@
+{
+  "kind": "smart-umn-netlify-serverless-acceptance",
+  "date": "2026-09-28",
+  "sourceBase": "c0ac1c6f24df36dac8baa5afbd3549c664dc1e01",
+  "stagingOrigin": "https://smart-umn-planner.netlify.app",
+  "netlify": {
+    "siteId": "3acbab52-b741-466a-bc3b-75c138903c83",
+    "deployId": "6ababd8c13183c69bd9999de",
+    "runtime": "nodejs24.x",
+    "region": "us-east-2",
+    "functionRoute": "/api/*",
+    "functionBundleBytes": 390671,
+    "edgeRateLimit": {
+      "windowLimit": 120,
+      "windowSizeSeconds": 60,
+      "aggregateBy": [
+        "ip",
+        "domain"
+      ],
+      "plan": "Free/code-based",
+      "deployMetadataValidated": true,
+      "acceptance": {
+        "healthBurstImmediate": {
+          "requests": 140,
+          "status200": 140
+        },
+        "followupAfter10Seconds": 429,
+        "note": "Health is excluded from the in-function RequestBudget; the 429 therefore proves Netlify edge enforcement."
+      }
+    }
+  },
+  "architecture": {
+    "studentState": "browser-local only",
+    "liveCache": "ephemeral in-memory SQLite",
+    "reviewedSeed": {
+      "policySnapshots": 6,
+      "communityReferences": 2
+    },
+    "embeddings": "lexical-only in serverless bundle",
+    "sharpReferencesInBundle": 0,
+    "nativeModuleColdStart": "pass after lexical/document split; no sharp runtime dependency"
+  },
+  "automated": {
+    "tests": {
+      "passed": 174,
+      "failed": 0
+    },
+    "typecheck": "pass",
+    "productionBuild": "pass"
+  },
+  "apiAcceptance": {
+    "health": {
+      "status": "running",
+      "version": "0.10.1",
+      "parserVersion": "0.4.5",
+      "serverless": true,
+      "cache": "ephemeral-public"
+    },
+    "providers": [
+      "umn-schedule-builder:healthy",
+      "gophergrades:healthy"
+    ],
+    "policy": {
+      "mode": "bounded-lexical",
+      "decisionAuthority": "none",
+      "officialEvidence": true
+    },
+    "representativeCourse": {
+      "code": "CSCI 5302",
+      "term": "1273",
+      "sections": 1,
+      "historicalStudents": 383,
+      "reviewedCommunity": [
+        "reddit",
+        "ratemyprofessor"
+      ]
+    },
+    "hostileOriginStatus": 403,
+    "securityHeaders": {
+      "contentSecurityPolicy": true,
+      "strictTransportSecurity": true,
+      "xContentTypeOptions": "nosniff",
+      "referrerPolicy": "no-referrer",
+      "permissionsPolicy": true
+    }
+  },
+  "privacy": {
+    "fixture": "tests/fixtures/apas-acceptance.html",
+    "realStudentAuditUsed": false,
+    "rawAuthenticatedApasUploaded": false,
+    "seedContainsStudentAcademicState": false
+  },
+  "browserAcceptance": {
+    "freshProfile": true,
+    "web": {
+      "import": true,
+      "unknownCreditsFailClosed": true,
+      "goalPersistence": true,
+      "reload": true,
+      "liveSchedule": true,
+      "narrowOverflow": false
+    },
+    "extension": {
+      "course": "MATH 1271",
+      "inline": true,
+      "instructorEvidence": true
+    }
+  },
+  "promotionBoundary": "Staging passed independently. The canonical smartumn.qinyangtan.com hostname remains on the existing Cloudflare/Mac origin until custom-domain DNS/TLS cutover and final-host acceptance are complete."
+}
