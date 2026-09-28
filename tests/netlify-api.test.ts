@@ -1,8 +1,12 @@
-import test from'node:test';import assert from'node:assert/strict';import{readFileSync}from'node:fs';
+import test,{mock}from'node:test';import assert from'node:assert/strict';import{readFileSync}from'node:fs';
 import seed from'../config/public-evidence-seed.json'with{type:'json'};
 
 process.env.PUBLIC_ORIGIN='https://smart-umn-planner.netlify.app';
 process.env.EXTENSION_IDS='cleikpoiflloemienikmmmedkniblobc';
+// The function applies the 7-day policy-snapshot window at cold start. Pin the clock to the seed's
+// capture window so this contract test does not start failing when the checked-in seed ages out;
+// production expiry is monitored by tests/production-canary.test.ts and npm run verify:production.
+mock.timers.enable({apis:['Date'],now:Math.max(...seed.snapshots.map(x=>Date.parse(x.payload.capturedAt)))+3600000});
 const netlifyModule=await import('../netlify/functions/api.mts');const handler=netlifyModule.default;
 const ctx={ip:'203.0.113.10'} as any;
 const call=(path:string,init?:RequestInit)=>handler(new Request('https://smart-umn-planner.netlify.app'+path,init),ctx);

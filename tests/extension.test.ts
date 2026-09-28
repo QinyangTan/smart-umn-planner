@@ -227,3 +227,16 @@ test('manifest and build are inline-only: no side-panel permission or side-panel
  const schedule=readFileSync('apps/extension/schedule.ts','utf8');assert.ok(schedule.includes('PERSONALIZATION_CHANGED'));
  const build=readFileSync('scripts/build.mjs','utf8');assert.ok(!build.includes("'panel'"));assert.ok(!build.includes('panel.html'));assert.equal(existsSync('apps/extension/panel.ts'),false);assert.equal(existsSync('apps/extension/panel.html'),false);
 });
+
+test('keyboard toggling an inline insight keeps focus on the same control after the shadow rail re-renders',async()=>{
+ const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/',pretendToBeVisual:true});
+ const app=installEnhancements(dom.window.document,{batch:async()=>[context()],fit:async courses=>fitFor(courses.map(x=>x.code)),connect:async()=>{}});await tick();
+ const shadow=dom.window.document.querySelector('smart-umn-insight')!.shadowRoot!;
+ const first=shadow.querySelector<HTMLButtonElement>('button.insight')!;const tab=first.dataset.tab;assert.ok(tab,'insight buttons carry a stable tab identity');
+ first.focus();first.click();
+ const again=shadow.querySelector<HTMLButtonElement>(`button[data-tab="${tab}"]`)!;
+ assert.notEqual(again,first,'the rail re-renders');assert.equal(again.getAttribute('aria-expanded'),'true');assert.equal(shadow.activeElement,again,'focus must not fall back to the host page');
+ again.click();assert.equal(shadow.activeElement?.getAttribute('aria-expanded'),'false');
+ const css=shadow.querySelector('style')!.textContent||'';assert.match(css,/button:focus-visible,a:focus-visible\{outline:2px solid #7a0019/);assert.doesNotMatch(css,/color:#777\b/,'#777 on white is below 4.5:1');
+ app.disconnect();dom.window.close();
+});

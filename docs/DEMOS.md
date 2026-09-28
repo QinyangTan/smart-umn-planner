@@ -1,8 +1,14 @@
 # Smart UMN demos
 
-## Current production — v0.10.4
+## Current production — v0.10.5
 
 [Open the live planner](https://smartumn.qinyangtan.com) · [Download the production extension](https://smartumn.qinyangtan.com/smart-umn-extension.zip)
+
+![Keyboard-focused Course Intelligence inside Schedule Builder](demos/v0105-keyboard-course-intelligence.png)
+
+v0.10.5 keyboard flow on the real public CSCI 5302 page. The Grade history insight was focused with Tab and opened with Enter. It shows the maroon focus ring and the expanded distribution, GPA trend and current-instructor record. No APAS profile is present.
+
+The planner screenshots below were captured on v0.10.4. v0.10.5 changed only focus, keyboard and target-size details, so the layouts still match production.
 
 ![Canonical planner with synthetic APAS](demos/v0104-canonical-plan.png)
 
@@ -10,7 +16,7 @@ Captured from the canonical HTTPS site on September 28, 2026. The checked-in `ap
 
 ![Current extension inside public Schedule Builder](store/screenshot-course-intelligence-1280x800.png)
 
-The v0.10.4 extension capture shows the actual public CSCI 5302 course page. No student APAS profile is present. Source values reflect the capture date and can change.
+The extension capture (recaptured with v0.10.5) shows the actual public CSCI 5302 course page. No student APAS profile is present. Source values reflect the capture date and can change.
 
 ![Planning preferences with synthetic audit](demos/v0104-canonical-preferences.png)
 

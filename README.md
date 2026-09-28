@@ -33,11 +33,11 @@ Smart UMN brings those questions together. Import your APAS, explore courses thr
 
 ### Course intelligence, where you already choose classes
 
-![Smart UMN v0.10.4 inside the real UMN Schedule Builder course page](docs/store/screenshot-course-intelligence-1280x800.png)
+![Smart UMN v0.10.5 inside the real UMN Schedule Builder course page](docs/store/screenshot-course-intelligence-1280x800.png)
 
 The extension adds a compact inline row inside Schedule Builder: APAS fit, grade history, professor context, student voices and offering history. Expand the evidence without leaving the course. Open the full planner with the course, semester and campus carried across automatically.
 
-*Current v0.10.4 capture; public course evidence, no student academic profile. Ratings and historical outcomes are context, not predictions.*
+*Current v0.10.5 capture; public course evidence, no student academic profile. Ratings and historical outcomes are context, not predictions.*
 
 ### From APAS to a plan you can explain
 
@@ -82,7 +82,15 @@ Current offerings come from UMN Schedule Builder. Historical grades come from Go
 
 Normalized APAS records, preferences and saved plans live in browser storage. The hosted API serves public evidence; it has no student-profile database. Course code, term and campus requests—and bounded review-only policy queries—are the network boundary. Passwords, Duo codes, cookies, SAML data and raw authenticated audit HTML are never uploaded to that API.
 
-The Manifest V3 extension uses `storage` and `alarms`, with access restricted to UMN APAS, Schedule Builder and the canonical planner. No `tabs`, cookies or Side Panel permission. [Privacy](https://smartumn.qinyangtan.com/privacy.html)
+The Manifest V3 extension uses `storage` and `alarms`, with access restricted to UMN APAS, Schedule Builder and the canonical planner. No `tabs`, cookies or Side Panel permission. [Privacy](https://smartumn.qinyangtan.com/privacy.html) · [Data & source governance](docs/GOVERNANCE.md)
+
+### Usable from the keyboard, watched in production
+
+![Keyboard-focused Course Intelligence expanded inside Schedule Builder](docs/demos/v0105-keyboard-course-intelligence.png)
+
+The core flows work from the keyboard: connecting APAS, planning, building a schedule and expanding Schedule Builder insights. The focus ring stays visible on UMN's white and maroon surfaces. Dialogs return focus to the control that opened them, and the weekly grid scrolls by keyboard. Layouts reflow down to 320 px and honor reduced motion. Each release runs axe-core (WCAG 2.2 AA) plus scripted keyboard, dialog and reflow checks against the live site and the exact published extension.
+
+A production canary runs every six hours. It checks TLS, security headers, API health and the deployed version, live UMN and GopherGrades data against the normalized contract, policy-evidence freshness, hostile-origin rejection and the published ZIP's checksum. An upstream **outage** is reported separately from a **schema change** that would need an adapter fix. A failure opens a GitHub issue, not a silent wrong answer.
 
 ## How it works
 
@@ -109,7 +117,8 @@ flowchart LR
 | **Academic core** | Typed rule trees, deterministic prerequisite evaluation, supported cross-requirement allocation and bounded section-combination search. |
 | **Public API** | Node.js 24 on Netlify Functions, validated provider adapters, bounded requests, timeouts and an ephemeral SQLite cache of refetchable public evidence. |
 | **Policy retrieval** | Lightweight lexical retrieval in production, with source scope, content hashes and freshness checks. Optional local MiniLM reranking is isolated from the serverless path and never becomes degree authority. |
-| **Build & verification** | esbuild, TypeScript checks, Node's test runner, synthetic browser acceptance, provider canaries and reproducible extension packaging. |
+| **Build & verification** | esbuild, TypeScript checks, Node's test runner, synthetic browser acceptance, axe-core accessibility acceptance and byte-reproducible extension packaging. |
+| **Operations** | Scheduled GitHub Actions canaries for canonical production and upstream sources, with outage and schema drift classified separately and issue-based alerting. |
 
 The public site runs independently of the developer's laptop. Personalization does not require a Smart UMN account. Hosting remains subject to provider availability and plan limits.
 
@@ -120,7 +129,7 @@ The public site runs independently of the developer's laptop. Personalization do
 3. Return to the planner and choose **Connect APAS**. Sign-in and Duo happen only on official UMN pages.
 4. Explore your options, build a plan, and review the final enrollment details in UMN's official systems.
 
-**Distribution status:** the production ZIP is publicly downloadable without GitHub access. Chrome Web Store submission/review is still pending; there is no one-click store listing yet. Managed browsers may prohibit unpacked extensions. Public course evidence can be explored without importing an APAS audit; personalized degree fit requires your own authorized audit.
+**Distribution status:** the v0.10.5 production ZIP is publicly downloadable without GitHub access. A Chrome Web Store package is prepared but not yet submitted, so there is no one-click store listing yet. Managed browsers may prohibit unpacked extensions. Public course evidence can be explored without importing an APAS audit; personalized degree fit requires your own authorized audit.
 
 [Support](https://smartumn.qinyangtan.com/support.html) · [Privacy](https://smartumn.qinyangtan.com/privacy.html) · [Known limitations](docs/LIMITATIONS.md)
 
@@ -141,9 +150,10 @@ npm test
 npm run typecheck
 NODE_ENV=production PUBLIC_ORIGIN=https://smartumn.qinyangtan.com npm run package:extension
 npm run verify:release -- --production
+npm run verify:production          # canonical production canary
 ```
 
-[Deployment](docs/DEPLOYMENT.md) · [Architecture](docs/ARCHITECTURE.md) · [Policy retrieval](docs/SEMANTIC_POLICY_RETRIEVAL.md) · [Verification](docs/VERIFICATION.md) · [Contributing](docs/CONTRIBUTING.md)
+[Deployment](docs/DEPLOYMENT.md) · [Operations](docs/OPERATIONS.md) · [Governance](docs/GOVERNANCE.md) · [Architecture](docs/ARCHITECTURE.md) · [Policy retrieval](docs/SEMANTIC_POLICY_RETRIEVAL.md) · [Verification](docs/VERIFICATION.md) · [Contributing](docs/CONTRIBUTING.md)
 
 ---
 

@@ -1,5 +1,32 @@
 # Verification
 
+## v0.10.5 production canary + accessibility — 2026-09-28
+
+v0.10.5 adds operational monitoring and fixes the accessibility defects found by a formal pass over v0.10.4 production. APAS parsing, prerequisite/eligibility logic, solver ranking and API inputs are unchanged.
+
+**Accessibility findings on v0.10.4 production** (fresh Chromium profile, synthetic fixture, axe-core 4.13 WCAG 2.2 AA + best-practice rules, plus a scripted keyboard walk):
+- Every focus stop had a gold-only ring at 1.32–1.51:1. WCAG 1.4.11 requires 3:1.
+- APAS import closed the dialog and dropped focus to `<body>`.
+- The weekly schedule grid scrolled horizontally but was not keyboard reachable (`scrollable-region-focusable`).
+- Controls could scroll under the sticky topbar. axe reported this as `target-size` at 375 px.
+- `/privacy.html` and `/support.html` produced a `/favicon.ico` 404 console error.
+- In the extension, toggling an insight re-rendered the shadow rail and dropped focus to the host page. The "Full planner" link was a sub-24 px target, and `#777` text was 4.48:1.
+
+**Fixes and regressions:** maroon-led two-tone focus ring; focus returns to the connection control; the week grid is a labelled focusable region; breakpoint-aware `scroll-padding-top`; generated favicon; extension focus retention, focus ring, 24 px link targets and `#6f6f6f` text. The new extension and Web focus tests fail on the pre-fix code (2 failures verified) and pass after.
+
+**Monitoring:** `npm run verify:production` and the 6-hourly `production-canary` workflow (see OPERATIONS.md). The Netlify contract test no longer depends on wall-clock time. Before this change it failed with the clock set to 2026-10-06, because the checked-in policy seed expires on 2026-10-05.
+
+**Gates:** npm ci, `npm audit --omit=dev` (0 vulnerabilities), 187/187 tests, TypeScript, APAS corpus, course coverage, production packaging and `verify:release --production` all pass. PR #15 CI passed. The deterministic ZIP `release/smart-umn-planner-extension-v0.10.5.zip` has SHA-256 `391671f857b418e325a0b08c1a9529a4487115d6261d9408557ad1bd5f8c4cbe`.
+
+**Canonical production** (Netlify deploy `6abaedabfb679a14c7b9e9ca`):
+- `verify:production` passed all 22 checks: DNS CNAME to Netlify, TLS with 89.9 days remaining, security headers, v0.10.5 health, healthy Schedule Builder and GopherGrades, live `CSCI 1133` course/sections/grades matching the normalized contract, 3 official policy passages with `decisionAuthority: none`, hostile Origin 403, no 429, and live ZIP == release ZIP. `/favicon.png` returns 200.
+- `verify:a11y` on production loaded the **online-downloaded** v0.10.5 ZIP into a fresh profile. 15 axe scans (privacy/support/home at 1280/375/320, connect dialog, imported plan, built schedule at 1280/375, Explore, and the real Schedule Builder `CSCI 5302` shadow rail) found 0 violations. Every focus ring measured ≥3:1. Escape restored focus to the trigger, import kept focus on `#connection` and announced through `role=status`, there was no horizontal overflow at 320 px, no animations ran under reduced motion, extension toggles kept focus, links pointed only to the canonical origin, and there were no console errors.
+- `verify:browser` on production passed synthetic import, fail-closed unknown credits, goal persistence, reload, live schedule, the 375 px layout, and the inline `MATH 1271` extension with instructor evidence.
+
+**Evidence:** `docs/evidence/production-canary-20260928-v0.10.5.json` and `docs/evidence/accessibility-acceptance-20260928-v0.10.5.json`. The Schedule Builder store screenshot was recaptured with the v0.10.5 production extension and no APAS profile.
+
+**Not done:** no assistive-technology (VoiceOver/NVDA) session was run. Chrome Web Store remains **package-ready**, with nothing uploaded.
+
 ## v0.10.4 production + Chrome Web Store readiness — 2026-09-28
 
 The v0.10.4 branch turns the reviewed ZIP into a Chrome Web Store-ready package without changing Smart UMN's local-first academic-data boundary. The Manifest V3 package declares Chrome 120+, `storage` and `alarms` only, exact host access for UMN uAchieve self-service, UMN Schedule Builder and `https://smartumn.qinyangtan.com/*`, a canonical homepage, and deterministic 16/32/48/128 pixel product icons. It contains no remotely hosted executable code, cookies/history/webRequest/all-sites permissions, Side Panel dependency, or credential API.
