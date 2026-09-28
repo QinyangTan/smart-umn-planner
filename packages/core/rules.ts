@@ -28,16 +28,36 @@ export function evaluate(rule:RequirementRule,courses:StudentCourse[]):Truth {
 }
 // Recursive descent preserves AND/OR precedence and parentheses. Unrecognized atoms
 // remain unknown, so an independently satisfied OR branch can still be proved.
-export function parsePrerequisites(source:string,campus?:UMNCampus):RequirementRule {
+// Schedule Builder often omits the subject for same-department prerequisite numbers;
+// callers may provide the current subject so "8201" on AEM 8202 becomes AEM 8201.
+// We never infer a subject for a numeric atom without that explicit course context.
+function prerequisiteSeparators(text:string):string{let depth=0,out='';for(const ch of text){if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);if((ch===','||ch===';')&&depth===0)out+=' AND ';else out+=ch;}return out.replace(/\bAND\s+(?:and|&)\b/gi,' AND ').replace(/\s+/g,' ').trim();}
+function minimumGrade(rule:RequirementRule,grade:string):RequirementRule{switch(rule.type){case'course':return{...rule,minimumGrade:grade.toUpperCase()};case'anyOf':case'allOf':return{...rule,rules:rule.rules.map(r=>minimumGrade(r,grade))};default:return rule;}}
+export function parsePrerequisites(source:string,campus?:UMNCampus,defaultSubject?:string):RequirementRule {
  if(!source.trim())return unknownRule(source,'No prerequisite information supplied');
- let text=source.replace(/^.*?prereq\s*:\s*/i,'').replace(/^Update:\s*/i,'').replace(/[\[\{]/g,'(').replace(/[\]\}]/g,')').replace(/,\s*(or|and)\b/gi,' $1 ').trim();
- if(/^(none|no prerequisites)[.]?$/i.test(text))return{type:'allOf',rules:[]};
+ const subject=defaultSubject?subjectCode(defaultSubject):undefined;
+ let text=source.replace(/^.*?prereq\s*:\s*/i,'').replace(/^Update:\s*/i,'').replace(/\(\s*previously\s+[A-Z]{2,8}\s*\d{1,4}[A-Z]?\s*\)/gi,'').replace(/\([^()]*\brecommended\b[^()]*\bnot\s+required\b[^()]*\)/gi,'').replace(/[\[\{]/g,'(').replace(/[\]\}]/g,')').replace(/,\s*(or|and)\b/gi,' $1 ').trim();
+ if(/^recommended\s+prereq(?:uisite)?\s*:/i.test(source))return{type:'allOf',rules:[]};
+ // A semicolon-delimited recommendation is non-binding. We intentionally do not
+ // strip comma-delimited recommendations because their modifier scope can be ambiguous.
+ if(text.includes(';'))text=text.split(';').filter(part=>!/\b(?:strongly\s+)?recommended\b/i.test(part)||/\b(?:required|must)\b/i.test(part.replace(/not\s+required/gi,''))).join(';').trim();if(!text)return{type:'allOf',rules:[]};
+ const recommendationOnly=(/^none\s*,?\s*but\b[\s\S]*\b(?:strongly\s+)?recommended\.?$/i.test(text)||(!/[,;]/.test(text)&&/\b(?:strongly\s+)?recommended\.?$/i.test(text)))&&!/\b(?:required|must|consent|standing|concurrent|coreq)\b/i.test(text.replace(/not\s+required/gi,''));
+ if(/^(none|no prerequisites)[.]?$/i.test(text)||recommendationOnly)return{type:'allOf',rules:[]};
+ text=prerequisiteSeparators(text);
+ const resolveCode=(raw:string):string=>{const clean=raw.trim().replace(/[.]+$/,'').trim();if(/^\d{1,4}[A-Z]?$/i.test(clean)){if(!subject)throw Error('Subject omitted');return courseCode(subject+' '+clean);}return courseCode(clean);};
+ const parseSimpleCourse=(raw:string):RequirementRule=>{const clean=raw.trim().replace(/[.]+$/,'').trim(),grade=/^(.+?)\s+(?:with|w\/)\s*grade\s+of\s+at\s+least\s+([A-F][+-]?)$/i.exec(clean);if(grade)return{type:'course',code:resolveCode(grade[1]),...(campus?{campus}:{}),minimumGrade:grade[2].toUpperCase()};return{type:'course',code:resolveCode(clean),...(campus?{campus}:{})};};
+ const prefixGrade=/^grade\s+of\s+(?:at\s+least\s+)?([A-F][+-]?)\s+(?:or\s+better\s+)?in\s+(.+)$/i.exec(text);
+ if(prefixGrade){try{return minimumGrade(parsePrerequisites(prefixGrade[2],campus,subject),prefixGrade[1]);}catch{}}
+ const groupedGrade=/^\((.+)\)\s+(?:with|w\/)\s*grade\s+of\s+at\s+least\s+([A-F][+-]?)\.?$/i.exec(text);
+ if(groupedGrade){const inner=parsePrerequisites(groupedGrade[1],campus,subject);if(inner.type!=='unknown')return minimumGrade(inner,groupedGrade[2]);}
  const tokens=text.split(/(\(|\)|\band\b|\bor\b|&)/i).map(s=>s.trim()).filter(Boolean);let i=0;
- function atom():RequirementRule {const t=tokens[i++];if(t==='('){const r=disjunction();if(tokens[i++]!==')')throw Error();return r;}if(!t||t===')')throw Error();try{return{type:'course',code:courseCode(t),...(campus?{campus}:{})}}catch{return unknownRule(t,'Standing, consent, grade or other condition requires review');}}
+ function atom():RequirementRule {const t=tokens[i++];if(t==='('){const r=disjunction();if(tokens[i++]!==')')throw Error();return r;}if(!t||t===')')throw Error();try{return parseSimpleCourse(t)}catch{return unknownRule(t,'Standing, consent, grade, corequisite or other condition requires review');}}
  function conjunction():RequirementRule {const rs=[atom()];while(/^(and|&)$/i.test(tokens[i]||'')){i++;rs.push(atom());}return rs.length===1?rs[0]:{type:'allOf',rules:rs};}
  function disjunction():RequirementRule {const rs=[conjunction()];while(/^or$/i.test(tokens[i]||'')){i++;rs.push(conjunction());}return rs.length===1?rs[0]:{type:'anyOf',rules:rs};}
  try{const r=disjunction();return i===tokens.length?r:unknownRule(source);}catch{return unknownRule(source);}
 }
+export type PrerequisiteRuleCoverage='deterministic'|'partial'|'review';
+export function prerequisiteRuleCoverage(rule:RequirementRule):PrerequisiteRuleCoverage{const features=(r:RequirementRule):{review:boolean;structured:boolean}=>{switch(r.type){case'unknown':case'policy':return{review:true,structured:false};case'course':case'range':case'attribute':return{review:false,structured:true};case'anyOf':case'allOf':{if(!r.rules.length)return{review:false,structured:true};const xs=r.rules.map(features);return{review:xs.some(x=>x.review),structured:xs.some(x=>x.structured)};}case'exclude':{const xs=[features(r.rule),...r.excluded.map(features)];return{review:xs.some(x=>x.review),structured:xs.some(x=>x.structured)};}case'credits':case'count':case'gpa':return features(r.rule);}};const f=features(rule);return f.review?(f.structured?'partial':'review'):'deterministic';}
 export function flattenRequirements(rs:DegreeRequirement[]):DegreeRequirement[]{return rs.flatMap(r=>[r,...flattenRequirements(r.children)]);}
 export function profileRequirementRoots(profile?:StudentAcademicProfile):DegreeRequirement[]{return profile?[...profile.requirements,...(profile.additionalPrograms||[]).flatMap(p=>p.requirements)]:[];}
 export type RequirementCoverageBucket='exactCourse'|'subjectRange'|'officialAttribute'|'credits'|'count'|'gpa'|'exclusions'|'nested'|'candidateOnly'|'unknown';

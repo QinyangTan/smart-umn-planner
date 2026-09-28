@@ -1,6 +1,6 @@
 # Twin Cities Course Intelligence coverage
 
-Public-data snapshot: **6,105 current Schedule Builder courses across 330 subjects** for term `1273`, checked 2026-09-28T04:13:12.085Z.
+Public-data snapshot: **6,105 current Schedule Builder courses across 330 subjects** for term `1273`, checked 2026-09-28T05:26:27.836Z.
 
 This is a public-source coverage audit, not a claim that every course has every optional evidence layer. Official Schedule Builder fields and third-party historical/community evidence are reported separately.
 
@@ -10,7 +10,7 @@ This is a public-source coverage audit, not a claim that every course has every 
 - Description present: **6,092 / 6,105 (99.8%)**.
 - Credits known: **6,105 / 6,105 (100%)**.
 - At least one current section indexed: **6,036 / 6,105 (98.9%)**.
-- Courses with published prerequisite text: **2,934**; deterministic parser handles 1,259 and leaves 1,675 review-only rather than guessing.
+- Courses with published prerequisite text: **2,934**; **334 fully deterministic**, **540 partially structured with at least one review-only condition**, and **2,060 fully review-only**. Partial structures never become schedule-eligible unless the complete rule evaluates to yes.
 - Official attribute-tagged courses: **1,046**.
 
 ## Historical grade evidence
