@@ -28,7 +28,7 @@ Policy retrieval is explanation/review evidence only (`decisionAuthority: none`)
 
 ## Schedule Builder and third-party evidence
 
-On `https://schedulebuilder.umn.edu/`, Smart UMN renders course intelligence next to the course using public UMN Schedule Builder data and optional public historical/context sources. RateMyProfessors and Reddit references are original links or reviewed context only. Following an external link sends the browser to that third-party site under that site's privacy practices.
+On `https://schedulebuilder.umn.edu/`, Smart UMN renders course intelligence next to the course using public UMN Schedule Builder data and optional public historical/context sources. RateMyProfessors and Reddit references are original links or reviewed context only. Smart UMN does not scrape either site. A professor-rating aggregate appears only when the public GopherGrades service already republishes it, with a link to its source. Source and legal boundaries are summarized in [GOVERNANCE.md](GOVERNANCE.md). Following an external link sends the browser to that third-party site under that site's privacy practices.
 
 Smart UMN does not sell user data, use it for advertising, build advertising profiles, or transfer academic data to data brokers. The project has no advertising or analytics scripts. Humans do not read individual academic profiles through a Smart UMN backend because those profiles are not stored there.
 

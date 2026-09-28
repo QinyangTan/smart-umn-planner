@@ -9,7 +9,10 @@ This document is the review authority for the Chrome Web Store listing. Keep the
 - Canonical homepage: https://smartumn.qinyangtan.com/
 - Privacy policy: https://smartumn.qinyangtan.com/privacy.html
 - Support URL: https://smartumn.qinyangtan.com/support.html
-- External blocker at the last check: Google requires account reauthentication before the Developer Dashboard can be inspected or a draft item created. Do not store or automate the Google password/2FA response.
+- Status (2026-09-28): **package-ready**. Nothing has been uploaded, submitted, approved or published.
+- Package to upload: `release/smart-umn-planner-extension-v0.10.5.zip` (SHA-256 `391671f857b418e325a0b08c1a9529a4487115d6261d9408557ad1bd5f8c4cbe`), identical to the live `/smart-umn-extension.zip`. Do not upload v0.10.4; it is superseded.
+- Last observed blocker (operator session, 2026-09-28): Google reauthentication and developer registration were reported complete, but the **Add new item → Select file** control did not open a file chooser, even when clicked manually. This is likely because an automation/debugger session was attached to that Chrome window. Try dragging the ZIP onto the upload area, or use a Chrome window without automation attached. Not re-verified by the v0.10.5 session, because browser automation was unavailable.
+- Do not store or automate the Google password/2FA response.
 - Do not mark the extension as published until Chrome Web Store review actually completes.
 
 ## Store listing
@@ -135,7 +138,7 @@ Upload assets:
 - Screenshot 1: `docs/store/screenshot-web-onboarding-1280x800.png`
 - Screenshot 2: `docs/store/screenshot-course-intelligence-1280x800.png`
 
-Screenshot 1 is a clean-profile canonical Web onboarding view with no imported APAS profile. Screenshot 2 is the real public Schedule Builder `CSCI 5302` page with v0.10.4 Course Intelligence loaded and no student APAS profile. Neither screenshot should contain private student academic information.
+Screenshot 1 is a clean-profile canonical Web onboarding view with no imported APAS profile. Screenshot 2 is the real public Schedule Builder `CSCI 5302` page with the v0.10.5 production extension loaded and no student APAS profile (recaptured 2026-09-28). Neither screenshot should contain private student academic information.
 
 ## Pre-upload gate
 

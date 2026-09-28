@@ -28,7 +28,7 @@ async function tabCycle(page:Page,label:string,max=80){
  report.keyboard[label]=seen;console.log(`PASS keyboard ${label}: ${seen.length} focus stops`);return seen;
 }
 const profile=await fs.mkdtemp(path.join(os.tmpdir(),'smart-umn-a11y-'));
-const ext=path.join(root,'dist/extension');
+const ext=process.env.SMART_UMN_EXTENSION_DIR?path.resolve(process.env.SMART_UMN_EXTENSION_DIR):path.join(root,'dist/extension');
 const context=await chromium.launchPersistentContext(profile,{headless:process.env.HEADLESS!=='false',executablePath,viewport:{width:1280,height:900},reducedMotion:'reduce',args:[`--disable-extensions-except=${ext}`,`--load-extension=${ext}`]});
 try{
  const page=await context.newPage();const errors:string[]=[];page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('response',r=>{if(r.status()>=400&&new URL(r.url()).origin===base)errors.push(`HTTP ${r.status()} ${r.url()}`);});
