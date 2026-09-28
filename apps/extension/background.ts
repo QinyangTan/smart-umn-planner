@@ -20,6 +20,7 @@ chrome.runtime.onMessage.addListener((m,sender,respond)=>{
  case'APAS_ERROR':if(!apas)throw Error('Unauthorized sender');await chrome.storage.local.set({status:String(m.message).slice(0,250)});return{ok:true};
  case'GET_STATE':if(!web&&!internal)throw Error('Unauthorized sender');return await chrome.storage.local.get(['profile','plans','status','availablePrograms','selectedCourse','selectedTerm','selectedTab']);
  case'FORGET':if(!web&&!internal)throw Error('Unauthorized sender');await chrome.storage.local.remove(['profile','plans','status','availablePrograms','requestedProgram']);return{ok:true};
+ case'SAVE_PROFILE':if(!web&&!internal)throw Error('Unauthorized sender');{const p=m.payload as StudentAcademicProfile;if(!p?.parserVersion||!Array.isArray(p.requirements)||!p.requirements.length||JSON.stringify(p).length>2_000_000)throw Error('Invalid normalized audit');await chrome.storage.local.set({profile:p,status:'UMN Connected · local recovery import'});return{ok:true};}
  case'SAVE_PLANS':if(!web&&!internal)throw Error('Unauthorized sender');if(!Array.isArray(m.payload)||JSON.stringify(m.payload).length>1_000_000)throw Error('Invalid plans');await chrome.storage.local.set({plans:m.payload});return{ok:true};
  case'CONTEXT_BATCH':if(!sb&&!internal)throw Error('Unauthorized sender');return batch(m.codes,m.term,m.campus);
  case'GET_FIT':if(!sb)throw Error('Unauthorized sender');{

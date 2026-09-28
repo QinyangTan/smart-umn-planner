@@ -1,19 +1,28 @@
 {
-  "generatedAt": "2026-09-27T22:39:45.924Z",
-  "profile": "synthetic demo only",
+  "generatedAt": "2026-09-28T00:03:23.451Z",
+  "profile": "synthetic academic profile only",
+  "publicEvidence": "Live public UMN/Schedule Builder/GopherGrades evidence plus manually reviewed original community links.",
   "privacy": "No raw APAS HTML, student identity, credentials, cookies, Duo/SAML data, or personal course history is recorded.",
   "videos": [
     {
-      "file": "docs/demos/01-plan-roadmap-registration.mp4",
-      "bytes": 401557
+      "file": "docs/demos/01-web-registration-advisor.mp4",
+      "bytes": 466442
     },
     {
-      "file": "docs/demos/02-what-if-graduation.mp4",
-      "bytes": 1661992
+      "file": "docs/demos/02-web-what-if-advisor.mp4",
+      "bytes": 838803
     },
     {
-      "file": "docs/demos/03-schedulebuilder-extension.mp4",
-      "bytes": 85363
+      "file": "docs/demos/03-extension-course-intelligence.mp4",
+      "bytes": 266201
     }
-  ]
+  ],
+  "showcase": {
+    "gif": "docs/demos/smart-umn-readme-demo.gif",
+    "thumbnails": [
+      "docs/demos/01-web-registration-advisor-thumb.png",
+      "docs/demos/02-web-what-if-advisor-thumb.png",
+      "docs/demos/03-extension-course-intelligence-thumb.png"
+    ]
+  }
 }

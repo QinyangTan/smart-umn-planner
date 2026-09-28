@@ -178,7 +178,9 @@ test('manifest and build are inline-only: no side-panel permission or side-panel
  assert.equal(m.side_panel,undefined);
  assert.ok(m.host_permissions.includes('https://schedulebuilder.umn.edu/*'),'background can refresh already-open Twin Cities Schedule Builder tabs after APAS changes');assert.equal(m.host_permissions.some((x:string)=>x.includes('*.schedulebuilder.umn.edu')),false);
  assert.ok(!JSON.stringify(m).includes('<all_urls>'));assert.ok(!JSON.stringify(m).includes('login.umn'));
- const bg=readFileSync('apps/extension/background.ts','utf8');assert.ok(!bg.includes('chrome.sidePanel'));assert.ok(bg.includes('PERSONALIZATION_CHANGED'));
+ const bg=readFileSync('apps/extension/background.ts','utf8');assert.ok(!bg.includes('chrome.sidePanel'));assert.ok(bg.includes('PERSONALIZATION_CHANGED'));assert.ok(bg.includes("case'SAVE_PROFILE'"),'validated local recovery profiles can sync into extension storage');
+ const bridge=readFileSync('apps/extension/bridge.ts','utf8');assert.ok(bridge.includes("'SAVE_PROFILE'"),'localhost planner bridge allows the validated recovery-profile sync action');
+ const web=readFileSync('apps/web/app.ts','utf8');assert.ok(web.includes("send('SAVE_PROFILE',profile)"),'recovery import syncs the normalized profile when the extension is present');
  const schedule=readFileSync('apps/extension/schedule.ts','utf8');assert.ok(schedule.includes('PERSONALIZATION_CHANGED'));
  const build=readFileSync('scripts/build.mjs','utf8');assert.ok(!build.includes("'panel'"));assert.ok(!build.includes('panel.html'));assert.equal(existsSync('apps/extension/panel.ts'),false);assert.equal(existsSync('apps/extension/panel.html'),false);
 });

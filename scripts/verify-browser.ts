@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {JSDOM} from 'jsdom';
 import {parseAPAS} from '../packages/apas-parser/index.ts';
 
@@ -8,6 +9,8 @@ const base=`http://127.0.0.1:${port}`;
 const root=process.cwd();
 const evidenceDir=path.join(root,'docs/evidence');
 fs.mkdirSync(evidenceDir,{recursive:true});
+function seedReviewedPublicAcceptanceReference(){const result=spawnSync(process.execPath,['apps/worker/cli.ts','import-reviewed-link','CSCI 5302','https://www.reddit.com/r/uofmn/comments/kal74z/','CSCI 5302 with Daniel Boley?','his lectures were kinda dreary and went pretty high level but the tests and quizzes were wayyy easier than the homework.','2020-12-10'],{cwd:root,stdio:'ignore'});if(result.status!==0)throw Error('Could not seed the reviewed public Reddit acceptance reference');}
+seedReviewedPublicAcceptanceReference();
 
 type Target={id:string;type:string;url:string;title:string;webSocketDebuggerUrl:string};
 async function targets():Promise<Target[]>{const r=await fetch(`${base}/json/list`);if(!r.ok)throw Error(`CDP target list failed: ${r.status}`);return await r.json() as Target[];}
@@ -68,7 +71,7 @@ try{const inlineRaw=await waitForTarget(scheduleBuilderTarget,`(()=>{const host=
 const intelligenceTarget=await openPage('https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/');let intelligence:any;
 try{const raw=await waitForTarget(intelligenceTarget,`(()=>{const host=document.querySelector('smart-umn-insight[data-course="CSCI 5302"]'),shadow=host?.shadowRoot;if(!shadow)return false;const degree=shadow.querySelector('[data-insight="degree"]'),grades=shadow.querySelector('[data-insight="course-grades"]'),professor=shadow.querySelector('[data-insight="instructor-intelligence"]'),voices=shadow.querySelector('[data-insight="references"]'),offering=shadow.querySelector('[data-insight="offering-history"]');if(!degree||!grades||!professor||!voices||!offering)return false;return JSON.stringify({degree:degree.textContent?.replace(/\\s+/g,' ').trim(),grades:grades.textContent?.replace(/\\s+/g,' ').trim(),professor:professor.textContent?.replace(/\\s+/g,' ').trim(),voices:voices.textContent?.replace(/\\s+/g,' ').trim(),offering:offering.textContent?.replace(/\\s+/g,' ').trim()})})()`,60000,1000);intelligence=JSON.parse(raw);if(!/2\.2\/5 RMP.*Daniel Boley/i.test(intelligence.professor||''))throw Error(`Live professor intelligence missing: ${raw}`);if(!/curated Reddit source/i.test(intelligence.voices||''))throw Error(`Live Reddit source summary missing: ${raw}`);if(!/Offering history/i.test(intelligence.offering||''))throw Error(`Live offering intelligence missing: ${raw}`);const gradeDetail=JSON.parse(await evaluateOn(intelligenceTarget,`(()=>{const host=document.querySelector('smart-umn-insight[data-course="CSCI 5302"]'),shadow=host?.shadowRoot,b=shadow?.querySelector('[data-insight="course-grades"]');b?.click();const body=shadow?.querySelector('.body');return JSON.stringify({text:body?.textContent?.replace(/\\s+/g,' ').trim(),trend:!!body?.querySelector('.trend svg')})})()`));if(!gradeDetail.trend||!/Historical GPA trend/i.test(gradeDetail.text||''))throw Error(`Expanded grade visualization missing: ${JSON.stringify(gradeDetail)}`);const communityDetail=JSON.parse(await evaluateOn(intelligenceTarget,`(()=>{const host=document.querySelector('smart-umn-insight[data-course="CSCI 5302"]'),shadow=host?.shadowRoot,b=shadow?.querySelector('[data-insight="references"] .more-link');b?.click();const body=shadow?.querySelector('.body');return JSON.stringify({text:body?.textContent?.replace(/\\s+/g,' ').trim(),reddit:[...body?.querySelectorAll('a.reference-title')||[]].map(a=>a.textContent?.trim())})})()`));if(!/lectures were kinda dreary/i.test(communityDetail.text||'')||!/homework/i.test(communityDetail.text||''))throw Error(`Reviewed Reddit excerpt/topic missing from live extension detail: ${JSON.stringify(communityDetail)}`);intelligence={...intelligence,gradeDetail,communityDetail};await screenshotTarget(intelligenceTarget,'final-browser-schedulebuilder-intelligence-20260927.png');}finally{await closePage(intelligenceTarget);}
 
-if(extension.manifest.version!=='0.7.1')throw Error(`Unexpected extension version: ${extension.manifest.version}`);
+if(extension.manifest.version!=='0.8.0')throw Error(`Unexpected extension version: ${extension.manifest.version}`);
 const permissions=[...(extension.manifest.permissions||[])].sort();
 if(JSON.stringify(permissions)!==JSON.stringify(['alarms','storage']))throw Error(`Unexpected extension permissions: ${JSON.stringify(permissions)}`);
 

@@ -1,25 +1,25 @@
-# Smart UMN v0.7.x demos
+# Smart UMN v0.8.0 demos
 
-![Smart UMN combined demo](demos/smart-umn-readme-demo.gif)
+![Smart UMN v0.8 combined demo](demos/smart-umn-readme-demo.gif)
 
-The combined GIF above is the lightweight autoplaying README showcase. All demo recordings use a synthetic academic profile plus public UMN course data. They do not contain raw APAS HTML, student identity, credentials, cookies, Duo/SAML material, or a real student's course history.
+The combined GIF above is the lightweight autoplaying README showcase. All recordings use a **synthetic academic profile**. Public UMN/Schedule Builder/GopherGrades data may be live; the community segment uses an explicitly reviewed original public Reddit reference. No raw APAS HTML, student identity, credentials, cookies, Duo/SAML material, or real student's private course history is recorded.
 
-## 1. Plan → graduation roadmap → registration handoff
+## 1. Web — Registration Advisor
 
-[![Plan roadmap demo](demos/01-plan-roadmap-registration-thumb.png)](demos/01-plan-roadmap-registration.mp4)
+[![Web Registration Advisor](demos/01-web-registration-advisor-thumb.png)](demos/01-web-registration-advisor.mp4)
 
-Shows a deterministic multi-term graduation horizon, evidence-backed future course placement, bottlenecks, a current generated schedule, and class-number handoff back to official UMN registration tools.
+The Web deliberately starts with the answer rather than an analytics dashboard: **What should you do next?** It surfaces the next registration move, planning horizon, bottleneck and the issues that truly need advisor/official confirmation. After building, it turns those decisions into a concrete schedule and class-number handoff.
 
-## 2. What-if graduation planning
+## 2. Web — What-if Advisor
 
-[![What-if demo](demos/02-what-if-graduation-thumb.png)](demos/02-what-if-graduation.mp4)
+[![Web what-if advisor](demos/02-web-what-if-advisor-thumb.png)](demos/02-web-what-if-advisor.mp4)
 
-Shows persistent planning controls for credit load, summer inclusion, program-scope changes, drop-course comparison, timing constraints, campus-day constraints, and waitlist opt-in.
+Shows the secondary planning controls without changing the simple top-level IA: credit load, summer inclusion, temporary program scope, drop-course comparison, time/travel constraints, campus-day limit and waitlist opt-in.
 
-## 3. Schedule Builder inline extension
+## 3. Extension — Schedule Builder Course Intelligence
 
-[![Schedule Builder extension demo](demos/03-schedulebuilder-extension-thumb.png)](demos/03-schedulebuilder-extension.mp4)
+[![Schedule Builder Course Intelligence](demos/03-extension-course-intelligence-thumb.png)](demos/03-extension-course-intelligence.mp4)
 
-Shows the current inline Smart UMN rail on a real Twin Cities Schedule Builder course page using a synthetic connected profile.
+Runs inside the real Twin Cities Schedule Builder CSCI 5302 page. The dense-but-collapsible rail adds information the native page does not already show: personalized APAS fit, historical grade distribution and GPA trend, exact-current-professor history, **RMP overall quality via GopherGrades**, reviewed Reddit context/topics, and historical offering pattern. Community evidence never changes degree or schedule truth.
 
-The machine-readable recording receipt is [`demos/demo-manifest.json`](demos/demo-manifest.json).
+The machine-readable recording receipt is [demo-manifest.json](demos/demo-manifest.json).
