@@ -16,3 +16,9 @@
 - Roll back by checking out the previous reviewed commit in a separate deployment directory, reinstalling its lockfile and rebuilding for the same PUBLIC_ORIGIN. Preserve the public DB backup; never move private browser state to the server.
 - A student can use **Forget local academic data**, clear the planner origin's site data, and remove the extension. Removing the extension does not clear the separate Web origin.
 - Do not log bodies, query text, full URLs, cookies, headers, raw errors containing academic text, or student profiles. Current counters are aggregate and memory-only. If an incident may involve private data, stop collection and preserve only the minimum non-content diagnostic evidence.
+
+## Custom-domain rollback checkpoint
+
+Before the pending migration, Cloudflare's authoritative DNS editor showed `smartumn` as CNAME `d3d8090b-2935-4862-ad10-ab90540a9c3f.cfargotunnel.com`, proxied, TTL Auto. The existing `devspace-hermes` tunnel and `com.qinyang.smartumn` LaunchAgent remain active. The service, prior v0.10.1 extension artifact and a SQLite backup made with the backup API are preserved locally outside Git. Never copy a live WAL database alone. The old origin passed external HTTPS and loopback Host-header health checks during preflight.
+
+If a later cutover fails, restore exactly that CNAME target, proxied status and Auto TTL, then verify external HTTPS, health and extension canonical-origin access. Preserve the unrelated `devspace` record. Current evidence proves the old origin works; it does not yet prove a post-cutover rollback drill.

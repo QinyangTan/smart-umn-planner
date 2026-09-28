@@ -4,6 +4,7 @@ import{campusCode,courseCode,instructorEntityKey,UMN_CAMPUSES}from'../../package
 import type{Course,CourseContext,Truth,UMNCampus}from'../../packages/schemas/index.ts';
 import{communityTopicSummary,currentInstructorGradeHistory,gradeDistributionSummary,gradeTermTrend,referenceEntityLabel,termLabel}from'../../packages/ui/index.ts';
 import{offeringPattern}from'../../packages/core/planning.ts';
+import{WEB_ORIGIN}from'../../packages/config/origin.ts';
 
 type Tab='Degree'|'Grades'|'Community'|'Offering';
 export type InlineFitItem={
@@ -118,7 +119,7 @@ export function findCards(doc:Document):{card:Element;code:string}[]{
 function safeExternal(raw:string):string|undefined{
  try{const u=new URL(raw);return u.protocol==='https:'||u.protocol==='http:'?u.href:undefined;}catch{return;}
 }
-function plannerUrl(code:string,term:string,campus:UMNCampus='UMNTC'){return`http://127.0.0.1:4317/?course=${encodeURIComponent(code)}&term=${encodeURIComponent(term)}&campus=${encodeURIComponent(campus)}`;}
+function plannerUrl(code:string,term:string,campus:UMNCampus='UMNTC'){return`${WEB_ORIGIN}/?course=${encodeURIComponent(code)}&term=${encodeURIComponent(term)}&campus=${encodeURIComponent(campus)}`;}
 function newestReferences(c?:CourseContext){return[...(c?.community||[])].sort((a,b)=>(b.publishedAt||b.discoveredAt).localeCompare(a.publishedAt||a.discoveredAt));}
 function insertInlineHost(card:Element,code:string,host:HTMLElement){
  if(card.tagName==='TR'){
