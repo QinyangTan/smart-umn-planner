@@ -33,11 +33,11 @@ Smart UMN brings those questions together. Import your APAS, explore courses thr
 
 ### Course intelligence, where you already choose classes
 
-![Smart UMN v0.10.5 inside the real UMN Schedule Builder course page](docs/store/screenshot-course-intelligence-1280x800.png)
+![Smart UMN inside the real UMN Schedule Builder course page](docs/store/screenshot-course-intelligence-1280x800.png)
 
 The extension adds a compact inline row inside Schedule Builder: APAS fit, grade history, professor context, student voices and offering history. Expand the evidence without leaving the course. Open the full planner with the course, semester and campus carried across automatically.
 
-*Current v0.10.5 capture; public course evidence, no student academic profile. Ratings and historical outcomes are context, not predictions.*
+*v0.10.5 capture (v0.10.6 changed no UI); public course evidence, no student academic profile. Ratings and historical outcomes are context, not predictions.*
 
 ### From APAS to a plan you can explain
 
@@ -129,7 +129,7 @@ The public site runs independently of the developer's laptop. Personalization do
 3. Return to the planner and choose **Connect APAS**. Sign-in and Duo happen only on official UMN pages.
 4. Explore your options, build a plan, and review the final enrollment details in UMN's official systems.
 
-**Distribution status:** the v0.10.5 production ZIP is publicly downloadable without GitHub access. A Chrome Web Store package is prepared but not yet submitted, so there is no one-click store listing yet. Managed browsers may prohibit unpacked extensions. Public course evidence can be explored without importing an APAS audit; personalized degree fit requires your own authorized audit.
+**Distribution status:** the v0.10.6 production ZIP is publicly downloadable without GitHub access. The Chrome Web Store listing is an uploaded draft that has not been submitted or reviewed yet, so there is no one-click store install yet. Managed browsers may prohibit unpacked extensions. Public course evidence can be explored without importing an APAS audit; personalized degree fit requires your own authorized audit.
 
 [Support](https://smartumn.qinyangtan.com/support.html) · [Privacy](https://smartumn.qinyangtan.com/privacy.html) · [Known limitations](docs/LIMITATIONS.md)
 
