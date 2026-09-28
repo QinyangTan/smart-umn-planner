@@ -9,9 +9,11 @@ This document is the review authority for the Chrome Web Store listing. Keep the
 - Canonical homepage: https://smartumn.qinyangtan.com/
 - Privacy policy: https://smartumn.qinyangtan.com/privacy.html
 - Support URL: https://smartumn.qinyangtan.com/support.html
-- Status (2026-09-28): **package-ready**. Nothing has been uploaded, submitted, approved or published.
-- Package to upload: `release/smart-umn-planner-extension-v0.10.5.zip` (SHA-256 `391671f857b418e325a0b08c1a9529a4487115d6261d9408557ad1bd5f8c4cbe`), identical to the live `/smart-umn-extension.zip`. Do not upload v0.10.4; it is superseded.
-- Last observed blocker (operator session, 2026-09-28): Google reauthentication and developer registration were reported complete, but the **Add new item → Select file** control did not open a file chooser, even when clicked manually. This is likely because an automation/debugger session was attached to that Chrome window. Try dragging the ZIP onto the upload area, or use a Chrome window without automation attached. Not re-verified by the v0.10.5 session, because browser automation was unavailable.
+- Status (2026-09-28): **uploaded draft**. Chrome Web Store item ID `ocbpkaiefaaboeiliopklleejlfnegbd`. Not yet submitted, approved or published.
+- Chrome Web Store rejects a manifest `key` ("key field is not allowed in manifest"). Upload only the key-free `release/smart-umn-planner-extension-v<version>-webstore.zip`. The direct-download `/smart-umn-extension.zip` keeps `key`, so Developer-mode installs keep ID `cleikpoiflloemienikmmmedkniblobc`.
+- The public API allows exactly these two extension origins (`netlify/functions/api.mts`). Submit for review only after the API that allowlists the Store ID is live, otherwise reviewers would see "Planner data unavailable".
+- The first draft upload was the v0.10.5 Web Store ZIP. v0.10.6 (Store-ID allowlist) is the package to submit.
+- Publisher contact email must be entered and verified by the account owner in Dashboard Settings.
 - Do not store or automate the Google password/2FA response.
 - Do not mark the extension as published until Chrome Web Store review actually completes.
 
