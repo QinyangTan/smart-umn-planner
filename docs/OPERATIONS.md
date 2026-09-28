@@ -2,7 +2,7 @@
 
 ## Netlify serverless path
 
-- Monitor the canonical `https://smartumn.qinyangtan.com/api/health` and `/api/health/providers`. The Netlify service subdomain remains useful for origin diagnosis, but a Netlify deploy being `ready` is not sufficient; invoke the canonical hostname and run fresh-browser acceptance.
+- Monitor the canonical `https://smartumn.qinyangtan.com/api/health` and `/api/health/providers`. The Netlify service subdomain remains useful for origin diagnosis, but a Netlify deploy being `ready` is not sufficient; invoke the canonical hostname, compare the live `/smart-umn-extension.zip` SHA with the reviewed release artifact, and run fresh-browser acceptance on the online-downloaded package.
 - Netlify applies a code-defined 120 requests / 60 seconds per IP+domain rate limit to `/api/*` before function execution. The in-memory `RequestBudget` remains defense-in-depth but is instance-local.
 - The serverless live provider cache is intentionally ephemeral. Cold starts refetch Schedule Builder/GopherGrades data. Reviewed policy/community evidence comes only from `config/public-evidence-seed.json`.
 - Refresh the reviewed public SQLite cache through the existing worker/policy workflow, run `npm run export:public-seed`, inspect the diff, then redeploy. Never seed APAS HTML, student records, plans, cookies or credentials.

@@ -2,7 +2,8 @@
   "kind": "chrome-web-store-readiness",
   "date": "2026-09-28",
   "version": "0.10.4",
-  "branch": "fix/deterministic-png-v0104",
+  "branch": "docs/v0104-production-acceptance",
+  "sourceCommit": "34815fd6d51aa7a2b7c4ffc3e5a6f6a114d995f5",
   "canonicalOrigin": "https://smartumn.qinyangtan.com",
   "package": {
     "path": "release/smart-umn-planner-extension-v0.10.4.zip",
@@ -93,7 +94,40 @@
     "productionPackage": "passed",
     "releaseGate": "passed",
     "freshProfileBrowserAcceptance": "passed on the final rebuilt v0.10.4 dist/extension after manifest duplicate-key cleanup",
-    "manifestDuplicateMinimumChromeKeys": 1
+    "manifestDuplicateMinimumChromeKeys": 1,
+    "canonicalExactArtifactAcceptance": "passed"
+  },
+  "production": {
+    "netlifySiteId": "3acbab52-b741-466a-bc3b-75c138903c83",
+    "deployId": "6abae0cb80e36dc07af5e8e5",
+    "state": "ready",
+    "canonicalHealthVersion": "0.10.4",
+    "canonicalZipSha256": "90919abaccc8173e64d474c459ea623c736d2fdb554407d0848fc75b53f8cf70",
+    "canonicalZipByteIdenticalToGitArtifact": true,
+    "onlineManifestHostPermissions": [
+      "https://umn.uachieve.com/selfservice/*",
+      "https://schedulebuilder.umn.edu/*",
+      "https://smartumn.qinyangtan.com/*"
+    ],
+    "onlineExactArtifactBrowserAcceptance": {
+      "extensionId": "cleikpoiflloemienikmmmedkniblobc",
+      "version": "0.10.4",
+      "scheduleBuilderCourse": "MATH 1271",
+      "inlineUi": true,
+      "canonicalPlannerLink": "https://smartumn.qinyangtan.com/?course=MATH%201271&term=1273&campus=UMNTC",
+      "localhostLinks": 0,
+      "plannerPrivacyLinkVisible": true,
+      "plannerSupportLinkVisible": true,
+      "scheduleBuilderConsoleErrors": 0,
+      "plannerConsoleErrors": 0
+    },
+    "netlifyPoweredByBadge": {
+      "enabled": false,
+      "reason": "The Free-plan edge-injected badge used a srcdoc inline script blocked by Smart UMN's strict CSP; the project-level badge was disabled instead of weakening CSP.",
+      "badgeScriptAbsentFromAnonymousHtml": true
+    },
+    "providersHealthy": true,
+    "strictCspRetained": true
   },
   "dashboard": {
     "draftCreated": false,
@@ -101,5 +135,5 @@
     "published": false,
     "externalBlocker": "Google Developer Dashboard requires account reauthentication before dashboard inspection or upload. Password/2FA must remain user-controlled."
   },
-  "conclusion": "v0.10.4 is locally package-ready for Chrome Web Store upload after branch review/merge and canonical deployment of matching privacy/support pages. Store submission/review has not occurred."
+  "conclusion": "v0.10.4 is production-accepted and package-ready for Chrome Web Store upload. The canonical Netlify download is byte-identical to the reviewed Git artifact and the online exact artifact passed fresh-profile browser acceptance. Store submission/review has not occurred because Google Developer Dashboard reauthentication remains user-controlled."
 }
