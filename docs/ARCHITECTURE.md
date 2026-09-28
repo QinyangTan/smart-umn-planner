@@ -49,4 +49,4 @@ Campus-wide public-source coverage is measured separately from product capabilit
 
 ## Deployment boundary
 
-This is a single-user localhost prototype. Shared hosting would require authenticated per-user storage, explicit academic-data consent, TLS, CSRF protection, deployment configuration, a production database migration strategy, provider governance and multi-user authorization tests. Those are not silently claimed by this local architecture.
+Smart UMN remains local-first for personalized academic state even though the public Web/public-evidence API is hosted. The canonical Netlify deployment serves only public course/policy/community evidence and static Web assets; APAS state and saved plans stay in the student's browser, so no authenticated per-user academic database is introduced. The historical localhost/Cloudflare service is retained only as rollback. Provider governance, privacy/legal review, Chrome Web Store review and broader real-APAS compatibility are still separate production-readiness work and are not silently claimed by the hosting architecture.

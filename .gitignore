@@ -8,6 +8,7 @@ docs/evidence/*
 !docs/evidence/production-acceptance-20260928.json
 !docs/evidence/production-acceptance-20260928-v0.10.1.json
 !docs/evidence/production-acceptance-20260928-v0.10.2.json
+!docs/evidence/production-acceptance-20260928-v0.10.3.json
 !docs/evidence/netlify-serverless-acceptance-20260928.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md

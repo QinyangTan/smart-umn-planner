@@ -16,8 +16,8 @@ The rule engine is deliberately conservative. AP/IB/test/transfer credit is reco
 
 ## Product / deployment boundary
 
-- The primary public Web/public-evidence origin is `https://smart-umn-planner.netlify.app`, deployed on Netlify Free. The backend has no student accounts, hosted academic-state storage, application sessions, or institutional SSO because personalized state intentionally stays in the browser.
-- The historical `https://smartumn.qinyangtan.com` Cloudflare/Mac origin remains available only as a rollback path. It is laptop-backed and can go offline when that host sleeps or disconnects; primary availability no longer depends on it.
+- The primary public Web/public-evidence origin is `https://smartumn.qinyangtan.com`, served by Netlify Free. The Netlify service subdomain remains available as an alternate hostname. The backend has no student accounts, hosted academic-state storage, application sessions, or institutional SSO because personalized state intentionally stays in the browser.
+- The historical Mac/Cloudflare service remains available only as a rollback origin behind the previously recorded Tunnel CNAME. It is laptop-backed and can go offline when that host sleeps or disconnects; primary availability no longer depends on it.
 - The Chrome extension is currently distributed as a reviewed ZIP / unpacked Developer-mode build rather than through the Chrome Web Store.
 - Academic state is local but not application-level encrypted; software with access to the same machine/browser profile may be able to read browser storage.
 - The extension initiates normal UMN/APAS navigation but never captures credentials, Duo codes, cookies, or SAML material.
@@ -32,6 +32,6 @@ The primary Netlify HTTPS deployment has bounded public API inputs, exact host/o
 
 The source of truth is the Hermes workspace. The current Chrome unpacked installation uses a separate build directory under Documents/Codex. Its displayed version and loaded path must be checked after deployment. Local academic records parsed by an older build may lack campus identity and remain prerequisite-review-only until APAS is synced with the current parser; the planner must not infer a missing campus to make them pass.
 
-## Pending canonical-domain transition
+## Canonical-domain status
 
-`smartumn.qinyangtan.com` has been attached to Netlify but still uses the original tunnel-backed DNS record. Netlify has not issued a matching certificate; certificate provisioning returned 422. The custom hostname must not be described as laptop-independent until final-host DNS/TLS, API, fresh-profile Web and extension acceptance pass. Version 0.10.3 is a local cutover candidate, not an accepted hosted release.
+The controlled v0.10.3 cutover completed on 2026-09-28. Public DNS for `smartumn.qinyangtan.com` now targets `smart-umn-planner.netlify.app`; Netlify has a matching Let’s Encrypt certificate, and final-host API, security-header, edge-rate-limit, fresh-profile Web and fresh-profile extension acceptance passed. The old Tunnel-backed service remains intentionally preserved for rollback. Free-hosting availability is still not a permanent-service guarantee, and external UMN/GopherGrades availability remains outside Smart UMN’s control.

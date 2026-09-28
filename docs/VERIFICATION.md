@@ -1,5 +1,15 @@
 # Verification
 
+## v0.10.3 canonical custom-domain production — 2026-09-28
+
+The canonical production origin is now `https://smartumn.qinyangtan.com`, served by Netlify deploy `6abacd41e1ae0bfd7e6d54b1`. Cloudflare authoritative DNS publishes `smartumn` as a DNS-only CNAME to `smart-umn-planner.netlify.app`; public Cloudflare and Google resolvers both returned that CNAME during acceptance. Netlify completed domain validation and installed a Let’s Encrypt certificate for `smartumn.qinyangtan.com`. Direct SNI checks against both observed Netlify IPs (`18.208.88.157` and `98.84.224.111`) returned that matching certificate and the v0.10.3 serverless health response.
+
+The final canonical API gate passed v0.10.3 / parser 0.4.5 health, healthy Schedule Builder and GopherGrades probes, review-only official policy evidence with `decisionAuthority: none`, live Spring 2027 `CSCI 5302` with class 57085, 383 historical students, the reviewed Reddit reference and original RateMyProfessors link, HTTP 403 for a hostile Origin, and CSP/HSTS/nosniff/referrer/permissions headers. Netlify edge rate limiting was exercised on the canonical host: a 135-request health burst produced 127 HTTP 200 responses and 8 HTTP 429 responses, and a later request remained 429 after propagation.
+
+Fresh-profile browser acceptance used only `tests/fixtures/apas-acceptance.html` and passed import, fail-closed unknown degree credits, planning-goal persistence, live scheduling, reload and 375 px layout. A separate fresh Chrome profile loaded extension v0.10.3 (`cleikpoiflloemienikmmmedkniblobc`) on the real Schedule Builder `MATH 1271` page. Its `Full planner ↗` link resolved to `https://smartumn.qinyangtan.com/?course=MATH%201271&term=1273&campus=UMNTC`; there were no localhost planner links, no console errors, and opening the link loaded the canonical Smart UMN Web.
+
+The reviewed v0.10.3 extension archive and canonical `/smart-umn-extension.zip` are byte-identical with SHA-256 `212d619a82f3e894dc4818794eeb21b9e30ae6b92a7cb03e7ab808e1377917f9`. Main CI for merge `51d58050f895d891032d058e4878e237992f8a89` completed successfully. The historical `com.qinyang.smartumn` LaunchAgent and Cloudflare Tunnel remain active as rollback; the exact rollback DNS value is CNAME `d3d8090b-2935-4862-ad10-ab90540a9c3f.cfargotunnel.com`, Proxied, TTL Auto. Machine-readable evidence is `docs/evidence/production-acceptance-20260928-v0.10.3.json`.
+
 ## v0.10.2 Netlify primary production — 2026-09-28
 
 The primary public origin is now `https://smart-umn-planner.netlify.app`. Netlify deploy `6abac1163b9f3389c28c8b78` is ready on Node 24 in us-east-2 with the code-defined 120 requests / 60 seconds per-IP+domain sliding-window rule. The function remains about 391 KB and keeps only refetchable public provider data in ephemeral in-memory SQLite; six reviewed UMN policy snapshots and two reviewed community/RMP references are cold-start seed data. Student APAS state, saved plans, credentials, cookies and Duo/SAML material remain browser-local.
@@ -180,8 +190,6 @@ Reddit/RateMyProfessors automated collection remains link-only. The reviewed-exc
 
 A final post-release health check found a monitoring correctness bug: one expected course-level GopherGrades 404 could overwrite the provider-wide health row and make `/api/health` report the entire source as down even while known live queries succeeded. Record-level 404s now remain local to that evidence request and do not poison provider-wide health. Provider health probes use known positive records, and `/api/health` actively refreshes Schedule Builder and GopherGrades health before responding. `tests/provider-health.test.ts` locks this behavior. On the patched running API both providers return `healthy`.
 
-## v0.10.3 canonical-link candidate
+## v0.10.3 canonical-link preflight
 
-Local gates: 177 tests passed; typecheck, production dependency audit (zero vulnerabilities), anonymous APAS corpus, course coverage, production packaging and deterministic release verification passed. Production packaging used `https://smartumn.qinyangtan.com`. The new regression bundles the extension DOM module with this origin and observes its rendered planner link, including the unavailable-provider path.
-
-These are local candidate checks. They do not establish fresh-profile Web/extension acceptance or a completed custom-domain migration. Current Netlify production remains v0.10.2; the tunnel-backed custom hostname remains v0.10.1. Netlify TLS provisioning is unresolved, so public DNS was not changed.
+Before DNS cutover, local candidate gates passed 177 tests, typecheck, production dependency audit, anonymous APAS corpus, course coverage, production packaging and deterministic release verification with `PUBLIC_ORIGIN=https://smartumn.qinyangtan.com`. Those checks are now superseded by the completed canonical production acceptance recorded at the top of this file.

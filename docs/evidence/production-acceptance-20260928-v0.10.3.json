@@ -1,0 +1,141 @@
+{
+  "kind": "smart-umn-production-acceptance",
+  "date": "2026-09-28",
+  "version": "0.10.3",
+  "sourceCommit": "51d58050f895d891032d058e4878e237992f8a89",
+  "canonicalOrigin": "https://smartumn.qinyangtan.com",
+  "alternateOrigin": "https://smart-umn-planner.netlify.app",
+  "netlify": {
+    "siteId": "3acbab52-b741-466a-bc3b-75c138903c83",
+    "deployId": "6abacd41e1ae0bfd7e6d54b1",
+    "runtime": "nodejs24.x",
+    "region": "us-east-2",
+    "functionRoute": "/api/*",
+    "customDomain": "smartumn.qinyangtan.com",
+    "tls": {
+      "provider": "Let's Encrypt",
+      "subject": "CN=smartumn.qinyangtan.com",
+      "san": [
+        "smartumn.qinyangtan.com"
+      ],
+      "issuer": "Let's Encrypt YE1",
+      "notBefore": "2026-09-28T19:34:38Z",
+      "notAfter": "2026-12-27T19:34:37Z",
+      "directNetlifyIps": [
+        "18.208.88.157",
+        "98.84.224.111"
+      ]
+    }
+  },
+  "dns": {
+    "authoritativeProvider": "Cloudflare",
+    "current": {
+      "type": "CNAME",
+      "name": "smartumn.qinyangtan.com",
+      "target": "smart-umn-planner.netlify.app",
+      "proxyStatus": "DNS only"
+    },
+    "publicResolvers": {
+      "1.1.1.1": "smart-umn-planner.netlify.app",
+      "8.8.8.8": "smart-umn-planner.netlify.app"
+    },
+    "rollback": {
+      "type": "CNAME",
+      "target": "d3d8090b-2935-4862-ad10-ab90540a9c3f.cfargotunnel.com",
+      "proxyStatus": "Proxied",
+      "ttl": "Auto"
+    }
+  },
+  "apiAcceptance": {
+    "health": {
+      "status": "running",
+      "version": "0.10.3",
+      "parserVersion": "0.4.5",
+      "serverless": true,
+      "cache": "ephemeral-public"
+    },
+    "providers": [
+      "umn-schedule-builder:healthy",
+      "gophergrades:healthy"
+    ],
+    "policy": {
+      "decisionAuthority": "none",
+      "officialEvidence": true
+    },
+    "representativeCourse": {
+      "code": "CSCI 5302",
+      "term": "1273",
+      "classNumber": "57085",
+      "historicalStudents": 383,
+      "reviewedCommunity": [
+        "reddit",
+        "ratemyprofessor"
+      ]
+    },
+    "hostileOriginStatus": 403,
+    "securityHeaders": [
+      "Content-Security-Policy",
+      "Strict-Transport-Security",
+      "X-Content-Type-Options",
+      "Referrer-Policy",
+      "Permissions-Policy"
+    ],
+    "netlifyRequestIdObserved": true
+  },
+  "edgeRateLimitAcceptance": {
+    "configuredWindowLimit": 120,
+    "configuredWindowSizeSeconds": 60,
+    "aggregateBy": [
+      "ip",
+      "domain"
+    ],
+    "burstRequests": 135,
+    "immediateStatusCounts": {
+      "200": 127,
+      "429": 8
+    },
+    "postPropagationStatus": 429
+  },
+  "privacy": {
+    "fixture": "tests/fixtures/apas-acceptance.html",
+    "realStudentAuditUsed": false,
+    "rawAuthenticatedApasUploaded": false,
+    "studentAcademicStateHosted": false
+  },
+  "browserAcceptance": {
+    "freshProfile": true,
+    "web": {
+      "syntheticApasImport": true,
+      "unknownDegreeCreditsFailClosed": true,
+      "planningGoalPersistence": true,
+      "liveSchedule": true,
+      "reload": true,
+      "narrowViewportOverflow": false
+    },
+    "extension": {
+      "id": "cleikpoiflloemienikmmmedkniblobc",
+      "version": "0.10.3",
+      "course": "MATH 1271",
+      "inline": true,
+      "instructorEvidence": true,
+      "canonicalPlannerLink": "https://smartumn.qinyangtan.com/?course=MATH%201271&term=1273&campus=UMNTC",
+      "localhostPlannerLinks": 0,
+      "plannerNavigationPassed": true,
+      "consoleErrors": 0
+    }
+  },
+  "release": {
+    "archive": "release/smart-umn-planner-extension-v0.10.3.zip",
+    "sha256": "212d619a82f3e894dc4818794eeb21b9e30ae6b92a7cb03e7ab808e1377917f9",
+    "canonicalDownloadMatchesArchive": true
+  },
+  "rollback": {
+    "launchAgent": "com.qinyang.smartumn",
+    "launchAgentStatus": "running",
+    "oldServiceVersion": "0.10.1",
+    "publicSqlitePreserved": true,
+    "tunnelPreserved": true,
+    "unrelatedDevspaceDnsUntouched": true
+  },
+  "conclusion": "Canonical DNS/TLS/API/Web/Extension acceptance passed on Netlify. Historical Mac/Cloudflare service remains preserved as rollback."
+}

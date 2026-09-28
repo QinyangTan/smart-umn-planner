@@ -47,10 +47,12 @@ For the long-running Node service, back up the public SQLite database with the S
 
 ## Stable hostname versus availability
 
-The primary public origin is `https://smart-umn-planner.netlify.app`, which no longer depends on the developer Mac being awake. The historical Mac/Cloudflare origin remains a rollback path and can go offline when that machine sleeps or disconnects. A future custom-domain move is optional, not required for availability; any new hostname must still pass the same HTTPS API and clean-browser/extension acceptance gates. No paid resource is required by either current path.
+The primary public origin is now `https://smartumn.qinyangtan.com`, served by the accepted Netlify deployment. The Netlify service subdomain `https://smart-umn-planner.netlify.app` remains available as an alternate hostname. The historical Mac/Cloudflare service remains running only as a rollback origin and can go offline when that machine sleeps or disconnects; primary availability no longer depends on it. No paid resource is required by the current hosting path.
 
-## Canonical migration preflight (2026-09-28)
+## Canonical custom-domain production (2026-09-28)
 
-The requested destination is `https://smartumn.qinyangtan.com` on the existing Netlify site `3acbab52-b741-466a-bc3b-75c138903c83`. The domain is now attached to that site, but DNS still points to the working Cloudflare Tunnel. Netlify certificate provisioning returned HTTP 422 and direct TLS validation against Netlify rejected the hostname. Do not treat the domain attachment as an accepted migration or change DNS until the TLS transition is resolved.
+`https://smartumn.qinyangtan.com` is attached to Netlify site `3acbab52-b741-466a-bc3b-75c138903c83` and is the canonical production origin. Cloudflare authoritative DNS now publishes `smartumn` as a DNS-only CNAME to `smart-umn-planner.netlify.app`. Netlify successfully validated DNS and installed a Let’s Encrypt certificate whose SAN is `smartumn.qinyangtan.com`; direct SNI checks against both observed Netlify service IPs returned the matching certificate and v0.10.3 API response.
 
-Build the cutover candidate with `NODE_ENV=production PUBLIC_ORIGIN=https://smartumn.qinyangtan.com npm run package:extension`. Version 0.10.3 fixes Schedule Builder planner links to use the same compiled origin as the extension bridge; the previous 0.10.2 release contained a localhost link. The compiled-link regression exercises the rendered link and its course, term and campus query parameters. No DNS cutover or new production deploy is included in this code change.
+Version 0.10.3 fixes Schedule Builder planner links to use the same compiled canonical origin as the extension bridge. The production manifest grants only the canonical Smart UMN host plus UMN APAS and Schedule Builder. The reviewed v0.10.3 extension archive and the canonical `/smart-umn-extension.zip` are byte-identical with SHA-256 `212d619a82f3e894dc4818794eeb21b9e30ae6b92a7cb03e7ab808e1377917f9`.
+
+Rollback is intentionally retained: restore the `smartumn` record to CNAME `d3d8090b-2935-4862-ad10-ab90540a9c3f.cfargotunnel.com`, Proxied, TTL Auto. The `com.qinyang.smartumn` LaunchAgent and its public SQLite cache remain intact for that rollback; do not change the unrelated `devspace` DNS record or tunnel.
