@@ -18,4 +18,13 @@ if(result.status!==0)throw new Error('zip failed');
 fs.copyFileSync(out,path.join(root,'dist/web/smart-umn-extension.zip'));
 const size=fs.statSync(out).size;
 if(size>10_000_000)throw new Error(`Extension package unexpectedly large: ${size} bytes`);
-console.log(JSON.stringify({out:path.relative(root,out),version:manifest.version,bytes:size,deterministic:true},null,2));
+// Chrome Web Store rejects a manifest `key` ("key field is not allowed in manifest") and assigns its own item ID.
+// The direct-download ZIP keeps `key` so Developer-mode installs keep the fixed ID; the Store ZIP is otherwise identical.
+const storeDir=path.join(root,'dist/webstore');fs.rmSync(storeDir,{recursive:true,force:true});
+for(const rel of files){const target=path.join(storeDir,rel);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(dist,rel),target);}
+const {key:_key,...storeManifest}=manifest;fs.writeFileSync(path.join(storeDir,'manifest.json'),JSON.stringify(storeManifest,null,1)+'\n');
+for(const rel of files){const full=path.join(storeDir,rel);fs.chmodSync(full,0o644);fs.utimesSync(full,fixed,fixed);}
+const storeOut=path.join(outDir,`smart-umn-planner-extension-v${manifest.version}-webstore.zip`);fs.rmSync(storeOut,{force:true});
+const storeResult=spawnSync('zip',['-X','-q',storeOut,...files],{cwd:storeDir,stdio:'inherit',env:{...process.env,TZ:'UTC'}});
+if(storeResult.status!==0)throw new Error('store zip failed');
+console.log(JSON.stringify({out:path.relative(root,out),webstore:path.relative(root,storeOut),version:manifest.version,bytes:size,deterministic:true},null,2));
