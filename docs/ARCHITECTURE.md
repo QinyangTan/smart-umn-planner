@@ -1,6 +1,8 @@
 # Architecture
 
-The two frontends import one shared parser, rule engine, solver and source-labeled UI. Node serves the built web application and a public evidence API. SQLite caches public source snapshots, provider health, community entities/references, instructor identities and crawl jobs. Private student context never enters that database.
+The Web and Chrome extension share TypeScript schemas, parsing, deterministic academic rules and source-labeled presentation. Production serves static Web assets and a Node 24 public-evidence function on Netlify at `https://smartumn.qinyangtan.com`. The function caches refetchable public provider data in ephemeral in-memory SQLite and loads reviewed policy/community evidence from a checked-in seed. Normalized academic profiles, preferences and plans stay browser-local.
+
+The optional long-running Node deployment uses persistent public SQLite for provider snapshots, health, reviewed references and worker jobs. It remains available as a rollback/local-development path; it is not the primary production host. See [Deployment](DEPLOYMENT.md) for the exact current release and topology.
 
 ```mermaid
 flowchart TD
@@ -11,12 +13,13 @@ flowchart TD
   Local <--> Inline[Schedule Builder native inline Smart UMN UI]
   Web --> Core[Shared deterministic rule engine and solver]
   Inline --> Core
-  Web --> API[Loopback public course-context API]
+  Web --> API[Netlify public-evidence API]
   Inline --> API
   API --> SB[Schedule Builder adapter]
   API --> GG[GopherGrades adapter]
-  API --> DB[SQLite public evidence]
-  Worker[JEV targeted background worker] --> DB
+  API --> DB[Ephemeral public SQLite cache]
+  Seed[Reviewed policy and community seed] --> API
+  Worker[Optional local JEV review workflow] --> Seed
 ```
 
 ## APAS state machine
@@ -35,7 +38,7 @@ A schedule proves the supported course eligibility and timing constraints; it do
 
 ## Reliability
 
-Public requests use per-provider pacing, bounded timeout, one-flight deduplication and schema checks. Current subject discovery uses Schedule Builder's own `courses_wildcard` followed by bounded `courses` bulk lookups; the localhost API receives a subject code and term, never the APAS rule that caused the lookup. Failed refreshes retain old evidence with the original retrieval timestamp and degraded health. Stale sections cannot enter the solver. The browser refreshes selected public context before generation. Search is bounded to 16 candidates / 25,000 nodes / eight displayed options, and reports truncation.
+Public requests use per-provider pacing, bounded timeout, one-flight deduplication and schema checks. Current subject discovery uses Schedule Builder's own `courses_wildcard` followed by bounded `courses` bulk lookups; the public API receives a subject code and term, never the APAS rule that caused the lookup. Failed refreshes retain old evidence with the original retrieval timestamp and degraded health. Stale sections cannot enter the solver. The browser refreshes selected public context before generation. Search is bounded to 16 candidates / 25,000 nodes / eight displayed options, and reports truncation.
 
 Community references come from precomputed DB lookup. Browser collection never runs on the course detail request path. JEV uses a distinct named session and only owned tabs on sources with an explicit current `allow` policy. Reddit and RateMyProfessors are currently `link-only`; their original links can be attached to verified course/instructor entities, but the worker will not scrape them. Site access policy, CAPTCHA detection, URL allowlisting and entity evidence precede persistence.
 

@@ -1,5 +1,25 @@
 # Smart UMN demos
 
+## Current production — v0.10.4
+
+[Open the live planner](https://smartumn.qinyangtan.com) · [Download the production extension](https://smartumn.qinyangtan.com/smart-umn-extension.zip)
+
+![Canonical planner with synthetic APAS](demos/v0104-canonical-plan.png)
+
+Captured from the canonical HTTPS site on September 28, 2026. The checked-in `apas-acceptance.html` fixture was imported through the local file picker; no real audit was used. The live solver generated CSCI 5302 with verified prerequisites, while the missing degree-credit total stayed “Not enough evidence.”
+
+![Current extension inside public Schedule Builder](store/screenshot-course-intelligence-1280x800.png)
+
+The v0.10.4 extension capture shows the actual public CSCI 5302 course page. No student APAS profile is present. Source values reflect the capture date and can change.
+
+![Planning preferences with synthetic audit](demos/v0104-canonical-preferences.png)
+
+![Generated semester schedule](demos/v0104-canonical-schedule.png)
+
+## Earlier workflow recordings
+
+The recordings below predate v0.10.4. They illustrate the interaction design, not the current deployment or a fresh acceptance result. The current screenshots above take precedence if details differ.
+
 ![Smart UMN v0.8 combined demo](demos/smart-umn-readme-demo.gif)
 
 The combined GIF above is the lightweight autoplaying README showcase. All recordings use a **synthetic academic profile**. Public UMN/Schedule Builder/GopherGrades data may be live; the community segment uses an explicitly reviewed original public Reddit reference. No raw APAS HTML, student identity, credentials, cookies, Duo/SAML material, or real student's private course history is recorded.
