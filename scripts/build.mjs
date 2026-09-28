@@ -6,7 +6,7 @@ if(production&&(!process.env.PUBLIC_ORIGIN||!origin.startsWith('https://')))thro
 for(const dir of ['dist/web','dist/extension']){await rm(dir,{recursive:true,force:true});await mkdir(dir,{recursive:true});}
 const options={bundle:true,target:'chrome120',sourcemap:!production,minify:production,define:{__SMART_UMN_WEB_ORIGIN__:JSON.stringify(origin)}};
 await build({...options,entryPoints:['apps/web/app.ts'],outfile:'dist/web/app.js',format:'esm'});
-for(const f of ['index.html','style.css'])await copyFile('apps/web/'+f,'dist/web/'+f);
+for(const f of ['index.html','style.css','privacy.html'])await copyFile('apps/web/'+f,'dist/web/'+f);
 for(const name of ['background','apas','schedule','bridge'])await build({...options,entryPoints:[`apps/extension/${name}.ts`],outfile:`dist/extension/${name}.js`,format:name==='background'?'esm':'iife'});
 const manifest=JSON.parse(await readFile('apps/extension/manifest.json','utf8'));
 // Chrome match patterns cannot restrict ports; bridge.ts checks the full origin.

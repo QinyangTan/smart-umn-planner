@@ -2,6 +2,7 @@ import{readFileSync}from'node:fs';
 import{JSDOM}from'jsdom';
 import{Store}from'../packages/providers/store.ts';
 import{ScheduleBuilderProvider,GopherGradesProvider}from'../packages/providers/index.ts';
+import{compatibilityReport}from'../packages/core/compatibility.ts';
 import{parseAPAS}from'../packages/apas-parser/index.ts';
 import{enrichGeneralEducation}from'../packages/core/general-education.ts';
 import{flattenRequirements}from'../packages/core/rules.ts';
@@ -26,7 +27,7 @@ try{
  if(auditPath){
   const auditDom=new JSDOM(readFileSync(auditPath,'utf8'));let profile=parseAPAS(auditDom.window.document);profile=enrichGeneralEducation(profile,gened.data);
   const open=flattenRequirements(profile.requirements).filter(r=>r.status==='incomplete'||r.status==='in_progress'),strict=open.filter(r=>r.rule.type!=='unknown'&&r.rule.type!=='policy'),candidate=open.filter(r=>(r.rule.type==='unknown'||r.rule.type==='policy')&&r.candidateRule);
-  result.localAPAS={parsed:true,parserVersion:profile.parserVersion,openRequirements:open.length,strictCourseRoutes:strict.length,candidateOnlyRoutes:candidate.length,routeLabels:[...strict,...candidate].map(r=>r.label),warnings:profile.warnings};
+  result.localAPAS=compatibilityReport(profile);
   auditDom.window.close();
  }
  console.log(JSON.stringify(result,null,2));

@@ -1,17 +1,56 @@
 {
- "manifest_version":3,
- "name":"Smart UMN Planner",
- "version":"0.9.9",
- "minimum_chrome_version":"120",
- "description":"Personalized Twin Cities APAS program context and source-labeled insights rendered directly inside UMN Schedule Builder.",
- "permissions":["storage","alarms"],
- "host_permissions":["https://umn.uachieve.com/selfservice/*","https://schedulebuilder.umn.edu/*","http://127.0.0.1/*"],
- "background":{"service_worker":"background.js","type":"module"},
- "action":{"default_title":"Open Smart UMN Planner"},
- "content_scripts":[
-  {"matches":["https://umn.uachieve.com/selfservice/*"],"js":["apas.js"],"run_at":"document_idle"},
-  {"matches":["https://schedulebuilder.umn.edu/*"],"js":["schedule.js"],"run_at":"document_idle"},
-  {"matches":["http://127.0.0.1/*"],"js":["bridge.js"],"run_at":"document_idle"}
+ "manifest_version": 3,
+ "name": "Smart UMN Planner",
+ "version": "0.10.0",
+ "minimum_chrome_version": "120",
+ "description": "Personalized Twin Cities APAS program context and source-labeled insights rendered directly inside UMN Schedule Builder.",
+ "permissions": [
+  "storage",
+  "alarms"
  ],
- "content_security_policy":{"extension_pages":"script-src 'self'; object-src 'none'"}
+ "host_permissions": [
+  "https://umn.uachieve.com/selfservice/*",
+  "https://schedulebuilder.umn.edu/*",
+  "http://127.0.0.1/*"
+ ],
+ "background": {
+  "service_worker": "background.js",
+  "type": "module"
+ },
+ "action": {
+  "default_title": "Open Smart UMN Planner"
+ },
+ "content_scripts": [
+  {
+   "matches": [
+    "https://umn.uachieve.com/selfservice/*"
+   ],
+   "js": [
+    "apas.js"
+   ],
+   "run_at": "document_idle"
+  },
+  {
+   "matches": [
+    "https://schedulebuilder.umn.edu/*"
+   ],
+   "js": [
+    "schedule.js"
+   ],
+   "run_at": "document_idle"
+  },
+  {
+   "matches": [
+    "http://127.0.0.1/*"
+   ],
+   "js": [
+    "bridge.js"
+   ],
+   "run_at": "document_idle"
+  }
+ ],
+ "content_security_policy": {
+  "extension_pages": "script-src 'self'; object-src 'none'"
+ },
+ "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0HedzZlxDHQnOvo3ScMnEtDyH15Dk5pEBbyDzhf/96kXqEMWNO4WfoCVF7zx8jrd1cQEBR1Ff1XyG/Q/xtdopcVAJxJK51qxFKWKJyNt4udpAD/V18Anc10lLiIoIK7ZpBRW2jaLRl+fUYUpvgEC5Pm0Xk+qFMSQ/QOyS0IEeFlhkMg9tQ4TqZpMBgWr6XeDTdhBEB5eOcR6T7Wo+RLKS0QKhXuwewfGdIAC36BhfRtAYwz5KcEvIl7Uuq8PkhLuBvtCv3Soq8zQ+hhpWcq7RCBNsSG4f/f4jLjSd58RtTRWUX0W9h/fxYEKHodB2tEs4X6VuuacjTVnQ8NyeuHakwIDAQAB"
 }
