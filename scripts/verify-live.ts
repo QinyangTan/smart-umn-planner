@@ -25,7 +25,7 @@ try{
  const[auditPath]=process.argv.slice(2);
  if(auditPath){
   const auditDom=new JSDOM(readFileSync(auditPath,'utf8'));let profile=parseAPAS(auditDom.window.document);profile=enrichGeneralEducation(profile,gened.data);
-  const open=flattenRequirements(profile.requirements).filter(r=>r.status==='incomplete'||r.status==='in_progress'),strict=open.filter(r=>r.rule.type!=='unknown'),candidate=open.filter(r=>r.rule.type==='unknown'&&r.candidateRule);
+  const open=flattenRequirements(profile.requirements).filter(r=>r.status==='incomplete'||r.status==='in_progress'),strict=open.filter(r=>r.rule.type!=='unknown'&&r.rule.type!=='policy'),candidate=open.filter(r=>(r.rule.type==='unknown'||r.rule.type==='policy')&&r.candidateRule);
   result.localAPAS={parsed:true,parserVersion:profile.parserVersion,openRequirements:open.length,strictCourseRoutes:strict.length,candidateOnlyRoutes:candidate.length,routeLabels:[...strict,...candidate].map(r=>r.label),warnings:profile.warnings};
   auditDom.window.close();
  }

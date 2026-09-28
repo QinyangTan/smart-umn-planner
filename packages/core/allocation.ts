@@ -13,7 +13,7 @@ function specificity(rule:RequirementRule):number{
   case'allOf':return rule.rules.length===1?specificity(rule.rules[0]):0;
   case'credits':case'count':return specificity(rule.rule);
   case'gpa':return specificity(rule.rule);
-  case'unknown':return 0;
+  case'unknown':case'policy':return 0;
  }
 }
 function baseDemand(req:DegreeRequirement,rule:RequirementRule):Omit<Target,'req'|'matcher'|'specificity'>|null{
@@ -29,7 +29,7 @@ function baseDemand(req:DegreeRequirement,rule:RequirementRule):Omit<Target,'req
   case'gpa':{const inner=baseDemand(req,rule.rule);return inner?{...inner,gradeSensitive:true}:null;}
   case'course':case'range':case'attribute':case'anyOf':case'exclude':return{unit:'courses',demand:1,gradeSensitive:false};
   case'allOf':return rule.rules.length===1?baseDemand(req,rule.rules[0]):null;
-  case'unknown':return null;
+  case'unknown':case'policy':return null;
  }
 }
 function targetFor(req:DegreeRequirement):Target|null{

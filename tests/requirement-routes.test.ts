@@ -82,12 +82,24 @@ test('standalone APAS designator-credit prose becomes a generic subject route',(
 
 test('designator credit scoped to another requirement never independently authorizes arbitrary subject courses',()=>{
  const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_IP" rname="DES" rqdhours="11"><div class="reqTitle">Of the 23 credits required for the Technical Electives and Math Requirement, 11 must have a CSCI designator.</div><div class="reqBody"></div></div></div></body>';
- const dom=new JSDOM(html),p=parseAPAS(dom.window.document),r=flattenRequirements(p.requirements)[0];assert.equal(r.rule.type,'unknown');assert.match(r.rule.type==='unknown'?r.rule.reason:'',/scoped to another requirement/);assert.equal(r.candidateRule,undefined);assert.equal(degreeFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);assert.equal(degreeCandidateFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);dom.window.close();
+ const dom=new JSDOM(html),p=parseAPAS(dom.window.document),r=flattenRequirements(p.requirements)[0];assert.equal(r.rule.type,'policy');assert.equal(r.rule.type==='policy'?r.rule.family:'','designator-scope');assert.equal(r.rule.type==='policy'?r.rule.parameters.subject:'','CSCI');assert.equal(r.candidateRule,undefined);assert.equal(degreeFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);assert.equal(degreeCandidateFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);dom.window.close();
 });
 
 test('designator credits needed to fulfill a parent requirement stay non-authorizing',()=>{
  const html='<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_NO" rname="TECH"><div class="reqTitle">Technical Electives</div><div class="subrequirement Status_IP" rqdhours="11"><div class="subreqTitle">Of the 23 credits needed to fulfill this requirement 11 must have a CSCI designator.</div></div></div></div></body>';
- const dom=new JSDOM(html),p=parseAPAS(dom.window.document),all=flattenRequirements(p.requirements),child=all.find(x=>/needed to fulfill/.test(x.label))!;assert.equal(child.rule.type,'unknown');assert.equal(child.candidateRule,undefined);assert.equal(degreeCandidateFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);dom.window.close();
+ const dom=new JSDOM(html),p=parseAPAS(dom.window.document),all=flattenRequirements(p.requirements),child=all.find(x=>/needed to fulfill/.test(x.label))!;assert.equal(child.rule.type,'policy');assert.equal(child.rule.type==='policy'?child.rule.family:'','designator-scope');assert.equal(child.candidateRule,undefined);assert.equal(degreeCandidateFit(course('CSCI 1113'),p).some(x=>x.result==='yes'),false);dom.window.close();
+});
+
+test('generic APAS accounting prose compiles to non-authorizing policy Rule IR',()=>{
+ const cases=[
+  ['You must complete at least 120 credits. This includes all University of Minnesota and transfer credits.','degree-credits',{minimumCredits:120,includesTransfer:true}],
+  ['You need a 2.00 GPA in University of Minnesota coursework upon graduating. This includes credits from all University of Minnesota campuses and excludes transfer credits.','institutional-gpa',{minimumGpa:2,institution:'University of Minnesota',excludesTransfer:true}],
+  ['Credits completed on campus: overall You must complete at least 30 credits through University of Minnesota Twin Cities and Rochester. Credits completed through the University of Minnesota Twin Cities include those taught on campus, online, and approved learning abroad courses.','residency-credits',{minimumCredits:30,campuses:['UMNTC','UMNRO']}],
+  ['Credits completed on campus: 15 of final 30 You must complete at least 15 of your last 30 credits through University of Minnesota.','final-residency-credits',{minimumCredits:15,ofLastCredits:30,institution:'University of Minnesota'}],
+  ['You need at least 78 credits in this major. This GPA includes all major credits, including transfer credits.','major-credits',{minimumCredits:78,scope:'major',includesTransfer:true}],
+  ['You must complete at least 19 upper-division (3xxx-level or higher) credits for this major through University of Minnesota Twin Cities. This includes those taught on campus, online, and approved learning abroad courses.','upper-division-major-credits',{minimumCredits:19,minimumLevel:3000,campus:'UMNTC'}]
+ ] as const;
+ for(const[label,family,parameters]of cases){const html=`<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_IP" rname="POL"><div class="reqTitle">${label}</div></div></div></body>`,dom=new JSDOM(html),p=parseAPAS(dom.window.document),r=flattenRequirements(p.requirements)[0];assert.equal(r.rule.type,'policy',label);if(r.rule.type==='policy'){assert.equal(r.rule.family,family);for(const[k,v]of Object.entries(parameters))assert.deepEqual(r.rule.parameters[k],v,label);}assert.equal(r.candidateRule,undefined);assert.equal(degreeFit(course('CSCI 4041'),p).some(x=>x.result==='yes'),false);assert.equal(degreeCandidateFit(course('CSCI 4041'),p).some(x=>x.result==='yes'),false);dom.window.close();}
 });
 
 test('generic APAS route parsing is department-agnostic across Twin Cities colleges',()=>{

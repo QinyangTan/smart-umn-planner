@@ -350,6 +350,6 @@ Current result: **146/146 majors PASS** and **161/161 program-degree identities 
 
 ## Current real-audit evidence
 
-The saved real audit maps to major **Computer Science (B.S.)** and program-degree identity **Computer Science B.S. Comp.Sc.** in **College of Science and Engineering**. Its active remaining nodes are 2 strict routes, 1 candidate routes, 16 policy constraints, and 0 unknown/unrouted requirements.
+The saved real audit maps to major **Computer Science (B.S.)** and program-degree identity **Computer Science B.S. Comp.Sc.** in **College of Science and Engineering**. Its active remaining nodes are 2 strict routes, 1 candidate routes, 16 policy constraints (7 structured policy rules / 9 still-unclassified policy/accounting constraints), and 0 unknown/unrouted requirements.
 
 The machine-readable source of truth is `docs/evidence/twin-cities-program-coverage-20260927.json`. Raw private APAS HTML is not copied into either evidence file.

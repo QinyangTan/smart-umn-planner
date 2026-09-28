@@ -1,6 +1,6 @@
 import {APAS_CAMPUS_DIGITS,courseCode,finite,parseCampusCourseCode,unknownRule} from '../schemas/index.ts';
 import type {StudentAcademicProfile,StudentCourse,DegreeRequirement,RequirementRule,AcademicProgramRoute} from '../schemas/index.ts';
-export const PARSER_VERSION='0.4.3';
+export const PARSER_VERSION='0.4.4';
 const text=(n:Element|null):string=>{if(!n)return'';const clone=n.cloneNode(true) as Element;clone.querySelectorAll('br').forEach(b=>b.replaceWith(' '));return(clone.textContent||'').replace(/\s+/g,' ').trim();};
 const num=(n:Element|null)=>finite(text(n));
 function status(el:Element):DegreeRequirement['status'] {const s=el.matches('.requirement')?el.className:el.querySelector('.subreqPretext .status')?.className||el.className;return /Status_OK/.test(s)?'complete':/Status_IP/.test(s)?'in_progress':/Status_NO\b/.test(s)?'incomplete':/Status_NONE/.test(s)?'informational':'unknown';}
@@ -26,6 +26,15 @@ function selectableRule(el:Element):RequirementRule|undefined{
  const excluded=[...el.querySelectorAll('.notcourses .course[department][number]')].filter(n=>n.closest('.subrequirement,.requirement')===el).map(courseRule).filter(r=>r.type!=='unknown');if(excluded.length)rule={type:'exclude',rule,excluded};return rule;
 }
 function scopedDesignatorConstraint(label:string):boolean{return /\bof\s+the(?:\s+\d+(?:\.\d+)?)?\s+credits?\b[\s\S]*\b(?:required|needed)\b[\s\S]*\bmust\s+have\s+(?:an?\s+)?[A-Z]{2,8}\s+designator\b/i.test(label);}
+function deterministicPolicyRule(label:string):RequirementRule|undefined{const s=label.replace(/\s+/g,' ').trim();let m:RegExpExecArray|null;
+ if((m=/\bcomplete at least (\d+(?:\.\d+)?) upper-division \((\d)xxx-level or higher\) credits? for this major through University of Minnesota Twin Cities\b/i.exec(s)))return{type:'policy',family:'upper-division-major-credits',sourceText:s,reason:'Recognized upper-division major-credit policy; APAS remains authoritative for accounting',parameters:{minimumCredits:Number(m[1]),minimumLevel:Number(m[2])*1000,campus:'UMNTC'}};
+ if((m=/\bcomplete at least (\d+(?:\.\d+)?) of (?:your )?last (\d+(?:\.\d+)?) credits? through University of Minnesota\b/i.exec(s)))return{type:'policy',family:'final-residency-credits',sourceText:s,reason:'Recognized final-credit residency policy; course-by-course residency accounting remains review-only',parameters:{minimumCredits:Number(m[1]),ofLastCredits:Number(m[2]),institution:'University of Minnesota'}};
+ if((m=/\bcomplete at least (\d+(?:\.\d+)?) credits? through University of Minnesota Twin Cities(?: and Rochester)?\b/i.exec(s)))return{type:'policy',family:'residency-credits',sourceText:s,reason:'Recognized UMN residency-credit policy; course-by-course residency accounting remains review-only',parameters:{minimumCredits:Number(m[1]),campuses:/and Rochester/i.test(s)?['UMNTC','UMNRO']:['UMNTC']}};
+ if((m=/\bneed a (\d+(?:\.\d+)?) GPA in University of Minnesota coursework\b/i.exec(s)))return{type:'policy',family:'institutional-gpa',sourceText:s,reason:'Recognized institutional GPA policy; final GPA accounting remains APAS-authoritative',parameters:{minimumGpa:Number(m[1]),institution:'University of Minnesota',excludesTransfer:/excludes transfer credits/i.test(s)}};
+ if((m=/\bneed at least (\d+(?:\.\d+)?) credits? in this major\b/i.exec(s)))return{type:'policy',family:'major-credits',sourceText:s,reason:'Recognized minimum-major-credit policy; degree-wide allocation remains review-only',parameters:{minimumCredits:Number(m[1]),scope:'major',includesTransfer:/including transfer credits/i.test(s)}};
+ if((m=/\bcomplete at least (\d+(?:\.\d+)?) credits?\b/i.exec(s))&&/\bThis includes all University of Minnesota and transfer credits\b/i.test(s))return{type:'policy',family:'degree-credits',sourceText:s,reason:'Recognized minimum-degree-credit policy; APAS remains authoritative for total degree accounting',parameters:{minimumCredits:Number(m[1]),includesTransfer:true}};
+ if(scopedDesignatorConstraint(s)&&(m=/\b(\d+(?:\.\d+)?)\s+must\s+have\s+(?:an?\s+)?([A-Z]{2,8})\s+designator\b/i.exec(s)))return{type:'policy',family:'designator-scope',sourceText:s,reason:'Recognized scoped designator-credit policy; it cannot independently authorize courses',parameters:{minimumCredits:Number(m[1]),subject:m[2].toUpperCase()}};
+ return;}
 function deterministicLabelRule(label:string):RequirementRule|undefined{
  const level=/^(\d)xxx\/(\d)xxx-level\s+([A-Z]{2,8})\s+coursework$/i.exec(label.trim());if(level){const subject=level[3].toUpperCase();return{type:'anyOf',rules:[{type:'range',subject,min:Number(level[1])*1000,max:Number(level[1])*1000+999,campus:'UMNTC'},{type:'range',subject,min:Number(level[2])*1000,max:Number(level[2])*1000+999,campus:'UMNTC'}]};}
  if(scopedDesignatorConstraint(label))return;
@@ -33,8 +42,8 @@ function deterministicLabelRule(label:string):RequirementRule|undefined{
  return;
 }
 function parseRule(el:Element,label:string):RequirementRule {
- if(scopedDesignatorConstraint(label)&&!selectableRule(el))return unknownRule(label,'Designator-credit constraint is scoped to another requirement and cannot independently authorize courses');
- const base=selectableRule(el)||deterministicLabelRule(label);if(!base)return unknownRule(label,'No explicit selectable course rule');
+ const selectable=selectableRule(el),policy=deterministicPolicyRule(label);if(policy&&!selectable)return policy;
+ const base=selectable||deterministicLabelRule(label);if(!base)return unknownRule(label,'No explicit selectable course rule');
  // Explicit pools with caps/exceptions are exposed as candidate routes separately,
  // but are not promoted to completion rules until their quantitative semantics are proven.
  const unresolvedCompound=/\b(note:|combined|permission|approval|0-2|up to|not count more|no more than)\b/i.test(label)||(/\bexcept\b/i.test(label)&&base.type!=='exclude');
@@ -50,7 +59,7 @@ function parseRule(el:Element,label:string):RequirementRule {
 function requirement(el:Element,index:string):DegreeRequirement {
  const sub=el.matches('.subrequirement');const label=text(el.querySelector(sub?'.subreqTitle':'.reqTitle'))||text(el.querySelector(sub?'.subreqBody':'.reqText'))||el.getAttribute('rname')||'Untitled requirement';
  const children=[...el.querySelectorAll('.subrequirement')].filter(e=>e.parentElement?.closest('.subrequirement,.requirement')===el).map((e,i)=>requirement(e,`${index}.${i}`));
- const ownCandidate=selectableRule(el)||deterministicLabelRule(label),childCandidates=children.map(c=>c.candidateRule||(c.rule.type!=='unknown'?c.rule:undefined)).filter((r):r is RequirementRule=>!!r),candidateRule=ownCandidate||(childCandidates.length===1?childCandidates[0]:childCandidates.length?{type:'anyOf',rules:childCandidates} as RequirementRule:undefined);
+ const ownCandidate=selectableRule(el)||deterministicLabelRule(label),childCandidates=children.map(c=>c.candidateRule||(c.rule.type!=='unknown'&&c.rule.type!=='policy'?c.rule:undefined)).filter((r):r is RequirementRule=>!!r),candidateRule=ownCandidate||(childCandidates.length===1?childCandidates[0]:childCandidates.length?{type:'anyOf',rules:childCandidates} as RequirementRule:undefined);
  const rawMetadata:Record<string,unknown>={attributes:Object.fromEntries([...el.attributes].filter(a=>!/^on|href|src/i.test(a.name)).map(a=>[a.name,a.value])),sourceText:label,selectableCourses:[...el.querySelectorAll('.selectcourses .course[department][number]')].map(e=>({department:e.getAttribute('department'),number:e.getAttribute('number')})),candidateRoute:!!candidateRule};
  const requiredCount=finite(el.getAttribute('rqdcount'))||finite(el.getAttribute('rqdsubreq'));
  return{id:index,code:el.getAttribute(sub?'pseudo':'rname')||undefined,label,status:status(el),requiredCredits:finite(el.getAttribute('rqdhours')),appliedCredits:num(direct(el,'.reqEarned .hours,.subreqEarned .hours')),inProgressCredits:num(direct(el,'.reqIpDetail .hours,.subreqIpHours .hours')),remainingCredits:num(direct(el,'.reqNeeds .hours,.subreqNeeds .hours')),requiredCount,appliedCount:num(direct(el,'.reqEarned .count,.subreqEarned .count')),inProgressCount:num(direct(el,'.reqIpDetail .count,.subreqIpHours .count')),remainingCount:num(direct(el,'.reqNeeds .count,.subreqNeeds .count')),requiredGpa:finite(el.getAttribute('rqdgpa')),coursesUsed:[...new Set(taken(el).map(c=>c.courseCode!))],children,rule:parseRule(el,label),...(candidateRule?{candidateRule}:{}),rawMetadata};

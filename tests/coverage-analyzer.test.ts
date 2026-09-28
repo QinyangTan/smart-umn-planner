@@ -41,6 +41,8 @@ test('coverage analyzer reports strict, candidate, unknown, percentages, rule bu
  assert.equal(analysis.overall.candidateRouteSupportedRequirements,1);
  assert.equal(analysis.overall.unknownUnroutedRequirements,1);
  assert.equal(analysis.overall.policyConstraints,1);
+ assert.equal(analysis.overall.recognizedPolicyRules,0);
+ assert.equal(analysis.overall.unclassifiedPolicyConstraints,1);
  assert.equal(analysis.overall.strictCoveragePercent,70);
  assert.equal(analysis.overall.usefulRouteCoveragePercent,80);
  assert.deepEqual(analysis.overall.breakdown,{
@@ -61,6 +63,8 @@ test('coverage analyzer reports strict, candidate, unknown, percentages, rule bu
  assert.equal(certificate.programKind,'certificate');
  assert.equal(certificate.summary.breakdown.subjectRange,1);
 });
+
+test('recognized policy Rule IR is separated from legacy unclassified policy accounting',()=>{const p=profile();p.requirements.push(requirement('residency','Residency',{type:'policy',family:'residency-credits',sourceText:'30 credits through UMN Twin Cities',reason:'recognized',parameters:{minimumCredits:30,campuses:['UMNTC']}}));const s=analyzeRequirementRouteCoverage(p).overall;assert.equal(s.policyConstraints,2);assert.equal(s.recognizedPolicyRules,1);assert.equal(s.unclassifiedPolicyConstraints,1);assert.equal(s.unknownUnroutedRequirements,1);});
 
 test('legacy compact route coverage remains compatible with the richer analyzer',()=>{
  assert.deepEqual(requirementRouteCoverage(profile()),{
