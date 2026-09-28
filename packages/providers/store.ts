@@ -16,6 +16,7 @@ export class Store {
  put(key:string,source:string,data:unknown,retrievedAt=new Date().toISOString()){this.db.prepare('INSERT OR REPLACE INTO source_snapshots VALUES(?,?,?,?)').run(key,source,retrievedAt,JSON.stringify(data));}
  health(h:ProviderHealth){this.db.prepare('INSERT OR REPLACE INTO provider_health VALUES(?,?)').run(h.source,JSON.stringify(h));}
  healthList(){return this.db.prepare('SELECT payload FROM provider_health').all().map(r=>JSON.parse(String(r.payload)));}
+ policySnapshots():any[]{return this.db.prepare("SELECT payload FROM source_snapshots WHERE key LIKE 'policy:%' ORDER BY retrieved_at DESC").all().map(r=>JSON.parse(String(r.payload)));}
  reference(r:CommunityReference){this.db.prepare('INSERT INTO community_references VALUES(?,?,?,?,?) ON CONFLICT(url) DO UPDATE SET payload=excluded.payload').run(r.id,r.source,r.sourceDocumentId||null,r.url,JSON.stringify(r));const found=this.db.prepare('SELECT id FROM community_references WHERE url=?').get(r.url)!;this.db.prepare('INSERT OR IGNORE INTO community_entities VALUES(?,?)').run(String(found.id),r.entityId);}
  references(entity:string):CommunityReference[]{return this.db.prepare('SELECT r.payload FROM community_references r JOIN community_entities e ON r.id=e.reference_id WHERE e.entity_id=?').all(entity).map(r=>({...JSON.parse(String(r.payload)),entityId:entity}));}
  close(){this.db.close();}

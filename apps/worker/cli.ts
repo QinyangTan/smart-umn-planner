@@ -2,7 +2,7 @@ import{readFileSync,existsSync}from'node:fs';
 import{Store}from'../../packages/providers/store.ts';
 import{makeReference,makeInstructorReference,canonicalURL}from'../../packages/community/index.ts';
 import{campusCode,courseEntityKey,instructorEntityKey}from'../../packages/schemas/index.ts';
-import{JevBrowser}from'./jev.ts';
+import{JevBrowser}from'./jev.ts';import{snapshotPolicySource}from'./policy-source.ts';
 
 // A single bounded process uses its own named persistent browser session. It never
 // joins the ChatGPT supervisor session and never exports browser state or cookies.
@@ -51,9 +51,11 @@ try{
   await collect('course',args[0],args[1]);
  }else if(action==='collect-instructor'){
   await collect('instructor',args[0],args[1]);
+ }else if(action==='snapshot-policy'){
+  const snapshot=await snapshotPolicySource(args[0],Number(args[1]||12));store.put(`policy-manual:${snapshot.sourceHash}`,'jev-ultrafast',snapshot,snapshot.capturedAt);console.log(JSON.stringify({stored:`policy-manual:${snapshot.sourceHash}`,url:snapshot.url,title:snapshot.title,screens:snapshot.screens,extractor:snapshot.extractor,sourceHash:snapshot.sourceHash,note:'Manual snapshots are not added to the curated student policy index until listed in config/policy-sources.json'}));
  }else if(action==='status'){
   console.log(JSON.stringify(store.db.prepare('SELECT * FROM crawl_jobs').all()));
  }else{
-  console.log('Usage: npm run worker -- import-link "PSY 1001" <original-url> <verified-title> | import-reviewed-link "PSY 1001" <original-url> <verified-title> <manual-excerpt> <published-at> | import-instructor-link <name> <original-url> <verified-title> | import-reviewed-instructor-link <name> <original-url> <verified-title> <manual-excerpt> <published-at> | collect <course> <original-url> | collect-instructor <name> <original-url> | status [--campus=...]');
+  console.log('Usage: npm run worker -- import-link "PSY 1001" <original-url> <verified-title> | import-reviewed-link "PSY 1001" <original-url> <verified-title> <manual-excerpt> <published-at> | import-instructor-link <name> <original-url> <verified-title> | import-reviewed-instructor-link <name> <original-url> <verified-title> <manual-excerpt> <published-at> | collect <course> <original-url> | collect-instructor <name> <original-url> | snapshot-policy <public-umn-url> [max-screens] | status [--campus=...]');
  }
 }catch(e){console.error(e instanceof Error?e.message:'Collector error');process.exitCode=1;}finally{store.close();}

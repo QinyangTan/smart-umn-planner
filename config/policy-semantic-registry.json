@@ -1,0 +1,106 @@
+[
+  {
+    "id": "family.residency",
+    "title": "Residency / in-residence policy language",
+    "text": "credits in residence residency final credits taken at the University institutional residency campus residency",
+    "family": "residency",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "docs/APAS_COVERAGE.md",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.double-count",
+    "title": "Double-count / shared-credit policy language",
+    "text": "double count shared credits may not also satisfy another major minor certificate requirement overlap allocation",
+    "family": "double-count",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "docs/APAS_COVERAGE.md",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.credit-cap",
+    "title": "Maximum / capped credit policy language",
+    "text": "up to credits no more than maximum credits cap applies combined credits limit",
+    "family": "credit-cap",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "docs/APAS_COVERAGE.md",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.permission-standing",
+    "title": "Permission, consent, or standing requirement",
+    "text": "permission approval instructor consent department consent graduate standing junior standing senior standing requires review",
+    "family": "permission-standing",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "packages/core/rules.ts",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.gpa",
+    "title": "GPA accounting policy language",
+    "text": "minimum GPA cumulative GPA major GPA requirement grade point average",
+    "family": "gpa",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "docs/APAS_COVERAGE.md",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.designator-scope",
+    "title": "Scoped subject-designator credit constraint",
+    "text": "of the credits required needed to fulfill this requirement must have a designator subject credits scoped to parent requirement",
+    "family": "designator-scope",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "docs/APAS_COVERAGE.md",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.course-pool",
+    "title": "Explicit selectable course pool",
+    "text": "take courses from the following list select one or more courses explicit course pool",
+    "family": "course-pool",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "packages/apas-parser/index.ts",
+    "authority": "classification-only",
+    "execution": "deterministic-template"
+  },
+  {
+    "id": "family.subject-range",
+    "title": "Subject-level course range",
+    "text": "upper division subject coursework 3000 level 4000 level 5000 level course range designator coursework",
+    "family": "subject-range",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "packages/apas-parser/index.ts",
+    "authority": "classification-only",
+    "execution": "deterministic-template"
+  }
+]

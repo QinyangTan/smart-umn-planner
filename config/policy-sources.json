@@ -1,0 +1,50 @@
+[
+  {
+    "id": "undergrad-degree-major-credit",
+    "url": "https://policy.umn.edu/education/degreerequirement",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "purpose": "Campus-specific undergraduate degree, major, minor, and certificate credit requirements"
+  },
+  {
+    "id": "baccalaureate-credit-gpa",
+    "url": "https://policy.umn.edu/education/bacreditreq",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "purpose": "Undergraduate baccalaureate credit and GPA requirements"
+  },
+  {
+    "id": "transfer-credit",
+    "url": "https://policy.umn.edu/education/transfercredit",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "purpose": "Undergraduate transfer-credit policy"
+  },
+  {
+    "id": "curriculum-authority",
+    "url": "https://policy.umn.edu/education/curriculumauthority",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "purpose": "Academic-unit authority over curriculum and majors"
+  },
+  {
+    "id": "course-credit-numbering",
+    "url": "https://policy.umn.edu/education/coursenumbering",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "purpose": "Course credit and numbering policy"
+  },
+  {
+    "id": "national-exam-credit",
+    "url": "https://policy.umn.edu/education/creditexam",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "purpose": "Credit for nationally recognized exams"
+  }
+]

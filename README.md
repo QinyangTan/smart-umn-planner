@@ -14,7 +14,7 @@ Smart UMN turns your APAS into practical course-planning decisions. The Web answ
 - **Schedule Builder Course Intelligence** — appears directly under the native course description and adds APAS fit, historical grades, GPA trends, current-professor history, RateMyProfessors overall quality when available through GopherGrades, reviewed Reddit context, and historical offering patterns.
 - **APAS-aware across programs** — supports generic degree / major / second-major / minor / certificate routes without hardcoding one major.
 - **Real scheduling constraints** — checks prerequisites, duplicate/equivalent credit, live sections, meeting conflicts, linked sections, travel buffers, campus-day preferences, waitlist policy, and credit-load preferences.
-- **Conservative by design** — unsupported caps, residency rules, permission requirements, ambiguous prerequisites, and other institutional policies stay visible as review items instead of being guessed.
+- **Policy evidence without AI guessing** — review-only APAS language is matched to typed policy families and curated official UMN policy pages with JEV + a lightweight local MiniLM reranker; retrieval never changes the deterministic degree decision.
 - **Local-first privacy** — normalized academic state and saved plans stay in the browser; raw authenticated APAS HTML, credentials, Duo/SAML data, and cookies are not sent to the local public-evidence API.
 
 ## Demos
@@ -53,7 +53,7 @@ npm run build
 npm start
 ```
 
-Open `http://127.0.0.1:4317/`.
+Open `http://127.0.0.1:4317/`. Optional semantic policy evidence can be prepared once with `npm run embeddings:warm` and refreshed from curated public UMN policy sources with `npm run policy:refresh`; the planner still works without this layer.
 
 To install the Chrome Extension, open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select `dist/extension`. Then reload the planner and any open Twin Cities Schedule Builder pages.
 

@@ -42,6 +42,14 @@ test('Folwell-aligned visual contract avoids generic gradient-card styling',()=>
  assert.match(css,/\.topbar nav button\.active::after\{background:var\(--gold\)/);
 });
 
+test('APAS detail uses semantic retrieval only as review evidence',()=>{
+ assert.match(app,/\/api\/policy\/search/);
+ assert.match(app,/Semantic match/);
+ assert.match(app,/retrieval never authorizes degree credit/);
+ assert.match(app,/Official UMN policy evidence/);
+ assert.match(css,/\.semantic-policy/);
+});
+
 test('onboarding has one connection action and no decorative fake dashboard',()=>{
  assert.match(app,/Your APAS becomes the filter/);
  assert.match(app,/Connect APAS/);

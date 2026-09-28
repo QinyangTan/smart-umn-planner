@@ -1,4 +1,4 @@
-# Smart UMN v0.8.1 demos
+# Smart UMN demos
 
 ![Smart UMN v0.8 combined demo](demos/smart-umn-readme-demo.gif)
 

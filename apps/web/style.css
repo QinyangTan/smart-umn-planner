@@ -390,7 +390,7 @@ button:not(.text-button):not(.connection-status):not(.topbar nav button):not(.cl
 .requirement summary>small{color:var(--muted)}
 .status-symbol{font-size:.95rem;color:var(--muted)}
 .requirement-body{padding:9px 0 3px 34px}
-.requirement-body p{font-size:.77rem;margin:0 0 8px}
+.requirement-body p{font-size:.77rem;margin:0 0 8px}.semantic-policy{display:grid;gap:2px;padding:8px 10px;border-left:3px solid var(--gold);background:var(--gold-soft)}.semantic-policy strong{font-size:.72rem;color:var(--maroon)}.semantic-policy span,.semantic-policy small{color:var(--muted);font-size:.69rem}.semantic-policy a{justify-self:start;color:var(--maroon);font-size:.69rem;text-decoration:none}.semantic-policy a:hover{text-decoration:underline}
 .notice,.callout{padding:11px 12px;border-left:4px solid var(--gold);background:var(--gold-soft);font-size:.78rem}
 dialog{
   width:min(720px,calc(100vw - 32px));
