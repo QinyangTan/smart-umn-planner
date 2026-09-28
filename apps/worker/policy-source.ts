@@ -8,9 +8,9 @@ export type JevPolicySnapshot={url:string;title:string;text:string;sourceHash:st
 
 export function allowedPolicySource(raw:string):URL{
  const u=new URL(raw);
- if(u.protocol!=='https:')throw Error('Policy source must use HTTPS');
+ if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash||u.port)throw Error('Policy source must use HTTPS');
  const h=u.hostname.toLowerCase();
- if(h!=='umn.edu'&&!h.endsWith('.umn.edu')&&h!=='umn.uachieve.com')throw Error('Policy snapshot is restricted to public UMN hosts');
+ if(h!=='policy.umn.edu'||!u.pathname.startsWith('/education'))throw Error('Policy snapshot is restricted to public UMN hosts');
  return u;
 }
 
@@ -22,7 +22,7 @@ function finish(url:URL,title:string,chunks:string[],screens:number,transport:Je
 async function withChromeUse(url:URL,maxScreens:number){
  const browser=new JevBrowser(process.env.CHROME_USE_BIN,'smart-umn-policy');await browser.open(url.href);
  const chunks:string[]=[];let title='',screens=0,last='';
- for(let i=0;i<maxScreens;i++){const snap=await browser.snapshot();if(!snap||typeof snap!=='object')throw Error('JEV policy snapshot unavailable');title=title||String((snap as any).title||'');last=mergeSnapshot(chunks,snap,last);screens++;const scroll=(snap as any).scroll;if(!scroll||Number(scroll.y)+Number((snap as any).h)>=Number(scroll.height)-2)break;await browser.evaluate('window.scrollBy(0,Math.max(420,Math.floor(innerHeight*0.82)));true');await new Promise(r=>setTimeout(r,140));}
+ for(let i=0;i<maxScreens;i++){const current=allowedPolicySource(String(await browser.evaluate('location.href')));if(current.href!==url.href)throw Error('Policy source redirected; review the source manifest');const snap=await browser.snapshot();if(!snap||typeof snap!=='object')throw Error('JEV policy snapshot unavailable');title=title||String((snap as any).title||'');last=mergeSnapshot(chunks,snap,last);screens++;const scroll=(snap as any).scroll;if(!scroll||Number(scroll.y)+Number((snap as any).h)>=Number(scroll.height)-2)break;await browser.evaluate('window.scrollBy(0,Math.max(420,Math.floor(innerHeight*0.82)));true');await new Promise(r=>setTimeout(r,140));}
  return finish(url,title,chunks,screens,'chrome-use');
 }
 function chromiumPath(){
@@ -33,7 +33,7 @@ async function withPlaywright(url:URL,maxScreens:number){
  const executablePath=chromiumPath();if(!executablePath)throw Error('JEV browser transport unavailable: set CHROME_USE_BIN or SMART_UMN_CHROMIUM');
  const browser=await chromium.launch({headless:true,executablePath});const page=await browser.newPage({viewport:{width:1280,height:900}});
  try{await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:30000});const snapshotJs=readFileSync(new URL('../../packages/community/upstream/snapshot.js',import.meta.url),'utf8'),chunks:string[]=[];let title='',screens=0,last='';
-  for(let i=0;i<maxScreens;i++){const snap=await page.evaluate(snapshotJs) as any;if(!snap)throw Error('JEV policy snapshot unavailable');title=title||String(snap.title||'');last=mergeSnapshot(chunks,snap,last);screens++;if(!snap.scroll||Number(snap.scroll.y)+Number(snap.h)>=Number(snap.scroll.height)-2)break;await page.evaluate(()=>window.scrollBy(0,Math.max(420,Math.floor(innerHeight*.82))));await page.waitForTimeout(140);}
+  for(let i=0;i<maxScreens;i++){if(allowedPolicySource(page.url()).href!==url.href)throw Error('Policy source redirected; review the source manifest');const snap=await page.evaluate(snapshotJs) as any;if(!snap)throw Error('JEV policy snapshot unavailable');title=title||String(snap.title||'');last=mergeSnapshot(chunks,snap,last);screens++;if(!snap.scroll||Number(snap.scroll.y)+Number(snap.h)>=Number(snap.scroll.height)-2)break;await page.evaluate(()=>window.scrollBy(0,Math.max(420,Math.floor(innerHeight*.82))));await page.waitForTimeout(140);}
   return finish(url,title,chunks,screens,'playwright');
  }finally{await browser.close();}
 }

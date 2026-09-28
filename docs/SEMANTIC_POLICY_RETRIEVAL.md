@@ -57,3 +57,7 @@ The policy endpoint accepts only one bounded rule text plus public planning meta
 ## Failure behavior
 
 If the embedding model is unavailable, retrieval falls back to lexical ranking. If no trustworthy evidence is found, the original deterministic `unknown` / review-only behavior remains unchanged. Smart UMN remains usable if the semantic layer is completely disabled.
+
+## Production evidence boundary (2026-09-28)
+
+Only snapshots whose source ID and exact URL match the curated manifest, whose SHA-256 matches the stored text, and whose capture time is no more than seven days old enter retrieval. Scope comes from the manifest, not the snapshot. Unknown/manual, future-dated, stale or spoofed snapshots are excluded. The API re-evaluates this index at least once per minute. Public collection rejects credentials/query strings and authenticated APAS/login hosts, and stops on a redirect rather than saving a login page under a policy URL. Failed refresh preserves the old cache, but expiry removes it from current official evidence.

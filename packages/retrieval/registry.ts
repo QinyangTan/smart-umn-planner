@@ -1,3 +1,4 @@
+import{createHash}from'node:crypto';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {HybridPolicyRetriever,MiniLMEmbedder,type Embedder,type PolicyDocument} from './policy.ts';
@@ -15,7 +16,8 @@ export function loadPolicyRegistry(path=resolve('config/policy-semantic-registry
   return x as PolicyDocument;
  });
 }
-export function policyDocumentsFromSnapshots(snapshots:any[]):PolicyDocument[]{const out:PolicyDocument[]=[];for(const snap of snapshots){if(!snap||typeof snap.text!=='string'||typeof snap.url!=='string')continue;const paragraphs=snap.text.split(/\n+/).map((x:string)=>x.trim()).filter(Boolean);let current='';let part=0;const push=()=>{const text=current.trim();if(!text)return;out.push({id:`jev:${snap.sourceHash||'unknown'}:${part++}`,title:String(snap.title||'UMN public policy source'),text,family:'official-policy-source',scope:snap.scope&&typeof snap.scope==='object'?snap.scope:{},sourceType:'official-umn',sourceRef:String(snap.url),authority:'classification-only',execution:'review-only'});current='';};for(const p of paragraphs){if(current&&current.length+p.length+1>1200)push();current+=(current?'\n':'')+p;}push();}return out;}
+const policySources=JSON.parse(readFileSync(new URL('../../config/policy-sources.json',import.meta.url),'utf8')) as {id:string;url:string;scope:Record<string,string>}[];
+export function policyDocumentsFromSnapshots(snapshots:any[],now=Date.now()):PolicyDocument[]{const out:PolicyDocument[]=[];for(const snap of snapshots){if(!snap||typeof snap.text!=='string'||snap.text.length>500000||typeof snap.url!=='string')continue;const source=policySources.find(s=>s.id===snap.sourceId&&s.url===snap.url),age=now-Date.parse(snap.capturedAt);if(!source||!Number.isFinite(age)||age<0||age>7*86400000||snap.sourceHash!==createHash('sha256').update(snap.text).digest('hex'))continue;const paragraphs=snap.text.split(/\n+/).map((x:string)=>x.trim()).filter(Boolean);let current='';let part=0;const push=()=>{const text=current.trim();if(!text)return;out.push({id:`jev:${snap.sourceHash||'unknown'}:${part++}`,title:String(snap.title||'UMN public policy source'),text,family:'official-policy-source',scope:source.scope,sourceType:'official-umn',sourceRef:String(snap.url),authority:'classification-only',execution:'review-only'});current='';};for(const p of paragraphs){if(current&&current.length+p.length+1>1200)push();current+=(current?'\n':'')+p;}push();}return out;}
 export function createPolicyRetriever(extraDocuments:PolicyDocument[]=[],embedder?:Embedder){
  const docs=[...loadPolicyRegistry(),...extraDocuments];
  const mode=process.env.SMART_UMN_EMBEDDINGS||'auto';

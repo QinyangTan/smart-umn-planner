@@ -8,4 +8,4 @@ Extension updates set storageVersion=1 and restrict storage access to trusted ex
 
 Shape validation is not cryptographic authentication: software or the user with access to the local browser profile can edit local academic records. Smart UMN does not claim that browser storage is an authoritative UMN audit. Official APAS and registration remain authoritative.
 
-Anonymous APAS corpus schema v1 is a separate strict allowlist; local normalized profiles must never enter it. Public evidence SQLite currently uses additive `CREATE TABLE IF NOT EXISTS` initialization; any future destructive schema migration needs an explicit schema version, backup and rollback gate before deployment.
+Anonymous APAS corpus schema v1 is a separate strict allowlist; local normalized profiles must never enter it. Public evidence SQLite uses PRAGMA user_version=1 with additive CREATE TABLE IF NOT EXISTS migration from version 0, and refuses future versions without modifying their tables. Any future destructive migration needs a backup and rollback gate before deployment.

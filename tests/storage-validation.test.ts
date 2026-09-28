@@ -15,3 +15,8 @@ test('poisoned preferences and saved plans do not escape bounded defaults',()=>{
 });
 
 test('future storage versions are preserved and oversized stored JSON is ignored',()=>{assert.equal(readableStorage(null),true);assert.equal(readableStorage('1'),true);assert.equal(readableStorage('2'),false);assert.equal(storedJSON('{bad'),undefined);assert.equal(storedJSON('[]',1),undefined);});
+
+test('public SQLite upgrades legacy cache schema and rejects a future schema without downgrade',async()=>{
+ const{Store}=await import('../packages/providers/store.ts');const{DatabaseSync}=await import('node:sqlite');const{mkdtemp,rm}=await import('node:fs/promises');const{tmpdir}=await import('node:os');const{join}=await import('node:path');const dir=await mkdtemp(join(tmpdir(),'smart-umn-schema-')),file=join(dir,'cache.sqlite');
+ try{const store=new Store(file);assert.equal(store.db.prepare('PRAGMA user_version').get()!.user_version,1);store.close();const db=new DatabaseSync(file);db.exec('PRAGMA user_version=2');db.close();assert.throws(()=>new Store(file),/newer/);const after=new DatabaseSync(file);assert.equal(after.prepare('PRAGMA user_version').get()!.user_version,2);after.close();}finally{await rm(dir,{recursive:true,force:true});}
+});

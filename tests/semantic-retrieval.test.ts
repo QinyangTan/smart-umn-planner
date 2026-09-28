@@ -1,3 +1,4 @@
+import{createHash}from'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {HybridPolicyRetriever,tokenize,type Embedder,type PolicyDocument} from '../packages/retrieval/policy.ts';
@@ -32,8 +33,20 @@ test('lightweight embedding only reranks lexical candidates and cannot promote e
  assert.equal(out.mode,'bounded-lexical+minilm');assert.equal(out.matches[0].id,'b');assert.ok(out.matches.every(x=>x.execution==='review-only'));
 });
 
-test('JEV policy snapshots become review-only official evidence chunks',()=>{const docs=policyDocumentsFromSnapshots([{url:'https://policy.umn.edu/education/test',title:'Official test policy',text:'First policy paragraph about degree credit.\nSecond paragraph about residency and GPA.',sourceHash:'abc',scope:{campus:'UMNTC'}}]);assert.ok(docs.length);assert.ok(docs.every(d=>d.sourceType==='official-umn'&&d.authority==='classification-only'&&d.execution==='review-only'));assert.ok(docs.every(d=>d.scope.campus==='UMNTC'));});
+test('JEV policy snapshots become review-only official evidence chunks',()=>{const docs=policyDocumentsFromSnapshots([{sourceId:'undergrad-degree-major-credit',url:'https://policy.umn.edu/education/degreerequirement',title:'Official test policy',text:'First policy paragraph about degree credit.\nSecond paragraph about residency and GPA.',sourceHash:createHash('sha256').update('First policy paragraph about degree credit.\nSecond paragraph about residency and GPA.').digest('hex'),capturedAt:new Date().toISOString(),scope:{campus:'UMNDL'}}]);assert.ok(docs.length);assert.ok(docs.every(d=>d.sourceType==='official-umn'&&d.authority==='classification-only'&&d.execution==='review-only'));assert.ok(docs.every(d=>d.scope.campus==='UMNTC'));});
 
 test('JEV policy source allowlist accepts only HTTPS UMN hosts',()=>{assert.equal(allowedPolicySource('https://policy.umn.edu/education').hostname,'policy.umn.edu');assert.throws(()=>allowedPolicySource('http://policy.umn.edu/education'));assert.throws(()=>allowedPolicySource('https://example.com/policy'));});
 
 test('tokenization is bounded and strips common filler',()=>{const t=tokenize('The credits in the major must be completed in residence');assert.ok(t.includes('credits'));assert.ok(t.includes('residence'));assert.ok(!t.includes('the'));assert.ok(t.length<512);});
+
+test('authenticated audit URLs and credential-bearing URLs cannot enter public policy collection',()=>{
+ for(const url of ['https://umn.uachieve.com/selfservice/audit','https://login.umn.edu/','https://policy.umn.edu.evil.example/','https://user:secret@policy.umn.edu/education','https://policy.umn.edu/education?token=secret'])assert.throws(()=>allowedPolicySource(url));
+});
+test('unknown, stale and spoofed snapshots cannot be relabeled official policy evidence',()=>{
+ const base={sourceId:'undergrad-degree-major-credit',url:'https://policy.umn.edu/education/degreerequirement',title:'Test',text:'Policy test',sourceHash:'spoofed',capturedAt:new Date().toISOString(),scope:{campus:'UMNTC'}};
+ assert.deepEqual(policyDocumentsFromSnapshots([base]),[]);
+ assert.deepEqual(policyDocumentsFromSnapshots([{...base,url:'https://evil.example/policy'}]),[]);
+ assert.deepEqual(policyDocumentsFromSnapshots([{...base,capturedAt:'2000-01-01T00:00:00Z'}]),[]);
+});
+
+test('valid hashes do not override stale timestamps or unknown source identities',()=>{const text='Public policy test',base={sourceId:'undergrad-degree-major-credit',url:'https://policy.umn.edu/education/degreerequirement',text,sourceHash:createHash('sha256').update(text).digest('hex'),capturedAt:new Date().toISOString()};assert.ok(policyDocumentsFromSnapshots([base]).length);assert.deepEqual(policyDocumentsFromSnapshots([{...base,capturedAt:'2000-01-01T00:00:00Z'}]),[]);assert.deepEqual(policyDocumentsFromSnapshots([{...base,sourceId:'manual'}]),[]);assert.deepEqual(policyDocumentsFromSnapshots([{...base,capturedAt:'2099-01-01T00:00:00Z'}]),[]);});
