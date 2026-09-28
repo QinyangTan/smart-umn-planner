@@ -8,7 +8,7 @@ const options={bundle:true,target:'chrome120',sourcemap:!production,minify:produ
 await build({...options,entryPoints:['apps/web/app.ts'],outfile:'dist/web/app.js',format:'esm'});
 for(const f of ['index.html','style.css','privacy.html','support.html'])await copyFile('apps/web/'+f,'dist/web/'+f);
 for(const name of ['background','apas','schedule','bridge'])await build({...options,entryPoints:[`apps/extension/${name}.ts`],outfile:`dist/extension/${name}.js`,format:name==='background'?'esm':'iife'});
-await generateExtensionIcons('dist/extension/icons');
+await generateExtensionIcons('dist/extension/icons');await copyFile('dist/extension/icons/icon32.png','dist/web/favicon.png');
 await generateStorePromo('dist/store/promo-small-440x280.png');
 const manifest=JSON.parse(await readFile('apps/extension/manifest.json','utf8'));
 // Chrome match patterns cannot restrict ports; bridge.ts checks the full origin.

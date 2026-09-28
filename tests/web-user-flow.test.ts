@@ -83,3 +83,18 @@ test('Plan explains a completed search that cannot verify any candidate prerequi
   assert.match(doc.querySelector('.candidate-list summary')?.textContent||'',/0 selected/);
  }finally{dom.window.close();}
 });
+
+test('local APAS import closes the dialog and returns focus to the persistent connection control',async()=>{
+ const dom=setup(course,section,null);
+ try{
+  const doc=dom.window.document,w=dom.window as any;
+  if(!w.HTMLDialogElement.prototype.showModal)w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};
+  (doc.querySelector('#connection') as HTMLElement).click();
+  await waitFor(()=>doc.querySelector('#import')!==null);
+  const input=doc.querySelector('#import') as HTMLInputElement;const html=(await import('node:fs')).readFileSync('tests/fixtures/apas-acceptance.html','utf8');
+  Object.defineProperty(input,'files',{value:[{text:async()=>html}]});input.dispatchEvent(new w.Event('change'));
+  await waitFor(()=>doc.querySelector('#drawer')===null&&/APAS connected/.test(doc.querySelector('#connection')?.textContent||''));
+  assert.equal(doc.activeElement?.id,'connection','focus must not be dropped to <body> after the dialog closes');
+  const week=doc.querySelector('.week');if(week){assert.equal(week.getAttribute('tabindex'),'0');assert.equal(week.getAttribute('role'),'region');}
+ }finally{dom.window.close();}
+});

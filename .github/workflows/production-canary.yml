@@ -1,0 +1,42 @@
+name: Production canary
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: production-canary
+  cancel-in-progress: false
+jobs:
+  canonical:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      # No npm ci: the canary uses only Node built-ins and the checked-in release/seed files.
+      - id: canary
+        shell: bash
+        run: node scripts/verify-production.ts --out canary-report.json | tee canary-report.txt
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: production-canary-report
+          path: canary-report.*
+          retention-days: 30
+      # Notification channel: a GitHub issue (repository watchers get email). No external secret required.
+      - if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create production-canary --color B60205 --description 'Automated canonical production canary failure' --force
+          body="$(printf 'Canary run: %s\n\n```\n%s\n```\n' "$RUN_URL" "$(grep -E '^(FAIL|WARN)|failing check' canary-report.txt || echo 'Canary did not produce a report; see the run log.')")"
+          existing="$(gh issue list --label production-canary --state open --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then gh issue comment "$existing" --body "$body"; else gh issue create --title 'Production canary failing' --label production-canary --body "$body"; fi
