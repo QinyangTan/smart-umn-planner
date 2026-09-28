@@ -64,3 +64,13 @@ test('onboarding has one connection action and no decorative fake dashboard',()=
  assert.match(readme,/docs\/demos\/smart-umn-readme-demo\.gif/,'README opens with an inline autoplaying demo rather than requiring a video click');
  assert.doesNotMatch(readme,/Three synthetic-profile screen-recorded demos are checked into GitHub/,'README should not lead with a file-list style demo section');
 });
+
+test('focus indicators, sticky-header scroll padding, schedule region and favicons meet the accessibility contract',()=>{
+ const css=readFileSync('apps/web/style.css','utf8'),app=readFileSync('apps/web/app.ts','utf8');
+ assert.match(css,/:focus-visible,\[tabindex\]:focus-visible\{outline:3px solid var\(--maroon\);outline-offset:2px;box-shadow:0 0 0 2px var\(--gold\)\}/,'gold alone is ~1.5:1 on white; the ring must be maroon-led');
+ assert.match(css,/html\{[^}]*scroll-padding-top:88px/,'focused controls must not scroll under the sticky topbar');
+ assert.match(css,/prefers-reduced-motion:reduce/);assert.match(app,/prefers-reduced-motion: reduce/);
+ assert.match(app,/class="week"[^>]*tabindex="0" role="region" aria-label="Weekly meeting grid"/,'horizontally scrollable week grid must be keyboard reachable');
+ for(const page of['index.html','privacy.html','support.html']){const html=readFileSync('apps/web/'+page,'utf8');assert.match(html,/<link rel="icon" type="image\/png" href="\/favicon.png">/,page+' must not trigger a /favicon.ico 404');assert.match(html,/<html lang="en">/);assert.match(html,/<meta name="color-scheme" content="light">/);}
+ assert.match(readFileSync('scripts/build.mjs','utf8'),/copyFile\('dist\/extension\/icons\/icon32.png','dist\/web\/favicon.png'\)/);
+});
