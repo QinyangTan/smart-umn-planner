@@ -2,6 +2,7 @@ import{preferredInstructorCount}from'../community/signals.ts';
 import type {CourseContext,StudentAcademicProfile,Preferences,Section,Meeting,Schedule} from '../schemas/index.ts';
 import {degreeFit,eligibility,evaluate} from './rules.ts';
 import {allocateDegreeProgress} from './allocation.ts';
+import {historicalGradeSignal} from './grade-signal.ts';
 // Revalidate safety-critical fields at the solver boundary: cached or restored
 // objects must not gain authority merely from a stale=false / scheduleKnown flag.
 function fresh(timestamp:string,now:number):boolean {
@@ -46,6 +47,18 @@ export function generateSchedules(contexts:CourseContext[],profile:StudentAcadem
  const results:Schedule[]=[];let explored=0;const maxNodes=25000;
  function visit(i:number,sections:Section[],chosen:CourseContext[],credits:number){if(++explored>maxNodes)return;if(credits>p.maxCredits)return;if(i===options.length){if(credits>=p.minCredits&&chosen.length){const courses=chosen.map(c=>c.course.data!),degreeProgress=allocateDegreeProgress(courses,profile);const campusDays=new Set(sections.filter(s=>!/online/i.test(s.instructionMode)).flatMap(s=>s.meetings.flatMap(m=>m.days))).size;if(p.maxCampusDays&&campusDays>p.maxCampusDays)return;const allocationNote=degreeProgress.totalTargets?`${degreeProgress.fullyCoveredTargets} of ${degreeProgress.totalTargets} supported remaining requirement targets fully covered by this plan`:'Cross-requirement allocation needs review for the remaining rule structure',waitlisted=sections.filter(s=>s.capacity!==undefined&&s.enrolled!==undefined&&s.capacity<=s.enrolled);results.push({id:sections.map(s=>s.classNumber).sort().join('-'),sections,courses,credits,campusDays,degreeProgress,explanations:[`${credits} credits within your target`,'No meeting overlaps; dates included',...(p.minimumTransitionMinutes?[`At least ${p.minimumTransitionMinutes} minutes between different-location classes when required`]:[]),'Every course matches a supported remaining APAS rule',allocationNote,'Each planned course is allocated to at most one supported remaining requirement','Completed-course prerequisites verified; unknown restrictions excluded',...(waitlisted.length?[`${waitlisted.length} section${waitlisted.length===1?' is':'s are'} waitlist-only; enrollment is not guaranteed`]:[]),'Final degree applicability remains subject to APAS and registration rules']});}return;}
  visit(i+1,sections,chosen,credits);const o=options[i],course=o.ctx.course.data!;const equivalentAlreadyChosen=chosen.some(ctx=>{const other=ctx.course.data!;return course.equivalents.includes(other.code)||other.equivalents.includes(course.code);});if(equivalentAlreadyChosen)return;for(const b of o.bundles){if(!b.some(s=>sections.some(t=>conflicts(s,t)||transitionTooTight(s,t,p.minimumTransitionMinutes||0))))visit(i+1,[...sections,...b],[...chosen,o.ctx],credits+(course.credits as number));}}
- visit(0,[],[],0);for(const s of results){const count=preferredInstructorCount(s.sections,p.preferredInstructors);if(count)s.explanations.push(`${count} of your preferred instructors in this option; your choice is used only after degree coverage and timing preferences`);}results.sort((a,b)=>(b.degreeProgress?.coverageScore||0)-(a.degreeProgress?.coverageScore||0)||(b.degreeProgress?.fullyCoveredTargets||0)-(a.degreeProgress?.fullyCoveredTargets||0)||(b.degreeProgress?.allocatedCredits||0)-(a.degreeProgress?.allocatedCredits||0)||(p.fewestDays?a.campusDays-b.campusDays:0)||(p.preferOnline?b.sections.filter(s=>/online/i.test(s.instructionMode)).length-a.sections.filter(s=>/online/i.test(s.instructionMode)).length:0)||preferredInstructorCount(b.sections,p.preferredInstructors)-preferredInstructorCount(a.sections,p.preferredInstructors)||b.credits-a.credits||a.id.localeCompare(b.id));
+ visit(0,[],[],0);for(const s of results){const count=preferredInstructorCount(s.sections,p.preferredInstructors);if(count)s.explanations.push(`${count} of your preferred instructors in this option; your choice is used only after degree coverage and timing preferences`);}
+ const gradeSignals=new Map(results.map(s=>[s.id,historicalGradeSignal(s,contexts)]));
+ results.sort((a,b)=>{
+  const coverage=(b.degreeProgress?.coverageScore||0)-(a.degreeProgress?.coverageScore||0)||(b.degreeProgress?.fullyCoveredTargets||0)-(a.degreeProgress?.fullyCoveredTargets||0);
+  if(coverage)return coverage;
+  if(p.planningGoal==='lightLoad'&&a.credits!==b.credits)return a.credits-b.credits;
+  if(p.planningGoal==='gradeHistory'){
+   const ga=gradeSignals.get(a.id),gb=gradeSignals.get(b.id);
+   if(!!ga!==!!gb)return ga?-1:1;
+   if(ga&&gb&&Math.abs(ga.aRangeShare-gb.aRangeShare)>1e-9)return gb.aRangeShare-ga.aRangeShare;
+  }
+  return(b.degreeProgress?.allocatedCredits||0)-(a.degreeProgress?.allocatedCredits||0)||(p.fewestDays?a.campusDays-b.campusDays:0)||(p.preferOnline?b.sections.filter(s=>/online/i.test(s.instructionMode)).length-a.sections.filter(s=>/online/i.test(s.instructionMode)).length:0)||preferredInstructorCount(b.sections,p.preferredInstructors)-preferredInstructorCount(a.sections,p.preferredInstructors)||b.credits-a.credits||a.id.localeCompare(b.id);
+ });
  return{schedules:results.slice(0,8),rejected,explored,truncated:explored>maxNodes,candidateCourses:options.length};
 }

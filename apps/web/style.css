@@ -511,5 +511,16 @@ footer{
 
 fieldset.preference-grid{border:0;padding:0;margin:0;min-width:0}fieldset.preference-grid:disabled{opacity:.65}
 
+.planning-goals{border:0;border-top:1px solid var(--line);padding:22px 0 8px;margin:20px 0 0;min-width:0}
+.planning-goals legend{font-size:1.05rem;font-weight:700;padding:0 10px 0 0}
+.planning-goals:disabled{opacity:.65}
+.planning-goal-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.planning-goal{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);background:#fff;border-radius:4px;cursor:pointer;font-size:.9rem;line-height:1.4}
+.planning-goal.selected{border-color:var(--maroon);box-shadow:inset 0 3px var(--maroon);background:var(--maroon-soft)}
+.planning-goal input{width:17px;height:17px;min-height:17px;margin:2px 0 0;accent-color:var(--maroon);flex:none}
+.planning-goal span{display:block;margin:0}.planning-goal strong{display:block;color:var(--ink)}.planning-goal small{display:block;margin-top:5px;font-weight:400;color:var(--muted)}
+.planning-goals>p{margin:12px 0 0;font-size:.8rem}
+@media(max-width:800px){.planning-goal-options{grid-template-columns:1fr}}
+
 /* Community evidence is separate from degree eligibility and historical outcomes. */
 .community-evidence{margin-top:26px;border-top:3px solid var(--maroon);padding-top:22px}.community-heading,.discussion-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}.community-heading h3{font-size:28px;margin:7px 0}.evidence-label{font-size:11px;border:1px solid var(--line);padding:5px 9px;white-space:nowrap}.instructor-signals{display:grid;gap:12px;margin:20px 0}.instructor-signal{display:grid;grid-template-columns:1fr auto;gap:12px 24px;padding:20px;border:1px solid var(--line);background:#fff}.instructor-signal h4{margin:0 0 6px;font-size:18px}.instructor-signal small{font-size:11px;color:var(--muted)}.rmp-metric{text-align:right}.rmp-metric strong{font-size:30px;color:var(--maroon);line-height:1}.rmp-metric span{display:block;font-size:11px;margin-top:6px}.rmp-metric strong small{font-weight:400;font-size:13px}.metric-provenance{grid-column:1/-1;color:var(--muted);font-size:11px;line-height:1.7;margin:0}.community-links{grid-column:1/-1;display:flex;gap:16px;flex-wrap:wrap;font-size:12px}.discussion-heading{margin-top:28px;align-items:baseline}.discussion-heading h4{font-size:18px;margin:0}.discussion-heading a{font-size:12px}.topic-tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.topic-tags span{font-size:11px;background:var(--off);border:1px solid var(--line);padding:3px 7px}.reference h4{margin:9px 0}.personal-choices{border-left:3px solid var(--gold);padding:5px 0 5px 16px;margin:24px 0}.personal-choices h4{margin:4px 0}.personal-choices button{font-size:12px;margin:4px 6px 4px 0}.personal-choices button[aria-pressed=true]{color:var(--maroon);border-color:var(--maroon);background:#fff3f5}.grade-history-disclosure{padding:18px 0;border-top:1px solid var(--line)}.grade-history-disclosure>summary{font-weight:600;cursor:pointer}@media(max-width:600px){.community-heading,.discussion-heading{display:block}.evidence-label{display:inline-block;margin:8px 0}.instructor-signal{padding:14px;gap:12px}.community-links{gap:10px}.discussion-heading a{display:inline-block;margin-top:10px}}

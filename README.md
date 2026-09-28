@@ -11,6 +11,7 @@ Smart UMN turns your APAS into practical course-planning decisions. The Web answ
 ## What it does
 
 - **Registration Advisor** — turns remaining APAS requirements into next-semester recommendations, registration-ready schedules, graduation-horizon estimates, bottlenecks, and clear advisor handoffs.
+- **Planning goals** — choose degree progress, the lightest useful credit load, or a cautious comparison of course-wide historical grades; degree and scheduling constraints always take priority. See [Planning goals and academic exploration](docs/PLANNING_GOALS.md).
 - **Schedule Builder Course Intelligence** — appears directly under the native course description and adds APAS fit, historical grades, GPA trends, current-professor history, RateMyProfessors overall quality when available through GopherGrades, reviewed Reddit context, and historical offering patterns.
 - **APAS-aware across programs** — supports generic degree / major / second-major / minor / certificate routes without hardcoding one major.
 - **Real scheduling constraints** — checks prerequisites, duplicate/equivalent credit, live sections, meeting conflicts, linked sections, travel buffers, campus-day preferences, waitlist policy, and credit-load preferences.

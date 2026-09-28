@@ -1,5 +1,9 @@
 # Verification
 
+## Planning-goals branch check
+
+Starting from the uploaded v0.9.3 source, the Plan page now offers degree progress, lightest useful load, and course-wide historical-grade comparison. The goal persists through browser preference edits, and the solver preserves hard APAS/section constraints before ranking alternatives. Historical-grade comparisons require complete nonstale records with at least 30 letter grades per course; missing evidence remains unranked. The Windows static-file path check now uses the platform separator. Local checks for this branch: 122 automated tests pass, TypeScript type checking passes, the web/extension build and extension package succeed, and the loopback server returns HTTP 200 for `/` and `/app.js`. These are local checks; no live UMN sign-in or current provider acceptance was performed for this branch.
+
 This file records the current prototype verification boundary. It is evidence for a local development build, not a production-service certification.
 
 ## Automated gate

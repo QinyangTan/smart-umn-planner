@@ -1,6 +1,7 @@
 import type {CourseContext,Preferences,Schedule,StudentAcademicProfile} from '../schemas/index.ts';
 import {analyzeRequirementRouteCoverage,degreeFit,evaluate,flattenRequirements} from './rules.ts';
 export{compatibilityPassport,compatibilityReport}from'./compatibility.ts';
+import {historicalGradeSignal} from './grade-signal.ts';
 
 export type TermSeason='Spring'|'Summer'|'Fall';
 export type OfferingPattern={code:string;observedTerms:string[];seasons:TermSeason[];confidence:'strong'|'limited'|'unknown';label:string;seasonCounts:Record<TermSeason,number>};
@@ -105,6 +106,11 @@ export function whyThisPlan(schedule:Schedule,prefs:Preferences,contexts:CourseC
  const why:string[]=[];const dp=schedule.degreeProgress;
  if(dp?.totalTargets)why.push(`Covers ${dp.fullyCoveredTargets} of ${dp.totalTargets} supported remaining APAS targets in this term.`);
  why.push(`${schedule.credits} credits across ${schedule.campusDays} campus day${schedule.campusDays===1?'':'s'} with no meeting overlap.`);
+ if(prefs.planningGoal==='lightLoad')why.push('Light-load goal: among plans with equal supported APAS coverage, fewer credits rank first. Confirm any remaining degree-wide or enrollment requirements separately.');
+ if(prefs.planningGoal==='gradeHistory'){
+  const signal=historicalGradeSignal(schedule,contexts);
+  why.push(signal?`Historical grades: ${Math.round(signal.aRangeShare*100)}% A-range across ${signal.courseCount} course-wide records (at least ${signal.minimumSample} graded students per course). Complete evidence ranks before unavailable evidence; historical outcomes do not predict your grade.`:'Historical grade comparison unavailable for this plan: each course needs current evidence with at least 30 recorded letter grades. Missing evidence is unranked, not treated as a poor grade outcome.');
+ }
  if(prefs.noFriday&&!schedule.sections.some(s=>s.meetings.some(m=>m.days.includes('fri'))))why.push('Keeps Friday free, matching your preference.');
  if(prefs.earliestTime)why.push(`All verified meetings start at or after ${prefs.earliestTime}.`);
  if(prefs.latestTime)why.push(`All verified meetings finish by ${prefs.latestTime}.`);
