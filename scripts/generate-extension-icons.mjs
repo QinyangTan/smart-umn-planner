@@ -1,11 +1,13 @@
 import{mkdir,writeFile}from'node:fs/promises';
 import{join}from'node:path';
-import{deflateSync}from'node:zlib';
 
 const table=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
 const crc32=(buf)=>{let c=0xffffffff;for(const b of buf)c=table[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0;};
+const adler32=(buf)=>{let a=1,b=0;for(const value of buf){a=(a+value)%65521;b=(b+a)%65521;}return((b<<16)|a)>>>0;};
+// Use uncompressed DEFLATE blocks instead of Node/zlib so PNG bytes are identical across OS/zlib versions.
+const zlibStore=(buf)=>{const parts=[Buffer.from([0x78,0x01])];for(let offset=0;offset<buf.length;){const len=Math.min(65535,buf.length-offset),final=offset+len===buf.length,header=Buffer.alloc(5);header[0]=final?1:0;header.writeUInt16LE(len,1);header.writeUInt16LE((~len)&0xffff,3);parts.push(header,buf.subarray(offset,offset+len));offset+=len;}const checksum=Buffer.alloc(4);checksum.writeUInt32BE(adler32(buf),0);parts.push(checksum);return Buffer.concat(parts);};
 const chunk=(type,data)=>{const name=Buffer.from(type),out=Buffer.alloc(12+data.length);out.writeUInt32BE(data.length,0);name.copy(out,4);data.copy(out,8);out.writeUInt32BE(crc32(Buffer.concat([name,data])),8+data.length);return out;};
-function png(size,pixels){const raw=Buffer.alloc(size*(size*4+1));for(let y=0;y<size;y++){const row=y*(size*4+1);raw[row]=0;pixels.copy(raw,row+1,y*size*4,(y+1)*size*4);}const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(size,0);ihdr.writeUInt32BE(size,4);ihdr[8]=8;ihdr[9]=6;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',deflateSync(raw,{level:9})),chunk('IEND',Buffer.alloc(0))]);}
+function png(size,pixels){const raw=Buffer.alloc(size*(size*4+1));for(let y=0;y<size;y++){const row=y*(size*4+1);raw[row]=0;pixels.copy(raw,row+1,y*size*4,(y+1)*size*4);}const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(size,0);ihdr.writeUInt32BE(size,4);ihdr[8]=8;ihdr[9]=6;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',zlibStore(raw)),chunk('IEND',Buffer.alloc(0))]);}
 const color=(hex,a=255)=>[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16),a];
 const MAROON=color('#6d001f'),GOLD=color('#ffcc33'),CREAM=color('#fffdf7');
 function paint(size){
@@ -33,7 +35,7 @@ function promoPixels(width=440,height=280){
  for(let y=44;y<58;y++)for(let x=44;x<58;x++)put(x,y,gold);
  return px;
 }
-function pngWH(width,height,pixels){const raw=Buffer.alloc(height*(width*4+1));for(let y=0;y<height;y++){const row=y*(width*4+1);raw[row]=0;pixels.copy(raw,row+1,y*width*4,(y+1)*width*4);}const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(width,0);ihdr.writeUInt32BE(height,4);ihdr[8]=8;ihdr[9]=6;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',deflateSync(raw,{level:9})),chunk('IEND',Buffer.alloc(0))]);}
+function pngWH(width,height,pixels){const raw=Buffer.alloc(height*(width*4+1));for(let y=0;y<height;y++){const row=y*(width*4+1);raw[row]=0;pixels.copy(raw,row+1,y*width*4,(y+1)*width*4);}const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(width,0);ihdr.writeUInt32BE(height,4);ihdr[8]=8;ihdr[9]=6;return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',zlibStore(raw)),chunk('IEND',Buffer.alloc(0))]);}
 export async function generateExtensionIcons(dir){await mkdir(dir,{recursive:true});for(const size of[16,32,48,128])await writeFile(join(dir,`icon${size}.png`),png(size,paint(size)));}
 export async function generateStorePromo(path){await mkdir(join(path,'..'),{recursive:true});await writeFile(path,pngWH(440,280,promoPixels()));}
 if(typeof process!=='undefined'&&process.argv?.[1]&&import.meta.url===new URL(process.argv[1],`file://${process.cwd()}/`).href){await generateExtensionIcons(process.argv[2]||'dist/extension/icons');if(process.argv[3])await generateStorePromo(process.argv[3]);}
