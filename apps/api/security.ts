@@ -1,4 +1,5 @@
 import type {IncomingMessage} from 'node:http';
+import {isIP} from 'node:net';
 import {plannerOrigin} from '../../packages/config/origin.ts';
 export function serverConfig(env:NodeJS.ProcessEnv=process.env){
  const port=Number(env.PORT||4317);
@@ -9,9 +10,20 @@ export function serverConfig(env:NodeJS.ProcessEnv=process.env){
  if(production&&!origin.startsWith('https://'))throw Error('Production requires HTTPS PUBLIC_ORIGIN');
  const extensionIds=(env.EXTENSION_IDS||'').split(',').map(x=>x.trim()).filter(Boolean);
  if(extensionIds.some(x=>! /^[a-p]{32}$/.test(x)))throw Error('Invalid EXTENSION_IDS');
+ const trustedProxy=env.TRUSTED_PROXY||'';
+ if(trustedProxy&&trustedProxy!=='cloudflare-loopback')throw Error('Invalid TRUSTED_PROXY');
  const hosts=new Set([new URL(origin).host,...(!production?[`127.0.0.1:${port}`,`localhost:${port}`]:[])]);
  const origins=new Set([origin,...(!production?[`http://127.0.0.1:${port}`,`http://localhost:${port}`]:[]),...extensionIds.map(id=>`chrome-extension://${id}`)]);
- return {port,production,origin,hosts,origins,bind:env.BIND_HOST||'127.0.0.1'};
+ return {port,production,origin,hosts,origins,bind:env.BIND_HOST||'127.0.0.1',trustedProxy};
+}
+function loopback(address:string):boolean{const value=address.startsWith('::ffff:')?address.slice(7):address;if(value==='::1')return true;if(isIP(value)!==4)return false;return value.startsWith('127.');}
+export function clientBudgetKey(req:IncomingMessage,c:ServerConfig):string{
+ const socket=req.socket.remoteAddress||'unknown';
+ if(c.trustedProxy==='cloudflare-loopback'&&loopback(socket)){
+  const raw=req.headers['cf-connecting-ip'];
+  if(typeof raw==='string'){const ip=raw.trim();if(isIP(ip))return `cf:${ip}`;}
+ }
+ return `socket:${socket}`;
 }
 export type ServerConfig=ReturnType<typeof serverConfig>;
 export function requestAllowed(req:IncomingMessage,c:ServerConfig):boolean{
