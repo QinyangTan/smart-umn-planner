@@ -7,8 +7,12 @@ docs/evidence/*
 !docs/evidence/course-intelligence-coverage.json
 !docs/evidence/production-acceptance-20260928.json
 !docs/evidence/production-acceptance-20260928-v0.10.1.json
+!docs/evidence/netlify-serverless-acceptance-20260928.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md
 *.log
 .env*
 .DS_Store
+
+# Local Netlify folder
+.netlify

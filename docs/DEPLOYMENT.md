@@ -23,10 +23,28 @@ Terminate TLS with a trusted reverse proxy or a named Cloudflare Tunnel. Preserv
 
 Requests are bounded to 32 KiB JSON, 12 course codes per batch, 32 concurrent API requests, 120 requests/minute per client budget key and 600/minute globally. Each provider has a bounded 32-request queue and a 12-second upstream timeout. By default the client key is the direct socket address. With `TRUSTED_PROXY=cloudflare-loopback`, a loopback Cloudflare Tunnel may supply one syntactically valid `CF-Connecting-IP`, preventing unrelated public clients from sharing the same per-client bucket while preserving the global safety budget. Non-loopback peers and malformed headers always fall back to the socket address. Rate limiting is not authentication; all served evidence is public.
 
+## Netlify serverless deployment
+
+The repository also supports an always-on public-evidence deployment on Netlify Free. Netlify applies a code-defined 120 requests / 60 seconds per IP+domain rate limit to the public API before function execution. `netlify/functions/api.mts` serves only the public `/api/*` routes; normalized APAS state, saved plans, schedules and credentials remain browser-local. The function uses an in-memory SQLite cache for live Schedule Builder/GopherGrades responses. Cold starts therefore lose only refetchable public cache entries.
+
+Reviewed evidence that must survive cold starts is checked in as `config/public-evidence-seed.json`: six curated UMN policy snapshots plus explicitly reviewed community/RMP links. Regenerate it from a reviewed public-cache database with:
+
+```sh
+npm run export:public-seed
+# or
+node scripts/export-public-evidence-seed.ts /path/to/planner.sqlite config/public-evidence-seed.json
+```
+
+The export contains no APAS HTML, student identity, course history, plans, credentials or cookies. Policy snapshots still pass the normal source/hash/freshness validation at runtime; a stale seed stops appearing as current official evidence rather than gaining authority.
+
+For Netlify, build the Web for the final HTTPS origin and deploy the function plus `dist/web`. The serverless handler has an exact HTTPS host/origin allowlist and exact extension ID; it does not rely on mutable runtime environment variables for those security boundaries. Its in-process request budget remains defense-in-depth; the Netlify edge rule is the cross-instance per-client control. Netlify Free does not provide the Enterprise-only absolute per-domain aggregate ceiling, so provider queues/timeouts remain the backend-wide safety boundary. Optional MiniLM is not bundled into the lexical-only function path; `packages/retrieval/lexical.ts` and `documents.ts` intentionally contain no HuggingFace/native dependency.
+
+DevSpace Git worktrees store `.git` as a pointer to an absolute local path. Do not upload that pointer to Netlify. Deploy from a clean source copy that excludes `.git`, `node_modules`, `.runtime`, `dist`, `release` and `.netlify`, or deploy from a normal Git checkout.
+
 ## Persistent evidence and optional embeddings
 
-Back up the public SQLite database with the SQLite backup API or after graceful shutdown; do not copy a live WAL database alone. The database must never receive APAS HTML or personal schedules. The deterministic core works with SMART_UMN_EMBEDDINGS=off. Warm optional MiniLM on the deployed service host before using cached auto mode; do not download models on student requests. See SEMANTIC_POLICY_RETRIEVAL.md. Policy refresh currently depends on the documented JEV worker and needs a separately provisioned worker; do not report an unconfigured refresh job as healthy.
+For the long-running Node service, back up the public SQLite database with the SQLite backup API or after graceful shutdown; do not copy a live WAL database alone. The database must never receive APAS HTML or personal schedules. The deterministic core works with SMART_UMN_EMBEDDINGS=off. Warm optional MiniLM on a long-running host before using cached auto mode; do not download models on student requests. The Netlify function deliberately runs lexical-only retrieval. See SEMANTIC_POLICY_RETRIEVAL.md. Policy refresh currently depends on the documented JEV worker; refresh the reviewed source cache and regenerate/redeploy the public seed rather than reporting an unconfigured refresh job as healthy.
 
 ## Stable hostname versus availability
 
-A named tunnel on an existing domain provides a stable hostname, not an availability guarantee. A laptop-backed service goes offline when that machine sleeps or disconnects. Public student production use needs an always-on host, monitored restarts, backups, and appropriate provider/privacy review. No paid resource is required by the local build. A live deployment is accepted only after HTTPS health, clean-browser import/planning and production-extension origin tests pass.
+A named tunnel on an existing domain provides a stable hostname, not an availability guarantee. The historical Mac/Cloudflare origin goes offline when that machine sleeps or disconnects. An independently accepted Netlify serverless deployment is available as an always-on hosting path, but the canonical custom-domain cutover must not occur until DNS/TLS and the final hostname pass the same HTTPS API and clean-browser/extension acceptance gates. No paid resource is required by either current path.
