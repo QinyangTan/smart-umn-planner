@@ -1,5 +1,19 @@
 # Verification
 
+## v0.10.6 Chrome Web Store package + Store ID — 2026-09-28
+
+The Chrome Web Store rejected the v0.10.5 upload ("key field is not allowed in manifest"). Packaging now also emits a deterministic key-free `release/*-webstore.zip`, which `verify:release` checks is key-free, reproducible, contains the same files, and has a manifest that differs only by `key`. The Store assigned item ID `ocbpkaiefaaboeiliopklleejlfnegbd`, and v0.10.6 adds it to the exact API origin allowlist next to the Developer-mode ID.
+
+Gates: 188/188 tests, TypeScript, audit 0, corpus, coverage, production package and release verification. PR #16 CI passed.
+
+Canonical production, Netlify deploy `6abafacae8b38b6727167aa4`:
+- `verify:production` 22/22: v0.10.6 health, and live ZIP == release `85e534b3…`.
+- A live `POST /api/course-context/batch` with `Origin: chrome-extension://ocbpkaiefaaboeiliopklleejlfnegbd` returned 200, the matching `Access-Control-Allow-Origin` and `CSCI 5302` data. The Developer-mode ID behaved the same; an unknown extension ID returned 403.
+- The online-downloaded v0.10.6 ZIP passed `verify:a11y` (0 axe violations) and `verify:browser` (synthetic import, unknown credits, goal persistence, reload, live schedule, 375 px, inline `MATH 1271`).
+- The Store ID itself cannot be loaded locally without the Store's signing key, so the Store build's end-to-end path is covered by the exact-origin API check above.
+
+Evidence: `docs/evidence/production-canary-20260928-v0.10.6.json` and `docs/evidence/accessibility-acceptance-20260928-v0.10.6.json`.
+
 ## v0.10.5 production canary + accessibility — 2026-09-28
 
 v0.10.5 adds operational monitoring and fixes the accessibility defects found by a formal pass over v0.10.4 production. APAS parsing, prerequisite/eligibility logic, solver ranking and API inputs are unchanged.

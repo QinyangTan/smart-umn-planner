@@ -12,7 +12,8 @@ import {RequestBudget,RequestError} from '../../apps/api/security.ts';
 type Runtime={store:Store;context:ContextService;budget:RequestBudget;hosts:Set<string>;origins:Set<string>;policyClassifier:HybridPolicyRetriever;policyEvidence:HybridPolicyRetriever;startedAt:number;requests:number;rejected:number;errors:number};
 let runtime:Runtime|undefined;
 const WEB_ORIGINS=['https://smart-umn-planner.netlify.app','https://smartumn.qinyangtan.com'];
-const EXTENSION_IDS=['cleikpoiflloemienikmmmedkniblobc'];
+// Direct-download/Developer-mode ID (fixed by manifest `key`) and the Chrome Web Store item ID (Store assigns its own; `key` is not allowed there).
+const EXTENSION_IDS=['cleikpoiflloemienikmmmedkniblobc','ocbpkaiefaaboeiliopklleejlfnegbd'];
 function getRuntime():Runtime{
  if(runtime)return runtime;
  const store=new Store(':memory:');

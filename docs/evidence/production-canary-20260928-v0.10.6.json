@@ -1,0 +1,139 @@
+{
+  "checkedAt": "2026-09-28T23:40:11.854Z",
+  "origin": "https://smartumn.qinyangtan.com",
+  "ok": true,
+  "checks": [
+    {
+      "id": "dns-route",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "CNAME smart-umn-planner.netlify.app"
+    },
+    {
+      "id": "tls-certificate",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "certificate expires in 89.8 days"
+    },
+    {
+      "id": "home",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "HTTP 200"
+    },
+    {
+      "id": "netlify-edge",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "server=Netlify"
+    },
+    {
+      "id": "security-headers",
+      "category": "security",
+      "status": "pass",
+      "detail": "HSTS, CSP, nosniff, no-referrer present"
+    },
+    {
+      "id": "privacy.html",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "HTTP 200"
+    },
+    {
+      "id": "support.html",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "HTTP 200"
+    },
+    {
+      "id": "api-health",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "status=running serverless=true"
+    },
+    {
+      "id": "deployed-version",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "live 0.10.6 / expected 0.10.6"
+    },
+    {
+      "id": "function-errors",
+      "category": "canonical",
+      "status": "pass",
+      "detail": "0 errors / 2 requests on this instance (per-instance, resets on cold start)"
+    },
+    {
+      "id": "provider:umn-schedule-builder",
+      "category": "provider-outage",
+      "status": "pass",
+      "detail": "healthy"
+    },
+    {
+      "id": "provider:gophergrades",
+      "category": "provider-outage",
+      "status": "pass",
+      "detail": "healthy"
+    },
+    {
+      "id": "course:schedule-builder",
+      "category": "provider-outage",
+      "status": "pass",
+      "detail": "live"
+    },
+    {
+      "id": "sections:schedule-builder",
+      "category": "provider-outage",
+      "status": "pass",
+      "detail": "live"
+    },
+    {
+      "id": "grades:gophergrades",
+      "category": "provider-outage",
+      "status": "pass",
+      "detail": "live"
+    },
+    {
+      "id": "community-context",
+      "category": "optional-source",
+      "status": "pass",
+      "detail": "0 reviewed references"
+    },
+    {
+      "id": "policy-authority",
+      "category": "security",
+      "status": "pass",
+      "detail": "decisionAuthority=none (HTTP 200)"
+    },
+    {
+      "id": "policy-live-evidence",
+      "category": "policy-freshness",
+      "status": "pass",
+      "detail": "3 official snapshot passages served"
+    },
+    {
+      "id": "policy-seed-expiry",
+      "category": "policy-freshness",
+      "status": "pass",
+      "detail": "oldest snapshot expires 2026-10-05T01:32:38.093Z (6.1 days)"
+    },
+    {
+      "id": "hostile-origin",
+      "category": "security",
+      "status": "pass",
+      "detail": "HTTP 403"
+    },
+    {
+      "id": "extension-zip",
+      "category": "package",
+      "status": "pass",
+      "detail": "live 85e534b3476250e5… / release 85e534b3476250e5…"
+    },
+    {
+      "id": "rate-limit",
+      "category": "rate-limit",
+      "status": "pass",
+      "detail": "no 429 for a low-volume client"
+    }
+  ]
+}
