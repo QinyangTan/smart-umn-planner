@@ -1,0 +1,110 @@
+{
+  "kind": "smart-umn-production-acceptance",
+  "date": "2026-09-28",
+  "version": "0.10.2",
+  "primaryOrigin": "https://smart-umn-planner.netlify.app",
+  "rollbackOrigin": "https://smartumn.qinyangtan.com",
+  "hosting": {
+    "provider": "Netlify Free",
+    "siteId": "3acbab52-b741-466a-bc3b-75c138903c83",
+    "deployId": "6abac1163b9f3389c28c8b78",
+    "runtime": "nodejs24.x",
+    "region": "us-east-2",
+    "functionBundleBytes": 390705,
+    "cache": "ephemeral public provider cache; reviewed seed survives cold starts",
+    "availabilityBoundary": "Laptop-independent while the Netlify project/account remains active and within plan/service limits; no perpetual-availability guarantee."
+  },
+  "privacy": {
+    "personalizedState": "browser-local",
+    "academicFixture": "tests/fixtures/apas-acceptance.html",
+    "realStudentAuditUsed": false,
+    "rawAuthenticatedApasUploaded": false,
+    "reviewedSeed": {
+      "policySnapshots": 6,
+      "communityReferences": 2,
+      "studentAcademicState": false
+    }
+  },
+  "automated": {
+    "productionDependencyVulnerabilities": 0,
+    "tests": {
+      "passed": 175,
+      "failed": 0
+    },
+    "typecheck": "pass",
+    "apasCorpus": "pass",
+    "courseCoverage": "pass",
+    "productionReleaseGate": "pass",
+    "deterministicArchive": "pass"
+  },
+  "apiAcceptance": {
+    "health": {
+      "status": "running",
+      "version": "0.10.2",
+      "parserVersion": "0.4.5",
+      "serverless": true
+    },
+    "providers": [
+      "umn-schedule-builder:healthy",
+      "gophergrades:healthy"
+    ],
+    "representativeCourse": {
+      "code": "CSCI 5302",
+      "term": "1273",
+      "sections": 1,
+      "historicalStudents": 383,
+      "community": [
+        "reddit",
+        "ratemyprofessor"
+      ]
+    },
+    "policy": {
+      "mode": "bounded-lexical",
+      "decisionAuthority": "none",
+      "officialEvidence": true
+    },
+    "hostileOriginStatus": 403,
+    "securityHeaders": [
+      "Content-Security-Policy",
+      "Strict-Transport-Security",
+      "X-Content-Type-Options",
+      "Referrer-Policy",
+      "Permissions-Policy"
+    ]
+  },
+  "edgeRateLimit": {
+    "algorithm": "sliding_window",
+    "windowSizeSeconds": 60,
+    "windowLimit": 120,
+    "aggregateBy": [
+      "ip",
+      "domain"
+    ],
+    "deployMetadataValidated": true
+  },
+  "extension": {
+    "version": "0.10.2",
+    "originPermission": "https://smart-umn-planner.netlify.app/*",
+    "publicArchiveSha256": "48dd2c092deffea02b45e0d5add7addb04e4fcab81d407965ad0dade26c5b5f1",
+    "releaseArchiveSha256": "48dd2c092deffea02b45e0d5add7addb04e4fcab81d407965ad0dade26c5b5f1",
+    "byteIdenticalPublicAndRelease": true,
+    "deterministicAcrossRepeatedPackaging": true
+  },
+  "browserAcceptance": {
+    "checkedAt": "2026-09-28T19:34:30.014Z",
+    "freshProfile": true,
+    "web": {
+      "import": true,
+      "unknownCreditsFailClosed": true,
+      "goalPersistence": true,
+      "reload": true,
+      "liveSchedule": true,
+      "narrowOverflow": false
+    },
+    "extension": {
+      "course": "MATH 1271",
+      "inline": true,
+      "instructorEvidence": true
+    }
+  }
+}

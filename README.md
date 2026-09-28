@@ -4,6 +4,8 @@
 
 Smart UMN turns your APAS into practical course-planning decisions. The Web answers **what should I take next?**; the Chrome Extension adds the information Schedule Builder does not show next to the course itself.
 
+**Live Web:** https://smart-umn-planner.netlify.app — hosted on Netlify Free; normalized academic state and saved plans remain local to the student's browser.
+
 ![Smart UMN Planner — Web Advisor and Schedule Builder Course Intelligence](docs/demos/smart-umn-readme-demo.gif)
 
 *All demos use a synthetic academic profile. Course/grade evidence shown in the Extension may come from current public UMN and GopherGrades data.*

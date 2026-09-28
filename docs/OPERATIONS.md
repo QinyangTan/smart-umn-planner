@@ -2,13 +2,13 @@
 
 ## Netlify serverless path
 
-- Monitor `https://smart-umn-planner.netlify.app/api/health` and `/api/health/providers` separately from the canonical Cloudflare origin until custom-domain promotion is complete. A Netlify deploy being `ready` is not sufficient; invoke the function and run fresh-browser acceptance.
-- Netlify applies a code-defined 120 requests / 60 seconds per IP+domain rate limit to /api/* before function execution. The in-memory RequestBudget remains defense-in-depth but is instance-local.
-- The serverless live provider cache is intentionally ephemeral. Cold starts refetch Schedule Builder/GopherGrades data. Reviewed policy/community evidence comes only from `config/public-evidence-seed.json`. Netlify's edge rate limit (120 requests / 60 seconds per IP+domain) applies before function execution; the in-function RequestBudget is defense in depth, not a cross-instance global counter.
+- Monitor the primary `https://smart-umn-planner.netlify.app/api/health` and `/api/health/providers`. A Netlify deploy being `ready` is not sufficient; invoke the function and run fresh-browser acceptance.
+- Netlify applies a code-defined 120 requests / 60 seconds per IP+domain rate limit to `/api/*` before function execution. The in-memory `RequestBudget` remains defense-in-depth but is instance-local.
+- The serverless live provider cache is intentionally ephemeral. Cold starts refetch Schedule Builder/GopherGrades data. Reviewed policy/community evidence comes only from `config/public-evidence-seed.json`.
 - Refresh the reviewed public SQLite cache through the existing worker/policy workflow, run `npm run export:public-seed`, inspect the diff, then redeploy. Never seed APAS HTML, student records, plans, cookies or credentials.
 - Before deploying from a DevSpace worktree, create a clean upload copy without the worktree `.git` pointer or deploy from a normal Git checkout. Do not upload `.runtime`, `var`, or local databases.
 - A serverless rollout is accepted only after health/provider checks, hostile-origin rejection, a representative live course-context query, policy retrieval with `decisionAuthority: none`, and the synthetic fresh-profile browser gate.
-- Keep the existing Cloudflare origin available as rollback until the final custom-domain DNS/TLS switch has independently passed those same checks.
+- Keep the existing Cloudflare/Mac origin available as rollback while v0.10.2 is observed in production; it is no longer the primary availability path.
 
 - Monitor `/api/health` for process availability and aggregate error/latency counters; inspect `/api/health/providers` separately for upstream failures. An unavailable optional historical/community provider must not authorize or block otherwise verified degree rules.
 - Alert on repeated provider `schemaDrift`, failed refreshes, rising `overloaded` counts and stale official evidence. Preserve last-known cache with `stale:true`; the solver excludes stale official schedules.

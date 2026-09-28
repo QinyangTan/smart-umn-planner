@@ -1,4 +1,4 @@
-import test from'node:test';import assert from'node:assert/strict';
+import test from'node:test';import assert from'node:assert/strict';import{readFileSync}from'node:fs';
 import seed from'../config/public-evidence-seed.json'with{type:'json'};
 
 process.env.PUBLIC_ORIGIN='https://smart-umn-planner.netlify.app';
@@ -7,6 +7,7 @@ const netlifyModule=await import('../netlify/functions/api.mts');const handler=n
 const ctx={ip:'203.0.113.10'} as any;
 const call=(path:string,init?:RequestInit)=>handler(new Request('https://smart-umn-planner.netlify.app'+path,init),ctx);
 
+test('Netlify build publishes the reviewed extension archive with the Web',()=>{const toml=readFileSync('netlify.toml','utf8');assert.match(toml,/command\s*=\s*"npm run package:extension"/);});
 test('Netlify edge rate limit protects every API path before function execution',()=>{const c=netlifyModule.config as any;assert.deepEqual(c.rateLimit,{windowLimit:120,windowSize:60,aggregateBy:['ip','domain']});assert.equal(c.path,'/api/*');});
 test('Netlify seed contains only reviewed public evidence',()=>{
  assert.equal(seed.schemaVersion,1);assert.equal(seed.snapshots.length,6);assert.equal(seed.community.length,2);

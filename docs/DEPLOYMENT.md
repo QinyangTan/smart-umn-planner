@@ -47,4 +47,4 @@ For the long-running Node service, back up the public SQLite database with the S
 
 ## Stable hostname versus availability
 
-A named tunnel on an existing domain provides a stable hostname, not an availability guarantee. The historical Mac/Cloudflare origin goes offline when that machine sleeps or disconnects. An independently accepted Netlify serverless deployment is available as an always-on hosting path, but the canonical custom-domain cutover must not occur until DNS/TLS and the final hostname pass the same HTTPS API and clean-browser/extension acceptance gates. No paid resource is required by either current path.
+The primary public origin is `https://smart-umn-planner.netlify.app`, which no longer depends on the developer Mac being awake. The historical Mac/Cloudflare origin remains a rollback path and can go offline when that machine sleeps or disconnects. A future custom-domain move is optional, not required for availability; any new hostname must still pass the same HTTPS API and clean-browser/extension acceptance gates. No paid resource is required by either current path.
