@@ -179,3 +179,9 @@ Reddit/RateMyProfessors automated collection remains link-only. The reviewed-exc
 ## v0.7.1 provider-health patch — 2026-09-27
 
 A final post-release health check found a monitoring correctness bug: one expected course-level GopherGrades 404 could overwrite the provider-wide health row and make `/api/health` report the entire source as down even while known live queries succeeded. Record-level 404s now remain local to that evidence request and do not poison provider-wide health. Provider health probes use known positive records, and `/api/health` actively refreshes Schedule Builder and GopherGrades health before responding. `tests/provider-health.test.ts` locks this behavior. On the patched running API both providers return `healthy`.
+
+## v0.10.3 canonical-link candidate
+
+Local gates: 177 tests passed; typecheck, production dependency audit (zero vulnerabilities), anonymous APAS corpus, course coverage, production packaging and deterministic release verification passed. Production packaging used `https://smartumn.qinyangtan.com`. The new regression bundles the extension DOM module with this origin and observes its rendered planner link, including the unavailable-provider path.
+
+These are local candidate checks. They do not establish fresh-profile Web/extension acceptance or a completed custom-domain migration. Current Netlify production remains v0.10.2; the tunnel-backed custom hostname remains v0.10.1. Netlify TLS provisioning is unresolved, so public DNS was not changed.

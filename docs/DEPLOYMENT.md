@@ -48,3 +48,9 @@ For the long-running Node service, back up the public SQLite database with the S
 ## Stable hostname versus availability
 
 The primary public origin is `https://smart-umn-planner.netlify.app`, which no longer depends on the developer Mac being awake. The historical Mac/Cloudflare origin remains a rollback path and can go offline when that machine sleeps or disconnects. A future custom-domain move is optional, not required for availability; any new hostname must still pass the same HTTPS API and clean-browser/extension acceptance gates. No paid resource is required by either current path.
+
+## Canonical migration preflight (2026-09-28)
+
+The requested destination is `https://smartumn.qinyangtan.com` on the existing Netlify site `3acbab52-b741-466a-bc3b-75c138903c83`. The domain is now attached to that site, but DNS still points to the working Cloudflare Tunnel. Netlify certificate provisioning returned HTTP 422 and direct TLS validation against Netlify rejected the hostname. Do not treat the domain attachment as an accepted migration or change DNS until the TLS transition is resolved.
+
+Build the cutover candidate with `NODE_ENV=production PUBLIC_ORIGIN=https://smartumn.qinyangtan.com npm run package:extension`. Version 0.10.3 fixes Schedule Builder planner links to use the same compiled origin as the extension bridge; the previous 0.10.2 release contained a localhost link. The compiled-link regression exercises the rendered link and its course, term and campus query parameters. No DNS cutover or new production deploy is included in this code change.

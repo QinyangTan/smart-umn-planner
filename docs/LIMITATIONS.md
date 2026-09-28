@@ -31,3 +31,7 @@ The primary Netlify HTTPS deployment has bounded public API inputs, exact host/o
 ## Checkpoint deployment note
 
 The source of truth is the Hermes workspace. The current Chrome unpacked installation uses a separate build directory under Documents/Codex. Its displayed version and loaded path must be checked after deployment. Local academic records parsed by an older build may lack campus identity and remain prerequisite-review-only until APAS is synced with the current parser; the planner must not infer a missing campus to make them pass.
+
+## Pending canonical-domain transition
+
+`smartumn.qinyangtan.com` has been attached to Netlify but still uses the original tunnel-backed DNS record. Netlify has not issued a matching certificate; certificate provisioning returned 422. The custom hostname must not be described as laptop-independent until final-host DNS/TLS, API, fresh-profile Web and extension acceptance pass. Version 0.10.3 is a local cutover candidate, not an accepted hosted release.

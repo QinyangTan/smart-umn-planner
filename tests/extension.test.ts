@@ -208,6 +208,8 @@ test('term and card detection fail closed outside known structures',()=>{
  assert.equal(detectTerm(d),undefined);assert.equal(findCards(d).length,0);
 });
 
+test('Schedule Builder planner links use the compiled shared Web origin instead of a hardcoded localhost',()=>{const source=readFileSync('apps/extension/schedule-dom.ts','utf8');assert.match(source,/WEB_ORIGIN/);assert.doesNotMatch(source,/http:\/\/127\.0\.0\.1:4317\/\?course=/);});
+
 test('package and extension manifest versions stay aligned for release artifacts',()=>{const pkg=JSON.parse(readFileSync('package.json','utf8')),m=JSON.parse(readFileSync('apps/extension/manifest.json','utf8'));assert.equal(m.version,pkg.version);});
 
 test('manifest and build are inline-only: no side-panel permission or side-panel bundle',()=>{
