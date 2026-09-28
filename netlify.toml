@@ -1,5 +1,5 @@
 [build]
-  command = "npm run package:extension"
+  command = "NODE_ENV=production PUBLIC_ORIGIN=https://smartumn.qinyangtan.com npm run package:extension"
   publish = "dist/web"
 
 [functions]
