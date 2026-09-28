@@ -24,3 +24,8 @@ jobs:
       - run: npm run build
       - run: npm run verify:apas-corpus
       - run: npm run verify:course-coverage
+      - run: npm run package:extension
+        env:
+          NODE_ENV: production
+          PUBLIC_ORIGIN: https://smartumn.qinyangtan.com
+      - run: npm run verify:release -- --production

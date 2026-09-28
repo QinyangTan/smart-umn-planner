@@ -25,7 +25,8 @@
   "record:demos": "npm run build && node scripts/record-demos.ts",
   "embeddings:warm": "node scripts/warm-policy-embeddings.ts",
   "policy:refresh": "node scripts/refresh-policy-sources.ts",
-  "worker": "node apps/worker/cli.ts"
+  "worker": "node apps/worker/cli.ts",
+  "verify:release": "node scripts/verify-release.ts"
  },
  "devDependencies": {
   "@types/chrome": "^0.1.0",

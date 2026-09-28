@@ -1,0 +1,12 @@
+import fs from'node:fs';import path from'node:path';import assert from'node:assert/strict';import{execFileSync}from'node:child_process';
+const pkg=JSON.parse(fs.readFileSync('package.json','utf8')),lock=JSON.parse(fs.readFileSync('package-lock.json','utf8')),source=JSON.parse(fs.readFileSync('apps/extension/manifest.json','utf8')),manifest=JSON.parse(fs.readFileSync('dist/extension/manifest.json','utf8')),build=JSON.parse(fs.readFileSync('dist/build.json','utf8'));
+for(const version of [lock.version,lock.packages[''].version,source.version,manifest.version,build.version])assert.equal(version,pkg.version,'Release version mismatch');
+assert.equal(manifest.manifest_version,3);assert.deepEqual(manifest.permissions,['storage','alarms']);assert.ok(!manifest.side_panel);assert.ok(manifest.key);
+assert.deepEqual(manifest.host_permissions,['https://umn.uachieve.com/selfservice/*','https://schedulebuilder.umn.edu/*',build.origin.replace(/:\d+$/,'')+'/*']);
+if(process.argv.includes('--production')){assert.equal(build.production,true);assert.ok(build.origin.startsWith('https://'));assert.ok(!manifest.host_permissions.some((x:string)=>x.includes('localhost')||x.includes('127.0.0.1')));}
+const zip=path.join('release',`smart-umn-planner-extension-v${pkg.version}.zip`);assert.ok(fs.statSync(zip).size<10_000_000);assert.deepEqual(fs.readFileSync(zip),fs.readFileSync('dist/web/smart-umn-extension.zip'));
+const entries=execFileSync('unzip',['-Z1',zip],{encoding:'utf8'}).trim().split('\n');for(const required of ['manifest.json','background.js','apas.js','schedule.js','bridge.js'])assert.ok(entries.includes(required));assert.ok(entries.every(e=>!e.startsWith('/')&&!e.split('/').includes('..')&&!/\.(?:html|sqlite|pem|env)$/.test(e)));
+if(build.production)assert.ok(!entries.some(e=>e.endsWith('.map')));
+for(const match of fs.readFileSync('README.md','utf8').matchAll(/!?\[[^\]]*\]\((docs\/[^)]+)\)/g))assert.ok(fs.existsSync(match[1]),`Missing README asset ${match[1]}`);
+for(const file of ['scripts/verify-browser.ts','scripts/record-demos.ts'])assert.ok(!/private-audit\.html/.test(fs.readFileSync(file,'utf8')),'Browser/demo workflow must use synthetic academic state');
+console.log(JSON.stringify({version:pkg.version,origin:build.origin,production:build.production,zip,bytes:fs.statSync(zip).size,checks:'versions, permissions, package, README assets, synthetic-only acceptance'},null,2));
