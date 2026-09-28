@@ -1,5 +1,6 @@
-import type {CourseContext,Preferences,Schedule,StudentAcademicProfile,DegreeRequirement} from '../schemas/index.ts';
+import type {CourseContext,Preferences,Schedule,StudentAcademicProfile} from '../schemas/index.ts';
 import {analyzeRequirementRouteCoverage,degreeFit,evaluate,flattenRequirements} from './rules.ts';
+export{compatibilityPassport,compatibilityReport}from'./compatibility.ts';
 
 export type TermSeason='Spring'|'Summer'|'Fall';
 export type OfferingPattern={code:string;observedTerms:string[];seasons:TermSeason[];confidence:'strong'|'limited'|'unknown';label:string;seasonCounts:Record<TermSeason,number>};
@@ -53,16 +54,6 @@ export function actionableReview(reason:string):ReviewGuidance{
  if(/offer|term|semester/.test(r))return{kind:'offering',title:'Future offering uncertainty',action:'Use the historical pattern as a planning signal only; confirm the future term when UMN publishes it.'};
  return{kind:'unknown',title:'Advisor review',action:'Smart UMN cannot prove this condition. Keep it out of the automatic plan until APAS or an advisor confirms it.'};
 }
-
-export function compatibilityPassport(profile:StudentAcademicProfile){
- const coverage=analyzeRequirementRouteCoverage(profile).overall;
- const roots=[...profile.requirements,...(profile.additionalPrograms||[]).flatMap(p=>p.requirements)];
- const open=flattenRequirements(roots).filter(r=>r.status==='incomplete'||r.status==='in_progress');
- const signature=open.map(r=>ruleFamily(r)).sort().join('|');
- let hash=2166136261;for(const ch of signature){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
- return{fingerprint:(hash>>>0).toString(16).padStart(8,'0'),parserVersion:profile.parserVersion,programCount:1+(profile.additionalPrograms?.length||0),programKinds:[profile.program.kind||'unknown',...(profile.additionalPrograms||[]).map(p=>p.program.kind||'unknown')],openRequirements:coverage.totalActiveRemainingRequirements,strictRoutes:coverage.strictSupportedRequirements,candidateRoutes:coverage.candidateRouteSupportedRequirements,policyConstraints:coverage.policyConstraints,recognizedPolicyRules:coverage.recognizedPolicyRules,unclassifiedPolicyConstraints:coverage.unclassifiedPolicyConstraints,aggregateContainers:coverage.aggregateContainers,unresolved:coverage.unknownUnroutedRequirements,transferCourseCount:profile.transferCourses.length,inProgressCourseCount:profile.inProgressCourses.length,warnings:profile.warnings.length};
-}
-function ruleFamily(r:DegreeRequirement):string{return `${r.rule.type}:${r.candidateRule?.type||'-'}:${r.requiredCredits!==undefined?'cr':''}${r.requiredCount!==undefined?'ct':''}${r.requiredGpa!==undefined?'gpa':''}`;}
 
 function roadmapProfile(profile:StudentAcademicProfile,scenario:WhatIfScenario):StudentAcademicProfile{return scenario.primaryOnly?{...profile,additionalPrograms:[]}:profile;}
 export function buildGraduationRoadmap(profile:StudentAcademicProfile,currentTerm:string,currentSchedule:Schedule|undefined,contexts:CourseContext[],prefs:Preferences,scenario:WhatIfScenario={}):GraduationRoadmap{

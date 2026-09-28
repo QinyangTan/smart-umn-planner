@@ -1,0 +1,32 @@
+{
+  "kind": "smart-umn-anonymous-apas-compatibility-corpus",
+  "schemaVersion": 1,
+  "reports": [
+    {
+      "kind": "smart-umn-anonymous-apas-compatibility",
+      "generatedAt": "2026-09-28T03:29:56.460Z",
+      "schemaVersion": 1,
+      "fingerprint": "94dd5e0b",
+      "parserVersion": "0.4.5",
+      "programCount": 1,
+      "programKinds": [
+        "degree"
+      ],
+      "openRequirements": 19,
+      "strictRoutes": 2,
+      "candidateRoutes": 1,
+      "policyConstraints": 9,
+      "recognizedPolicyRules": 9,
+      "unclassifiedPolicyConstraints": 0,
+      "aggregateContainers": 7,
+      "unresolved": 0,
+      "transferCourseCount": 4,
+      "apCreditCount": 0,
+      "ibCreditCount": 0,
+      "otherTestCreditCount": 0,
+      "nonTestTransferCount": 4,
+      "inProgressCourseCount": 4,
+      "warnings": 0
+    }
+  ]
+}

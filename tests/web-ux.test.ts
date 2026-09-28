@@ -52,6 +52,8 @@ test('APAS detail uses semantic retrieval only as review evidence',()=>{
 
 test('APAS detail refreshes official Liberal Education evidence and renders the enriched profile',()=>{assert.match(app,/if\(value==='degree'\)\{void refreshEffectiveProfile/);assert.match(app,/detailProfile\.requirements\.map\(requirementHTML\)/);assert.match(app,/Official base category matched; the lab\/field qualifier remains review-only/);});
 
+test('APAS compatibility copy action emits the schema-versioned anonymous report',()=>{assert.match(app,/JSON\.stringify\(compatibilityReport\(profile\),null,2\)/);});
+
 test('onboarding has one connection action and no decorative fake dashboard',()=>{
  assert.match(app,/Your APAS becomes the filter/);
  assert.match(app,/Connect APAS/);

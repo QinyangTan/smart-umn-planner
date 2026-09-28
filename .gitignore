@@ -2,7 +2,8 @@ node_modules/
 dist/
 var/
 .runtime/
-docs/evidence/
+docs/evidence/*
+!docs/evidence/apas-compatibility-corpus.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md
 *.log
