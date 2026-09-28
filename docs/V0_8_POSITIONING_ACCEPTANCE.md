@@ -1,4 +1,4 @@
-# Smart UMN v0.8.0 positioning acceptance
+# Smart UMN v0.8.x positioning acceptance
 
 Scope: University of Minnesota Twin Cities local release candidate. v0.8 intentionally separates the two product surfaces while keeping one deterministic academic core.
 
@@ -43,11 +43,11 @@ Official inventory coverage remains a separate claim: 146 current CAPE major nam
 
 ## Final observed acceptance — 2026-09-27
 
-- 105/105 automated tests pass; TypeScript, Web build, MV3 Extension build and release packaging pass.
+- 106/106 automated tests pass; TypeScript, Web build and MV3 Extension build pass.
 - Live provider verification passes: 330 Twin Cities subjects; current representative catalogs and GopherGrades are healthy.
 - Official inventory verification passes 146/146 current CAPE major names and 161/161 current Sample Plans program-degree identities across 13 colleges/schools, with zero inventory drift or structural failures.
-- Fresh isolated-browser acceptance runs Extension 0.8.0 with parser 0.4.3, produces 8 live schedule options from the saved real CS audit, and verifies the Web Advisor first fold plus registration handoff.
-- The same browser run opens real Schedule Builder CSCI 5302 and observes: Daniel Boley 2.2/5 RMP overall quality via GopherGrades, 383 historical grade students, an eight-term GPA trend, 10 observed Spring terms, one curated Reddit source with the reviewed excerpt/topic, and the personalized APAS/prerequisite verdict.
+- Fresh isolated-browser acceptance runs Extension 0.8.1 with parser 0.4.3, produces 8 live schedule options from the saved real CS audit, and verifies the Web Advisor first fold plus registration handoff.
+- The same browser run opens real Schedule Builder CSCI 5302 and observes: Daniel Boley 2.2/5 RMP overall quality via GopherGrades, 383 historical grade students, an eight-term GPA trend, 10 observed Spring terms, one curated Reddit source with the reviewed excerpt/topic, and the personalized APAS/prerequisite verdict. It also verifies that the Smart UMN host sits directly between the native description and `prereq:` paragraph with transparent background, zero border radius, and no shadow.
 - CSCI 1133 still correctly renders **Not eligible now · Already completed; duplicate credit excluded** for the saved real audit.
 
 ## Demo/privacy contract

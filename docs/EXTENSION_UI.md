@@ -1,6 +1,6 @@
 # Schedule Builder Course Intelligence UI
 
-The Chrome extension is deliberately the **high-information-density** Smart UMN surface. Its job is to make Schedule Builder feel like a richer course-intelligence product without replacing Schedule Builder itself. It follows a strict **value-add only** rule: Schedule Builder remains the owner of official catalog/section presentation; Smart UMN should not restate information that is already visible next to the injected UI.
+The Chrome extension is deliberately the **high-information-density** Smart UMN surface. Its job is to make Schedule Builder feel richer without looking like a second product pasted on top. On a course-detail page, Smart UMN mounts **immediately after the native course description and before the native prerequisite line**, so the intelligence reads as part of the course page itself. It follows a strict **value-add only** rule: Schedule Builder remains the owner of official catalog/section presentation.
 
 ## What Schedule Builder owns
 
@@ -35,16 +35,18 @@ Reddit and RateMyProfessors remain link-only for automated collection under the 
 
 ## Visual hierarchy
 
-The default surface should be readable in one glance:
+The default surface should be readable in one glance and visually merge with the native course copy:
 
-- one small Smart UMN brand line;
-- a responsive row of 3–4 insight cards;
-- one strong value, one short supporting line, optional tiny visualization;
-- subtle UMN maroon/gold accents rather than a second full application embedded inside Schedule Builder;
+- one tiny Smart UMN label, not a product header;
+- a flat responsive information row with thin separators instead of bordered cards;
+- transparent backgrounds, no drop shadows and no rounded-card chrome;
+- one strong value, one short supporting line, and an optional tiny grade sparkline;
+- expanded evidence appears as another inline section separated by a single rule, not as a floating panel;
+- subtle UMN maroon/gold accents only;
 - no side panel and no iframe;
 - source links are direct and clearly labeled.
 
-The historical-grade pattern is inspired by the successful GopherGrades approach: compact inline placement, average/most-common/sample-size summaries, and a small chart. Smart UMN implements its own DOM/CSS and adds APAS-personalized context rather than embedding GopherGrades UI.
+The presentation follows the useful part of the GopherGrades pattern: course intelligence feels embedded in the page, with compact grade summaries and visual evidence close to the native course description. Smart UMN implements its own DOM/CSS and adds APAS-personalized context rather than embedding or copying GopherGrades UI.
 
 ## Regression guard
 

@@ -72,6 +72,14 @@ test('Schedule Builder renders a compact value-add insight rail without repeatin
  app.disconnect();dom.window.close();
 });
 
+test('course detail view blends Smart UMN directly after the native description instead of rendering a detached card',async()=>{
+ const dom=new JSDOM('<body><div id="crse-info" class="col-sm-12"><div><h2>CSCI 5302: Computational Genomics</h2><p id="native-description">A current UMN course description.</p><p id="native-prereq">prereq: No prerequisites</p><p></p><div class="text-right"><button>Add course</button></div></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
+ const app=installEnhancements(dom.window.document,{batch:async()=>[context()],fit:async courses=>fitFor(courses.map(c=>c.code)),connect:async()=>{}});await tick();
+ const host=dom.window.document.querySelector('smart-umn-insight')!;assert.ok(host);assert.equal(host.previousElementSibling?.id,'native-description');assert.equal(host.nextElementSibling?.id,'native-prereq');
+ const style=host.shadowRoot?.querySelector('style')?.textContent||'';assert.match(style,/\.insight\{[^}]*border:0[^}]*background:transparent/s);assert.doesNotMatch(style,/border-radius:8px|box-shadow:0 1px 2px/,'default intelligence surface must not look like detached cards');
+ app.disconnect();dom.window.close();
+});
+
 test('Schedule Builder APAS summary prioritizes current eligibility over a raw requirement match',async()=>{
  const dom=new JSDOM('<body><a name="CSCI5302"></a><div class="panel"><div class="panel-body"></div></div></body>',{url:'https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/'});
  const app=installEnhancements(dom.window.document,{

@@ -1,4 +1,4 @@
-# Smart UMN v0.8.0 demos
+# Smart UMN v0.8.1 demos
 
 ![Smart UMN v0.8 combined demo](demos/smart-umn-readme-demo.gif)
 
@@ -20,6 +20,6 @@ Shows the secondary planning controls without changing the simple top-level IA: 
 
 [![Schedule Builder Course Intelligence](demos/03-extension-course-intelligence-thumb.png)](demos/03-extension-course-intelligence.mp4)
 
-Runs inside the real Twin Cities Schedule Builder CSCI 5302 page. The dense-but-collapsible rail adds information the native page does not already show: personalized APAS fit, historical grade distribution and GPA trend, exact-current-professor history, **RMP overall quality via GopherGrades**, reviewed Reddit context/topics, and historical offering pattern. Community evidence never changes degree or schedule truth.
+Runs inside the real Twin Cities Schedule Builder CSCI 5302 page. Smart UMN is inserted directly between the native course description and prerequisite text, using a flat transparent information row instead of detached cards. It adds personalized APAS fit, historical grade distribution and GPA trend, exact-current-professor history, **RMP overall quality via GopherGrades**, reviewed Reddit context/topics, and historical offering pattern. Community evidence never changes degree or schedule truth.
 
 The machine-readable recording receipt is [demo-manifest.json](demos/demo-manifest.json).

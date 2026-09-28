@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-09-28T00:03:23.451Z",
+  "generatedAt": "2026-09-28T00:30:30.233Z",
   "profile": "synthetic academic profile only",
   "publicEvidence": "Live public UMN/Schedule Builder/GopherGrades evidence plus manually reviewed original community links.",
   "privacy": "No raw APAS HTML, student identity, credentials, cookies, Duo/SAML data, or personal course history is recorded.",
   "videos": [
     {
       "file": "docs/demos/01-web-registration-advisor.mp4",
-      "bytes": 466442
+      "bytes": 309563
     },
     {
       "file": "docs/demos/02-web-what-if-advisor.mp4",
-      "bytes": 838803
+      "bytes": 757833
     },
     {
       "file": "docs/demos/03-extension-course-intelligence.mp4",
-      "bytes": 266201
+      "bytes": 302572
     }
   ],
   "showcase": {
@@ -23,6 +23,11 @@
       "docs/demos/01-web-registration-advisor-thumb.png",
       "docs/demos/02-web-what-if-advisor-thumb.png",
       "docs/demos/03-extension-course-intelligence-thumb.png"
+    ],
+    "previews": [
+      "docs/demos/01-web-registration-advisor-preview.gif",
+      "docs/demos/02-web-what-if-advisor-preview.gif",
+      "docs/demos/03-extension-course-intelligence-preview.gif"
     ]
   }
 }
