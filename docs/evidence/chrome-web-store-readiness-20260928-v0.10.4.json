@@ -2,13 +2,14 @@
   "kind": "chrome-web-store-readiness",
   "date": "2026-09-28",
   "version": "0.10.4",
-  "branch": "feat/chrome-web-store-readiness",
+  "branch": "fix/deterministic-png-v0104",
   "canonicalOrigin": "https://smartumn.qinyangtan.com",
   "package": {
     "path": "release/smart-umn-planner-extension-v0.10.4.zip",
-    "bytes": 32148,
-    "sha256": "40aef90baaa36aa8949fbccaedb38cf013226376901d56d017aa97b003191555",
+    "bytes": 32460,
+    "sha256": "90919abaccc8173e64d474c459ea623c736d2fdb554407d0848fc75b53f8cf70",
     "deterministic": true,
+    "crossPlatformPngEncoding": "pure-JS stored DEFLATE with fixed zlib framing and Adler-32; no node:zlib dependency",
     "manifestV3": true,
     "minimumChromeVersion": "120",
     "homepageUrl": "https://smartumn.qinyangtan.com",
@@ -39,13 +40,13 @@
       "path": "dist/extension/icons/icon128.png",
       "width": 128,
       "height": 128,
-      "sha256": "4774d648945ad7a7a390001e6dcecd2db3da3acad933ca68938bb0c59514772d"
+      "sha256": "9fca3649c7dc83dc5e1178c41532785c40378c7a92059dadeca718c27988ce36"
     },
     "smallPromo": {
       "path": "dist/store/promo-small-440x280.png",
       "width": 440,
       "height": 280,
-      "sha256": "05e6cc1981b23f8f43be3734c33f10ae049b1f61ec72be9deb06e643389e0d45",
+      "sha256": "9016388de807ff284b56ab62363adc6df27cb860e0b18852a3ed0fba0447c5b4",
       "generated": true
     },
     "screenshots": [
@@ -83,8 +84,8 @@
   },
   "verification": {
     "tests": {
-      "count": 177,
-      "pass": 177,
+      "count": 178,
+      "pass": 178,
       "fail": 0
     },
     "productionDependencyAudit": "0 vulnerabilities",
