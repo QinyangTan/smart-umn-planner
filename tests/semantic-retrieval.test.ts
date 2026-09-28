@@ -6,7 +6,7 @@ import {allowedPolicySource} from '../apps/worker/policy-source.ts';
 
 test('policy registry is unique, review-safe, and Twin Cities scoped',()=>{
  const docs=loadPolicyRegistry();assert.ok(docs.length>=8);assert.equal(new Set(docs.map(d=>d.id)).size,docs.length);
- assert.ok(docs.every(d=>d.scope.campus==='UMNTC'));
+ assert.ok(docs.every(d=>d.scope.campus==='UMNTC'));assert.ok(docs.some(d=>d.family==='qualified-attribute'));assert.ok(docs.some(d=>d.family==='degree-application-scope'));
  assert.ok(docs.filter(d=>d.authority==='classification-only').every(d=>d.execution==='review-only'||d.execution==='deterministic-template'));
 });
 

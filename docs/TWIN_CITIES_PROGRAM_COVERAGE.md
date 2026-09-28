@@ -7,7 +7,7 @@ Two official University of Minnesota sources are checked on every `npm run verif
 
 ## What a PASS means
 
-Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a seventeen-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, seven typed non-authorizing policy Rule IR families, one still-unclassified policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that supported routing, typed policy containment and unsupported-rule containment survive for that identity.
+Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a nineteen-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, nine typed non-authorizing policy Rule IR families, one still-unclassified policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that supported routing, typed policy containment and unsupported-rule containment survive for that identity.
 
 It does **not** prove that every real, major-specific APAS policy for that program has been observed. Only identities with a locally saved real audit are labeled `real+synthetic`; every other identity remains `synthetic-structural-only` until a real or anonymized audit sample is available.
 
@@ -350,6 +350,6 @@ Current result: **146/146 majors PASS** and **161/161 program-degree identities 
 
 ## Current real-audit evidence
 
-The saved real audit maps to major **Computer Science (B.S.)** and program-degree identity **Computer Science B.S. Comp.Sc.** in **College of Science and Engineering**. Its active remaining nodes are 2 strict routes, 1 candidate routes, 7 aggregate containers, 9 policy constraints (7 structured policy rules / 2 still-unclassified policy/accounting constraints), and 0 unknown/unrouted requirements.
+The saved real audit maps to major **Computer Science (B.S.)** and program-degree identity **Computer Science B.S. Comp.Sc.** in **College of Science and Engineering**. Its active remaining nodes are 2 strict routes, 1 candidate routes, 7 aggregate containers, 9 policy constraints (9 structured policy rules / 0 still-unclassified policy/accounting constraints), and 0 unknown/unrouted requirements.
 
 The machine-readable source of truth is `docs/evidence/twin-cities-program-coverage-20260927.json`. Raw private APAS HTML is not copied into either evidence file.

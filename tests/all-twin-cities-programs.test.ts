@@ -30,6 +30,8 @@ function structuralAudit(program:string){
  <div class="requirement Status_NO" rname="P-MAJOR"><div class="reqTitle">You need at least 78 credits in this major. This GPA includes all major credits, including transfer credits.</div></div>
  <div class="requirement Status_NO" rname="P-UPPER"><div class="reqTitle">You must complete at least 19 upper-division (3xxx-level or higher) credits for this major through University of Minnesota Twin Cities.</div></div>
  <div class="requirement Status_NO" rname="P-DES"><div class="reqTitle">Of the 23 credits required for Technical Electives, 11 must have a CSCI designator.</div></div>
+ <div class="requirement Status_NO" rname="P-QUAL"><div class="reqTitle">Biological Sciences with lab or field experience</div></div>
+ <div class="requirement Status_NO" rname="P-SCOPE"><div class="reqTitle">Credits used to meet this degree's liberal education, collegiate, and major requirements.</div></div>
  <div class="requirement Status_NO" rname="UNSUPPORTED"><div class="reqTitle">Residency policy requires institutional review</div><div class="reqBody"></div></div>
  </div></body>`;
 }
@@ -48,11 +50,11 @@ function assertStructuralIdentity(name:string){
   const summary=analyzeRequirementRouteCoverage(profile).overall;
   const discovery=degreeDiscoveryPlan(profile,'UMNTC');
   assert.equal(profile.program.name,name,name);
-  assert.equal(summary.totalActiveRemainingRequirements,17,name);
+  assert.equal(summary.totalActiveRemainingRequirements,19,name);
   assert.equal(summary.strictSupportedRequirements,7,name);
   assert.equal(summary.candidateRouteSupportedRequirements,1,name);
-  assert.equal(summary.policyConstraints,8,name);
-  assert.equal(summary.recognizedPolicyRules,7,name);
+  assert.equal(summary.policyConstraints,10,name);
+  assert.equal(summary.recognizedPolicyRules,9,name);
   assert.equal(summary.unclassifiedPolicyConstraints,1,name);
   assert.equal(summary.unknownUnroutedRequirements,1,name);
   assert.ok(discovery.explicitCodes.includes('GEN 1001'),name);
@@ -86,9 +88,9 @@ test('the official-inventory matrix exercises strict, candidate, policy and fail
     policy:summary.policyConstraints,
     unknown:summary.unknownUnroutedRequirements
    },
-   {total:17,strict:7,candidate:1,policy:8,unknown:1}
+   {total:19,strict:7,candidate:1,policy:10,unknown:1}
   );
-  assert.equal(summary.recognizedPolicyRules,7);
+  assert.equal(summary.recognizedPolicyRules,9);
   assert.equal(summary.unclassifiedPolicyConstraints,1);
   assert.equal(summary.breakdown.candidateOnly,1);
   assert.equal(summary.breakdown.gpa,2);
@@ -108,7 +110,7 @@ test('the official-inventory matrix exercises strict, candidate, policy and fail
   assert.equal(degreeFit(syntheticCourse('EXCL 3202'),profile).some(x=>x.requirementId===exclusion.id&&x.result==='yes'),false);
   const discovery=degreeDiscoveryPlan(profile,'UMNTC');
   assert.ok(discovery.subjects.includes('EXCL'));
-  for(const code of ['P-DEGREE','P-GPA','P-RES','P-FINAL','P-MAJOR','P-UPPER','P-DES'])assert.equal(byCode.get(code)?.rule.type,'policy',code);
+  for(const code of ['P-DEGREE','P-GPA','P-RES','P-FINAL','P-MAJOR','P-UPPER','P-DES','P-QUAL','P-SCOPE'])assert.equal(byCode.get(code)?.rule.type,'policy',code);
   assert.equal(unsupported.rule.type,'unknown');
   assert.equal(degreeFit(syntheticCourse('RES 3001'),profile).some(x=>x.requirementId===unsupported.id&&x.result==='yes'),false,'unsupported policy never authorizes a course');
  }finally{dom.window.close();}

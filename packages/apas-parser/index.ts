@@ -1,6 +1,6 @@
 import {APAS_CAMPUS_DIGITS,courseCode,finite,parseCampusCourseCode,unknownRule} from '../schemas/index.ts';
 import type {StudentAcademicProfile,StudentCourse,DegreeRequirement,RequirementRule,AcademicProgramRoute} from '../schemas/index.ts';
-export const PARSER_VERSION='0.4.4';
+export const PARSER_VERSION='0.4.5';
 const text=(n:Element|null):string=>{if(!n)return'';const clone=n.cloneNode(true) as Element;clone.querySelectorAll('br').forEach(b=>b.replaceWith(' '));return(clone.textContent||'').replace(/\s+/g,' ').trim();};
 const num=(n:Element|null)=>finite(text(n));
 function status(el:Element):DegreeRequirement['status'] {const s=el.matches('.requirement')?el.className:el.querySelector('.subreqPretext .status')?.className||el.className;return /Status_OK/.test(s)?'complete':/Status_IP/.test(s)?'in_progress':/Status_NO\b/.test(s)?'incomplete':/Status_NONE/.test(s)?'informational':'unknown';}
@@ -34,6 +34,8 @@ function deterministicPolicyRule(label:string):RequirementRule|undefined{const s
  if((m=/\bneed at least (\d+(?:\.\d+)?) credits? in this major\b/i.exec(s)))return{type:'policy',family:'major-credits',sourceText:s,reason:'Recognized minimum-major-credit policy; degree-wide allocation remains review-only',parameters:{minimumCredits:Number(m[1]),scope:'major',includesTransfer:/including transfer credits/i.test(s)}};
  if((m=/\bcomplete at least (\d+(?:\.\d+)?) credits?\b/i.exec(s))&&/\bThis includes all University of Minnesota and transfer credits\b/i.test(s))return{type:'policy',family:'degree-credits',sourceText:s,reason:'Recognized minimum-degree-credit policy; APAS remains authoritative for total degree accounting',parameters:{minimumCredits:Number(m[1]),includesTransfer:true}};
  if(scopedDesignatorConstraint(s)&&(m=/\b(\d+(?:\.\d+)?)\s+must\s+have\s+(?:an?\s+)?([A-Z]{2,8})\s+designator\b/i.exec(s)))return{type:'policy',family:'designator-scope',sourceText:s,reason:'Recognized scoped designator-credit policy; it cannot independently authorize courses',parameters:{minimumCredits:Number(m[1]),subject:m[2].toUpperCase()}};
+ if((m=/^(.+?)\s+with\s+lab\s+or\s+field\s+experience\.?$/i.exec(s)))return{type:'policy',family:'qualified-attribute',sourceText:s,reason:'Recognized qualified category requirement; the base official category may be used only as a candidate until the lab/field qualifier is proven',parameters:{categoryLabel:m[1].trim(),qualifier:'lab-or-field-experience'}};
+ if((m=/^Credits used to meet this degree's\s+(.+?)\s+requirements\.?$/i.exec(s))){const scopes=m[1].replace(/\s+and\s+/gi,', ').split(',').map(x=>x.trim()).filter(Boolean);return{type:'policy',family:'degree-application-scope',sourceText:s,reason:'Recognized degree-application accounting scope; it does not independently authorize courses',parameters:{scopes}};}
  return;}
 function deterministicLabelRule(label:string):RequirementRule|undefined{
  const level=/^(\d)xxx\/(\d)xxx-level\s+([A-Z]{2,8})\s+coursework$/i.exec(label.trim());if(level){const subject=level[3].toUpperCase();return{type:'anyOf',rules:[{type:'range',subject,min:Number(level[1])*1000,max:Number(level[1])*1000+999,campus:'UMNTC'},{type:'range',subject,min:Number(level[2])*1000,max:Number(level[2])*1000+999,campus:'UMNTC'}]};}

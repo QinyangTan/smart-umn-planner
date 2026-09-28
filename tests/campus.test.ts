@@ -5,7 +5,7 @@ import{Store}from'../packages/providers/store.ts';
 import{ContextService,ScheduleBuilderProvider}from'../packages/providers/index.ts';
 import{parseAPAS}from'../packages/apas-parser/index.ts';
 import{enrichGeneralEducation}from'../packages/core/general-education.ts';
-import{degreeFit,matches,discoverDegreeCandidates}from'../packages/core/rules.ts';
+import{degreeFit,degreeCandidateFit,matches,discoverDegreeCandidates}from'../packages/core/rules.ts';
 import{courseEntityKey}from'../packages/schemas/index.ts';
 import type{Course,Evidence,GeneralEducationCatalog,GradeEvidence,Section,StudentAcademicProfile}from'../packages/schemas/index.ts';
 
@@ -39,6 +39,8 @@ test('official Schedule Builder general-education catalog enriches only exact AP
  assert.equal(p.requirements.find(r=>r.id==='near')?.rule.type,'unknown','fuzzy labels never authorize a course');
  assert.equal(p.requirements.find(r=>r.id==='bio')?.rule.type,'unknown','qualified labels do not become strict rules');assert.equal(p.requirements.find(r=>r.id==='bio')?.candidateRule?.type,'attribute','official category is retained as a candidate route without dropping the lab qualifier');
 });
+
+test('qualified Liberal Education policy keeps the official base category candidate-only',()=>{const dom=new JSDOM('<body><div id="audit"><div class="card-header"><h2>Example Degree</h2></div><div class="requirement Status_NO" rname="BIO" rqdsubreq="1" rqdhours="2"><div class="reqTitle">Biological Sciences with lab or field experience</div></div></div></body>');const raw=parseAPAS(dom.window.document);dom.window.close();assert.equal(raw.requirements[0].rule.type,'policy');assert.equal(raw.requirements[0].rule.type==='policy'?raw.requirements[0].rule.family:'','qualified-attribute');const catalog:GeneralEducationCatalog={campus:'UMNTC',institution:'UMNTC',term:'1273',name:'Liberal Education Requirements',requirements:[{attribute:'CLE',value:'BIOL',token:'BIOL',name:'Biological Sciences'}],provenance:prov('umn-schedule-builder')};const p=enrichGeneralEducation(raw,catalog),c=course('BIOL 1001','UMNTC',[JSON.stringify({attribute:'CLE',attribute_value:'BIOL',name:'Biological Sciences'})]);assert.equal(p.requirements[0].rule.type,'policy');assert.equal(p.requirements[0].candidateRule?.type,'attribute');assert.equal(degreeFit(c,p).some(x=>x.result==='yes'),false);assert.equal(degreeCandidateFit(c,p).some(x=>x.result==='yes'&&!x.strict),true);});
 
 test('degree discovery keeps proven APAS matches visible when prerequisite metadata is unknown',()=>{
  const profile:StudentAcademicProfile={program:{name:'Synthetic Duluth',campus:'UMNDL'},degreeCredits:{},completedCourses:[],inProgressCourses:[],transferCourses:[],requirements:[{id:'soc',label:'Social Sciences',status:'incomplete',coursesUsed:[],children:[],rule:{type:'attribute',attribute:'DLE',value:'SOC SCI',name:'Social Sciences',campus:'UMNDL'},rawMetadata:{}}],syncedAt:now,parserVersion:'fixture',warnings:[],provenance:prov()};

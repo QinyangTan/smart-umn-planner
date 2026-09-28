@@ -6,7 +6,7 @@ export const UMN_CAMPUSES:Record<UMNCampus,CampusContext>={UMNTC:{campus:'UMNTC'
 export type Provenance = {source:string; url?:string; retrievedAt:string; period:string; sampleSize?:number};
 export type ProviderHealth = {source:string; status:'healthy'|'degraded'|'down'; checkedAt:string; message?:string};
 export type Evidence<T> = {data:T|null; provenance:Provenance; health:ProviderHealth; stale:boolean};
-export type PolicyRuleFamily='degree-credits'|'institutional-gpa'|'residency-credits'|'final-residency-credits'|'major-credits'|'upper-division-major-credits'|'designator-scope';
+export type PolicyRuleFamily='degree-credits'|'institutional-gpa'|'residency-credits'|'final-residency-credits'|'major-credits'|'upper-division-major-credits'|'designator-scope'|'qualified-attribute'|'degree-application-scope';
 export type PolicyRuleParameter=string|number|boolean|string[];
 export type RequirementRule =
  | {type:'unknown'; sourceText:string; reason:string}

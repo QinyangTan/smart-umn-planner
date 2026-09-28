@@ -102,5 +102,31 @@
     "sourceRef": "packages/apas-parser/index.ts",
     "authority": "classification-only",
     "execution": "deterministic-template"
+  },
+  {
+    "id": "family.qualified-attribute",
+    "title": "Qualified official category requirement",
+    "text": "official category with lab or field experience qualified category base category remains candidate until qualifier is proven",
+    "family": "qualified-attribute",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "packages/core/general-education.ts",
+    "authority": "classification-only",
+    "execution": "review-only"
+  },
+  {
+    "id": "family.degree-application-scope",
+    "title": "Degree application / accounting scope",
+    "text": "credits used to meet degree liberal education collegiate major requirements degree application accounting scope",
+    "family": "degree-application-scope",
+    "scope": {
+      "campus": "UMNTC"
+    },
+    "sourceType": "internal-contract",
+    "sourceRef": "packages/apas-parser/index.ts",
+    "authority": "classification-only",
+    "execution": "review-only"
   }
 ]

@@ -37,6 +37,8 @@ function structuralAudit(program:string){
  <div class="requirement Status_NO" rname="P-MAJOR"><div class="reqTitle">You need at least 78 credits in this major. This GPA includes all major credits, including transfer credits.</div></div>
  <div class="requirement Status_NO" rname="P-UPPER"><div class="reqTitle">You must complete at least 19 upper-division (3xxx-level or higher) credits for this major through University of Minnesota Twin Cities.</div></div>
  <div class="requirement Status_NO" rname="P-DES"><div class="reqTitle">Of the 23 credits required for Technical Electives, 11 must have a CSCI designator.</div></div>
+ <div class="requirement Status_NO" rname="P-QUAL"><div class="reqTitle">Biological Sciences with lab or field experience</div></div>
+ <div class="requirement Status_NO" rname="P-SCOPE"><div class="reqTitle">Credits used to meet this degree's liberal education, collegiate, and major requirements.</div></div>
  <div class="requirement Status_NO" rname="UNSUPPORTED"><div class="reqTitle">Residency policy requires institutional review</div><div class="reqBody"></div></div>
  </div></body>`;
 }
@@ -48,11 +50,11 @@ function structuralPass(name:string):boolean{
   const summary=analyzeRequirementRouteCoverage(profile).overall;
   const discovery=degreeDiscoveryPlan(profile,'UMNTC');
   return profile.program.name===name
-   &&summary.totalActiveRemainingRequirements===17
+   &&summary.totalActiveRemainingRequirements===19
    &&summary.strictSupportedRequirements===7
    &&summary.candidateRouteSupportedRequirements===1
-   &&summary.policyConstraints===8
-   &&summary.recognizedPolicyRules===7
+   &&summary.policyConstraints===10
+   &&summary.recognizedPolicyRules===9
    &&summary.unclassifiedPolicyConstraints===1
    &&summary.unknownUnroutedRequirements===1
    &&discovery.explicitCodes.includes('GEN 1001')
@@ -150,7 +152,7 @@ const report={
   currentProgramTitlesChecked:livePrograms.length,
   programStructuralPasses:perProgram.filter(x=>x.genericAPASStructuralMatrix==='pass').length,
   programStructuralFailures:programFailures.length,
-  structuralRequirementShape:{total:17,strict:7,candidate:1,aggregate:0,policy:8,recognizedPolicy:7,unclassifiedPolicy:1,unknown:1},
+  structuralRequirementShape:{total:19,strict:7,candidate:1,aggregate:0,policy:10,recognizedPolicy:9,unclassifiedPolicy:1,unknown:1},
   realAuditSamples:{
    count:realProgramMatch?1:0,
    matchedMajor:realMajorMatch||null,
@@ -180,7 +182,7 @@ const md:string[]=[
  `- **CAPE Major Profiles** for current major names: **${report.officialMajorInventory.liveMajors} majors**.`,
  `- **Twin Cities Sample Plans** for degree/program identities that more closely resemble APAS program headings: **${report.officialProgramInventory.liveRows} program-degree rows across ${report.officialProgramInventory.collegeCount} colleges/schools**.`,'',
  '## What a PASS means','',
- 'Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a seventeen-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, seven typed non-authorizing policy Rule IR families, one still-unclassified policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that supported routing, typed policy containment and unsupported-rule containment survive for that identity.','',
+ 'Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a nineteen-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, nine typed non-authorizing policy Rule IR families, one still-unclassified policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that supported routing, typed policy containment and unsupported-rule containment survive for that identity.','',
  'It does **not** prove that every real, major-specific APAS policy for that program has been observed. Only identities with a locally saved real audit are labeled `real+synthetic`; every other identity remains `synthetic-structural-only` until a real or anonymized audit sample is available.','',
  `Current result: **${report.verification.majorStructuralPasses}/${report.verification.currentMajorNamesChecked} majors PASS** and **${report.verification.programStructuralPasses}/${report.verification.currentProgramTitlesChecked} program-degree identities PASS**, with zero structural failures. Major inventory drift: ${report.officialMajorInventory.drift.added.length} added / ${report.officialMajorInventory.drift.removed.length} removed / ${report.officialMajorInventory.drift.duplicateCount} duplicates. Program inventory drift: ${report.officialProgramInventory.drift.added.length} added / ${report.officialProgramInventory.drift.removed.length} removed / ${report.officialProgramInventory.drift.duplicateCount} duplicates.`,'',
  '## College/school program-degree inventory','',
