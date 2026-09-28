@@ -1,6 +1,6 @@
 import{test}from'node:test';import assert from'node:assert/strict';
 import{spawn}from'node:child_process';import{createServer,request}from'node:http';import{mkdtemp,rm}from'node:fs/promises';import{tmpdir}from'node:os';import{join}from'node:path';import{once}from'node:events';
-import{plannerOrigin}from'../packages/config/origin.ts';import{serverConfig,requestAllowed,RequestBudget}from'../apps/api/security.ts';
+import{plannerOrigin}from'../packages/config/origin.ts';import{serverConfig,requestAllowed,clientBudgetKey,RequestBudget}from'../apps/api/security.ts';
 test('production origins must be exact HTTPS and extension IDs must be explicitly allowlisted',()=>{
  for(const value of ['http://planner.example','https://planner.example/path','https://u:p@planner.example','https://planner.example?x=1','javascript:alert(1)'])assert.throws(()=>plannerOrigin(value));
  assert.throws(()=>serverConfig({NODE_ENV:'production'}));
@@ -10,6 +10,17 @@ test('production origins must be exact HTTPS and extension IDs must be explicitl
  assert.ok(allowed('planner.example','chrome-extension://'+'a'.repeat(32)));
  for(const origin of ['null','https://planner.example.evil','http://planner.example','chrome-extension://'+'b'.repeat(32)])assert.equal(allowed('planner.example',origin),false);
  assert.equal(allowed('localhost:4317'),false);assert.equal(allowed('planner.example',undefined,'cross-site'),false);
+});
+test('Cloudflare client identity is trusted only from an explicitly configured loopback proxy',()=>{
+ const direct=serverConfig({NODE_ENV:'production',PUBLIC_ORIGIN:'https://planner.example'});
+ const trusted=serverConfig({NODE_ENV:'production',PUBLIC_ORIGIN:'https://planner.example',TRUSTED_PROXY:'cloudflare-loopback'});
+ const req=(remoteAddress:string,header?:string)=>({socket:{remoteAddress},headers:{...(header?{'cf-connecting-ip':header}:{})}} as any);
+ assert.equal(clientBudgetKey(req('127.0.0.1','203.0.113.9'),direct),'socket:127.0.0.1');
+ assert.equal(clientBudgetKey(req('127.0.0.1','203.0.113.9'),trusted),'cf:203.0.113.9');
+ assert.equal(clientBudgetKey(req('::ffff:127.0.0.1','2001:db8::7'),trusted),'cf:2001:db8::7');
+ assert.equal(clientBudgetKey(req('10.0.0.4','203.0.113.9'),trusted),'socket:10.0.0.4');
+ assert.equal(clientBudgetKey(req('127.0.0.1','not-an-ip'),trusted),'socket:127.0.0.1');
+ assert.throws(()=>serverConfig({NODE_ENV:'production',PUBLIC_ORIGIN:'https://planner.example',TRUSTED_PROXY:'forwarded'}),/TRUSTED_PROXY/);
 });
 test('request budgets bound individual clients, aggregate load and key memory',()=>{
  const budget=new RequestBudget(2,4,2);assert.ok(budget.take('a',100000));assert.ok(budget.take('a',100000));assert.equal(budget.take('a',100000),false);assert.ok(budget.take('b',100000));assert.equal(budget.take('c',100000),false);assert.ok(budget.take('c',161000));
