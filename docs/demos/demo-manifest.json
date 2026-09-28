@@ -29,5 +29,34 @@
       "docs/demos/02-web-what-if-advisor-preview.gif",
       "docs/demos/03-extension-course-intelligence-preview.gif"
     ]
-  }
+  },
+  "currentProductionScreenshots": {
+    "capturedAt": "2026-09-28T22:11:56.255765+00:00",
+    "version": "0.10.4",
+    "origin": "https://smartumn.qinyangtan.com",
+    "fixture": "tests/fixtures/apas-acceptance.html",
+    "method": "CUA UI file import, live plan generation and viewport screenshots; no DOM/state injection",
+    "observed": {
+      "generatedCourse": "CSCI 5302",
+      "credits": 3,
+      "campusDays": 2,
+      "degreeCreditHorizon": "Not enough evidence",
+      "consoleErrors": 0
+    },
+    "files": [
+      {
+        "file": "docs/demos/v0104-canonical-schedule.png",
+        "sha256": "4002dc4b9d2ca1bea16c84a96489157e8cbfb73d8aa712a74365257875427cf6"
+      },
+      {
+        "file": "docs/demos/v0104-canonical-plan.png",
+        "sha256": "b7f927834dbdeb6588bd9dcf95b6174a00db8b662b8d2c7395956b79a9a880eb"
+      },
+      {
+        "file": "docs/demos/v0104-canonical-preferences.png",
+        "sha256": "8d25cb8f2a3ddfc6497e98d4f75a32d4aaebe7636b7018d9cdb9b5d04096bdc8"
+      }
+    ]
+  },
+  "recordingStatus": "Earlier workflow videos predate v0.10.4; current production screenshots are recorded separately."
 }
