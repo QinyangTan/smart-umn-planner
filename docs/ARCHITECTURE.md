@@ -43,6 +43,10 @@ Community references come from precomputed DB lookup. Browser collection never r
 
 Real-audit expansion is deliberately separated from raw student data. `packages/core/compatibility.ts` turns a locally parsed profile into schema-v1 structural counts and a coarse fingerprint that includes rule/policy families but excludes program names, course codes, requirement text, exam names, source institutions and raw HTML. Transfer cohorts are counts only. The checked-in corpus is validated for exact allowed fields and internal accounting invariants; CI rejects stale coverage documentation, duplicate structures, unresolved requirements and unclassified policy constraints. `docs/APAS_COMPATIBILITY_COVERAGE.md` is generated from that corpus and explicitly shows missing real-audit cohorts rather than inferring coverage from the official synthetic identity matrix.
 
+## Public Course Intelligence coverage
+
+Campus-wide public-source coverage is measured separately from product capability. `scripts/report-course-intelligence-coverage.ts` walks the official Twin Cities Schedule Builder subject directory/catalogs through the existing paced provider and intersects current course codes with GopherGrades department records. It writes `docs/evidence/course-intelligence-coverage.json` plus the generated `docs/COURSE_INTELLIGENCE_COVERAGE.md`. The checked-in verifier recalculates all aggregate counts from the subject rows and rejects dashboard drift. This evidence intentionally keeps official current-course metadata, historical grades, and curated community/professor context as separate layers; missing optional evidence degrades visibly instead of being synthesized.
+
 ## Deployment boundary
 
 This is a single-user localhost prototype. Shared hosting would require authenticated per-user storage, explicit academic-data consent, TLS, CSRF protection, deployment configuration, a production database migration strategy, provider governance and multi-user authorization tests. Those are not silently claimed by this local architecture.

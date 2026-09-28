@@ -64,4 +64,4 @@ To install the Chrome Extension, open `chrome://extensions`, enable **Developer 
 - Graduation horizons, offering patterns, grade distributions, professor ratings, and community references are planning context, not guarantees or recommendations about academic outcomes.
 - RateMyProfessors values are displayed only when an upstream public dataset supplies them for an exact matched instructor; missing rating count, difficulty, would-take-again, or update dates are not invented.
 - Reddit excerpts appear only when an original public reference has been explicitly reviewed/imported. Smart UMN does not automatically scrape Reddit or RateMyProfessors.
-- Historical grade outcomes describe past cohorts and do not predict an individual student's grade.
+- Historical grade outcomes describe past cohorts and do not predict an individual student's grade. Optional third-party evidence is not available for every course; see [`docs/COURSE_INTELLIGENCE_COVERAGE.md`](docs/COURSE_INTELLIGENCE_COVERAGE.md) for the current public-source coverage audit.
