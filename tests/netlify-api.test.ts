@@ -29,3 +29,11 @@ test('Netlify origin boundary rejects cross-site and policy evidence stays revie
  const hostile=await handler(new Request('https://smart-umn-planner.netlify.app/api/health',{headers:{origin:'https://evil.example'}}),ctx);assert.equal(hostile.status,403);
  const p=await call('/api/policy/search',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'120 credits are required for the degree',campus:'UMNTC'})});assert.equal(p.status,200);const body=await p.json() as any;assert.equal(body.decisionAuthority,'none');assert.ok(Array.isArray(body.evidence)&&body.evidence.length>0);assert.ok(body.evidence.every((x:any)=>String(x.sourceRef||'').startsWith('https://')));
 });
+
+test('Netlify accepts exactly the Developer-mode and Chrome Web Store extension IDs',async()=>{
+ for(const id of['cleikpoiflloemienikmmmedkniblobc','ocbpkaiefaaboeiliopklleejlfnegbd']){
+  const r=await handler(new Request('https://smartumn.qinyangtan.com/api/course-context/batch',{method:'OPTIONS',headers:{origin:'chrome-extension://'+id}}),ctx);
+  assert.equal(r.status,204,id);assert.equal(r.headers.get('access-control-allow-origin'),'chrome-extension://'+id);
+ }
+ const other=await handler(new Request('https://smartumn.qinyangtan.com/api/health',{headers:{origin:'chrome-extension://'+'a'.repeat(32)}}),ctx);assert.equal(other.status,403);
+});

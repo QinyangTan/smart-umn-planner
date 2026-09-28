@@ -12,6 +12,8 @@ docs/evidence/*
 !docs/evidence/chrome-web-store-readiness-20260928-v0.10.4.json
 !docs/evidence/production-canary-20260928-v0.10.5.json
 !docs/evidence/accessibility-acceptance-20260928-v0.10.5.json
+!docs/evidence/production-canary-20260928-v0.10.6.json
+!docs/evidence/accessibility-acceptance-20260928-v0.10.6.json
 !docs/evidence/netlify-serverless-acceptance-20260928.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md
