@@ -25,3 +25,32 @@ test('roadmap respects prerequisite order and historical season evidence',()=>{
 test('advisor brief answers the student decision before exposing the machinery',()=>{const course=ctx().course.data!,schedule:Schedule={id:'s',sections:[],courses:[course],credits:3,campusDays:2,explanations:[],degreeProgress:{allocations:[],unallocatedCourseCodes:[],fullyCoveredTargets:1,totalTargets:2,coverageScore:1,allocatedCredits:3}};const brief=buildAdvisorBrief(profile,'1273',schedule,[ctx()],{minCredits:3,maxCredits:12,fewestDays:true});assert.equal(brief.status,'attention');assert.match(brief.headline,/Current evidence/);assert.match(brief.summary,/3 credits/);assert.ok(brief.nextDecisions.some(d=>d.kind==='register'));assert.ok(brief.nextDecisions.some(d=>d.kind==='review'));assert.equal(brief.nextDecisions.length<=4,true);});
 
 test('why-this-plan is deterministic and preference aware',()=>{const course=ctx().course.data!,schedule:Schedule={id:'s',sections:[],courses:[course],credits:3,campusDays:2,explanations:[],degreeProgress:{allocations:[],unallocatedCourseCodes:[],fullyCoveredTargets:1,totalTargets:2,coverageScore:1,allocatedCredits:3}};const why=whyThisPlan(schedule,{minCredits:3,maxCredits:12,fewestDays:true,noFriday:true,latestTime:'20:00',minimumTransitionMinutes:15},[ctx()]);assert.match(why.join(' '),/Covers 1 of 2/);assert.match(why.join(' '),/Friday/);assert.match(why.join(' '),/20:00/);assert.match(why.join(' '),/15 minutes/);});
+
+test('missing or invalid degree-credit totals cannot claim completion or a graduation term',()=>{
+ for(const degreeCredits of [{},{remaining:-1},{remaining:NaN},{required:120}]){
+  const p={...profile,degreeCredits};
+  const road=buildGraduationRoadmap(p,'1273',undefined,[],{minCredits:3,maxCredits:12});
+  assert.equal(road.confidence,'review');
+  assert.equal(road.estimatedGraduation,'Not enough evidence');
+  assert.match(road.headline,/degree.credit.*unavailable/i);
+  assert.doesNotMatch(road.headline,/reaches|About/);
+ }
+});
+test('dropping a course recalculates the credit horizon before creating semesters',()=>{
+ const course=ctx().course.data!,schedule:Schedule={id:'s',courses:[course],sections:[],credits:3,campusDays:2,explanations:[]};
+ const p={...profile,degreeCredits:{remaining:3}};
+ const road=buildGraduationRoadmap(p,'1273',schedule,[ctx()],{minCredits:3,maxCredits:3},{dropCourseCode:course.code});
+ assert.equal(road.remainingCredits,3);
+ assert.equal(road.semesters[0].courseCodes.length,0);
+ assert.equal(road.semesters[0].targetCredits,0);
+ assert.equal(road.semesters.length,2);
+ assert.doesNotMatch(road.headline,/reaches/);
+});
+test('a future course cannot satisfy another prerequisite in the same semester',()=>{
+ const a=ctx('CSCI 5100'),b=ctx('CSCI 5200');
+ b.course.data!.prerequisiteRule={type:'course',code:'CSCI 5100',campus:'UMNTC'};
+ const p={...profile,degreeCredits:{remaining:12}};
+ const road=buildGraduationRoadmap(p,'1273',undefined,[a,b],{minCredits:3,maxCredits:6});
+ assert.deepEqual(road.semesters.find(s=>s.term==='1279')?.courseCodes,['CSCI 5100']);
+ assert.deepEqual(road.semesters.find(s=>s.term==='1283')?.courseCodes,['CSCI 5200']);
+});

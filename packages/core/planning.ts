@@ -7,7 +7,7 @@ export type TermSeason='Spring'|'Summer'|'Fall';
 export type OfferingPattern={code:string;observedTerms:string[];seasons:TermSeason[];confidence:'strong'|'limited'|'unknown';label:string;seasonCounts:Record<TermSeason,number>};
 export type ReviewGuidance={kind:'prerequisite'|'capacity'|'policy'|'stale'|'restriction'|'offering'|'unknown';title:string;action:string};
 export type RoadmapSemester={term:string;label:string;targetCredits:number;courseCodes:string[];note:string};
-export type GraduationRoadmap={headline:string;estimatedGraduation:string;semesters:RoadmapSemester[];bottlenecks:string[];reviewItems:string[];confidence:'strong'|'bounded'|'review';remainingCredits:number};
+export type GraduationRoadmap={headline:string;estimatedGraduation:string;semesters:RoadmapSemester[];bottlenecks:string[];reviewItems:string[];confidence:'strong'|'bounded'|'review';remainingCredits:number|undefined};
 export type WhatIfScenario={primaryOnly?:boolean;includeSummer?:boolean;creditsPerTerm?:number;dropCourseCode?:string};
 export type AdvisorDecision={kind:'register'|'bottleneck'|'review'|'roadmap';title:string;detail:string;courseCode?:string};
 export type AdvisorBrief={status:'ready'|'attention'|'build';headline:string;summary:string;nextDecisions:AdvisorDecision[];reviewCount:number;estimatedGraduation:string};
@@ -60,45 +60,50 @@ function roadmapProfile(profile:StudentAcademicProfile,scenario:WhatIfScenario):
 export function buildGraduationRoadmap(profile:StudentAcademicProfile,currentTerm:string,currentSchedule:Schedule|undefined,contexts:CourseContext[],prefs:Preferences,scenario:WhatIfScenario={}):GraduationRoadmap{
  const p=roadmapProfile(profile,scenario),coverage=analyzeRequirementRouteCoverage(p).overall;
  const creditsPerTerm=Math.max(1,Math.min(30,scenario.creditsPerTerm||prefs.maxCredits||12));
- const startingRemaining=Math.max(0,p.degreeCredits.remaining??flattenRequirements(p.requirements).reduce((sum,r)=>sum+(r.status==='incomplete'?(r.remainingCredits||0):0),0));
- const currentCredits=currentSchedule?.credits||0,remainingCredits=Math.max(0,startingRemaining-currentCredits);
+ const recorded=p.degreeCredits.remaining;
+ const knownCredits=typeof recorded==='number'&&Number.isFinite(recorded)&&recorded>=0&&recorded<=1000;
+ // Requirement credits overlap and are not a substitute for the degree-wide total.
+ const startingRemaining=knownCredits?recorded:0;
+ const chosen=currentSchedule?.courses.filter(c=>c.code!==scenario.dropCourseCode)||[];
+ const dropped=currentSchedule?.courses.find(c=>c.code===scenario.dropCourseCode);
+ const currentCredits=Math.max(0,(currentSchedule?.credits||0)-(typeof dropped?.credits==='number'?dropped.credits:0)),remainingCredits=Math.max(0,startingRemaining-currentCredits);
  const additionalTerms=Math.max(0,Math.ceil(remainingCredits/creditsPerTerm));
  const terms=futurePlanningTerms(currentTerm,Math.max(1,additionalTerms+1),!!scenario.includeSummer);
  const patterns=new Map(contexts.map(c=>[c.course.data?.code,offeringPattern(c)]));
- const chosen=currentSchedule?.courses.filter(c=>c.code!==scenario.dropCourseCode)||[];
  const semesters:RoadmapSemester[]=[];
- semesters.push({term:currentTerm,label:termDisplay(currentTerm),targetCredits:currentCredits||Math.min(creditsPerTerm,startingRemaining),courseCodes:chosen.map(c=>c.code),note:chosen.length?'Current generated option; live sections verified at build time.':'No current schedule selected yet.'});
- let left=Math.max(0,remainingCredits+(scenario.dropCourseCode?(currentSchedule?.courses.find(c=>c.code===scenario.dropCourseCode)?.credits as number||0):0));
+ semesters.push({term:currentTerm,label:termDisplay(currentTerm),targetCredits:currentSchedule?currentCredits:Math.min(creditsPerTerm,startingRemaining),courseCodes:chosen.map(c=>c.code),note:chosen.length?'Current generated option; live sections verified at build time.':'No current schedule selected yet.'});
+ let left=remainingCredits;
  const planned=[...p.completedCourses,...p.transferCourses,...chosen.map(c=>({courseCode:c.code,campus:c.campus,subject:c.subject,number:c.catalogNumber,credits:typeof c.credits==='number'?c.credits:undefined,grade:'P',status:'completed' as const}))];
  const already=new Set(chosen.map(c=>c.code));
  const futureCandidates=contexts.map(c=>c.course.data).filter((c):c is NonNullable<typeof c>=>!!c&&typeof c.credits==='number'&&degreeFit(c,p).some(f=>f.result==='yes')&&!already.has(c.code)).sort((a,b)=>{const pa=patterns.get(a.code),pb=patterns.get(b.code);const sa=pa?.seasons.length??3,sb=pb?.seasons.length??3;return sa-sb||a.code.localeCompare(b.code);});
- for(const t of terms.slice(1)){if(left<=0)break;const target=Math.min(creditsPerTerm,left),assigned:string[]=[];let assignedCredits=0;for(const c of futureCandidates){if(already.has(c.code)||assignedCredits+(c.credits as number)>target)continue;const pattern=patterns.get(c.code);if(!pattern||likelyInTerm(pattern,t)!==true)continue;if(evaluate(c.prerequisiteRule,planned)!=='yes')continue;assigned.push(c.code);assignedCredits+=c.credits as number;already.add(c.code);planned.push({courseCode:c.code,campus:c.campus,subject:c.subject,number:c.catalogNumber,credits:c.credits as number,grade:'P',status:'completed'});}semesters.push({term:t,label:termDisplay(t),targetCredits:target,courseCodes:assigned,note:assigned.length?`${assignedCredits} credits are evidence-backed from current APAS matches, historical reported terms, and prerequisite order assuming successful completion of earlier planned courses; the rest remains unassigned until future offerings publish.`:'Target load only. Exact courses remain unassigned until UMN publishes enough future-offering evidence.'});left-=target;}
+ for(const t of terms.slice(1)){if(left<=0)break;const target=Math.min(creditsPerTerm,left),assigned:string[]=[];let assignedCredits=0;const completedBeforeTerm=[...planned];for(const c of futureCandidates){if(already.has(c.code)||assignedCredits+(c.credits as number)>target)continue;const pattern=patterns.get(c.code);if(!pattern||likelyInTerm(pattern,t)!==true)continue;if(evaluate(c.prerequisiteRule,completedBeforeTerm)!=='yes')continue;assigned.push(c.code);assignedCredits+=c.credits as number;already.add(c.code);planned.push({courseCode:c.code,campus:c.campus,subject:c.subject,number:c.catalogNumber,credits:c.credits as number,grade:'P',status:'completed'});}semesters.push({term:t,label:termDisplay(t),targetCredits:target,courseCodes:assigned,note:assigned.length?`${assignedCredits} credits are evidence-backed from current APAS matches, historical reported terms, and prerequisite order assuming successful completion of earlier planned courses; the rest remains unassigned until future offerings publish.`:'Target load only. Exact courses remain unassigned until UMN publishes enough future-offering evidence.'});left-=target;}
  const seasonal=contexts.map(c=>c.course.data?.code&&patterns.get(c.course.data.code)).filter((x):x is OfferingPattern=>!!x&&x.confidence!=='unknown'&&x.seasons.length<3);
  const bottlenecks:string[]=[];
  if(seasonal.length)bottlenecks.push(...seasonal.slice(0,3).map(x=>`${x.code}: ${x.label}`));
  if(coverage.candidateRouteSupportedRequirements)bottlenecks.push(`${coverage.candidateRouteSupportedRequirements} remaining requirement route${coverage.candidateRouteSupportedRequirements===1?'':'s'} still depend on caps or conditions.`);
  if(coverage.policyConstraints)bottlenecks.push(`${coverage.policyConstraints} policy/accounting constraint${coverage.policyConstraints===1?'':'s'} still need APAS/advisor confirmation.`);
  const reviewItems:string[]=[];
+ if(!knownCredits)reviewItems.push('Degree-credit total unavailable. Refresh APAS and confirm remaining degree credits with an advisor before estimating a completion term.');
  if(coverage.unknownUnroutedRequirements)reviewItems.push(`${coverage.unknownUnroutedRequirements} remaining requirement${coverage.unknownUnroutedRequirements===1?'':'s'} cannot yet be translated into a course-authorizing rule.`);
  for(const c of contexts){const reason=c.course.data?.prerequisiteRule.type==='unknown'?c.course.data.prerequisiteRule.reason:'';if(reason)reviewItems.push(`${c.course.data?.code}: ${actionableReview(reason).action}`);}
- const estimated=semesters.at(-1)?.label||termDisplay(currentTerm);
- const confidence=coverage.unknownUnroutedRequirements?'review':coverage.policyConstraints||coverage.candidateRouteSupportedRequirements?'bounded':'strong';
- const headline=remainingCredits<=0?'Current plan reaches the recorded degree-credit total.':`About ${Math.max(1,semesters.length)} planning term${semesters.length===1?'':'s'} to the recorded degree-credit total at up to ${creditsPerTerm} credits/term.`;
- return{headline,estimatedGraduation:estimated,semesters,bottlenecks:[...new Set(bottlenecks)],reviewItems:[...new Set(reviewItems)].slice(0,8),confidence,remainingCredits};
+ const estimated=knownCredits?(semesters.at(-1)?.label||termDisplay(currentTerm)):'Not enough evidence';
+ const confidence=!knownCredits||coverage.unknownUnroutedRequirements?'review':coverage.policyConstraints||coverage.candidateRouteSupportedRequirements?'bounded':'strong';
+ const headline=!knownCredits?'Degree-credit total unavailable; completion timing needs APAS review.':remainingCredits<=0?'Current plan reaches the recorded degree-credit total.':`About ${Math.max(1,semesters.length)} planning term${semesters.length===1?'':'s'} to the recorded degree-credit total at up to ${creditsPerTerm} credits/term.`;
+ return{headline,estimatedGraduation:estimated,semesters,bottlenecks:[...new Set(bottlenecks)],reviewItems:[...new Set(reviewItems)].slice(0,8),confidence,remainingCredits:knownCredits?remainingCredits:undefined};
 }
 
 export function buildAdvisorBrief(profile:StudentAcademicProfile,currentTerm:string,currentSchedule:Schedule|undefined,contexts:CourseContext[],prefs:Preferences,scenario:WhatIfScenario={}):AdvisorBrief{
  const road=buildGraduationRoadmap(profile,currentTerm,currentSchedule,contexts,prefs,scenario),coverage=analyzeRequirementRouteCoverage(roadmapProfile(profile,scenario)).overall;
  const reviewCount=road.reviewItems.length+coverage.policyConstraints+coverage.candidateRouteSupportedRequirements;
  const status:AdvisorBrief['status']=!currentSchedule?'build':reviewCount?'attention':'ready';
- const headline=!currentSchedule?'Let’s choose the next registration move.':road.confidence==='strong'?`Current evidence supports a path through ${road.estimatedGraduation}.`:`Current evidence points to ${road.estimatedGraduation}, with a few items to confirm.`;
+ const headline=road.remainingCredits===undefined?'Completion timing needs a confirmed APAS credit total.':!currentSchedule?'Let’s choose the next registration move.':road.confidence==='strong'?`Current evidence supports a path through ${road.estimatedGraduation}.`:`Current evidence points to ${road.estimatedGraduation}, with a few items to confirm.`;
  const summary=!currentSchedule?`${coverage.strictSupportedRequirements} proven course route${coverage.strictSupportedRequirements===1?'':'s'} can be used automatically; ${reviewCount} item${reviewCount===1?'':'s'} still need review.`:`${currentSchedule.credits} credits are planned this term across ${currentSchedule.campusDays} campus day${currentSchedule.campusDays===1?'':'s'}. ${reviewCount?`${reviewCount} review item${reviewCount===1?'':'s'} remain outside automatic authority.`:'No current review-only item blocks this generated option.'}`;
  const nextDecisions:AdvisorDecision[]=[];
  if(currentSchedule){const narrow=currentSchedule.courses.map(c=>({c,p:contexts.find(x=>x.course.data?.code===c.code)})).map(x=>({c:x.c,p:x.p?offeringPattern(x.p):undefined})).find(x=>x.p&&x.p.confidence!=='unknown'&&x.p.seasons.length<3);if(narrow?.p)nextDecisions.push({kind:'bottleneck',title:`Protect ${narrow.c.code} in this plan`,detail:`${narrow.p.label}. Keeping it now reduces future offering risk.`,courseCode:narrow.c.code});nextDecisions.push({kind:'register',title:`Prepare ${currentSchedule.courses.length} course${currentSchedule.courses.length===1?'':'s'} for registration`,detail:'Review the generated class numbers, refresh live seats, then finish enrollment in official UMN systems.'});}
  else nextDecisions.push({kind:'register',title:'Build this semester first',detail:'Smart UMN will match current offerings only to course-authorizing APAS rules with verified prerequisites.'});
  if(road.bottlenecks.length)nextDecisions.push({kind:'bottleneck',title:'Watch the graduation bottleneck',detail:road.bottlenecks[0]});
  if(road.reviewItems.length)nextDecisions.push({kind:'review',title:'Use an advisor only where policy judgment is still needed',detail:road.reviewItems[0]});else if(coverage.policyConstraints)nextDecisions.push({kind:'review',title:'Confirm degree-wide policy constraints',detail:`${coverage.policyConstraints} APAS policy/accounting constraint${coverage.policyConstraints===1?'':'s'} remain visible but do not authorize courses automatically.`});
- nextDecisions.push({kind:'roadmap',title:`Keep ${road.estimatedGraduation} as the current planning horizon`,detail:'This is a deterministic estimate from recorded credits, supported requirements, prerequisite order and observed offering patterns — not a graduation guarantee.'});
+ nextDecisions.push({kind:'roadmap',title:road.remainingCredits===undefined?'Confirm remaining degree credits in APAS':`Keep ${road.estimatedGraduation} as a credit-load planning horizon`,detail:'This is a deterministic estimate from recorded credits, supported requirements, prerequisite order and observed offering patterns — not a graduation guarantee.'});
  return{status,headline,summary,nextDecisions:nextDecisions.slice(0,4),reviewCount,estimatedGraduation:road.estimatedGraduation};
 }
 
