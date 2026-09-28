@@ -1,0 +1,68 @@
+{
+  "kind": "smart-umn-production-acceptance",
+  "date": "2026-09-28",
+  "version": "0.10.1",
+  "origin": "https://smartumn.qinyangtan.com",
+  "sourceCommit": "859eced2a0d74388906752ce5c0ad05ea9154f73",
+  "securityHardening": {
+    "pullRequest": 2,
+    "mergeCommit": "d0dad0870f274787898e983ec9f657d88472a271",
+    "dependencyAudit": "0 vulnerabilities",
+    "githubActionsPins": {
+      "actions/checkout": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "actions/setup-node": "820762786026740c76f36085b0efc47a31fe5020"
+    },
+    "trustedProxyMode": "cloudflare-loopback",
+    "launchAgent": "com.qinyang.smartumn",
+    "clientBudgetAcceptance": {
+      "sameClientRequest121": 429,
+      "secondClientFirstRequest": 404,
+      "malformedForwardedIpFirstRequest": 404,
+      "interpretation": "Only a valid CF-Connecting-IP from a loopback peer receives a separate client budget key."
+    }
+  },
+  "automated": {
+    "tests": {
+      "passed": 170,
+      "failed": 0
+    },
+    "typecheck": "pass",
+    "apasCorpus": "pass",
+    "courseCoverage": "pass",
+    "productionReleaseGate": "pass",
+    "githubActions": "success"
+  },
+  "deployment": {
+    "launchAgentEnvironment": {
+      "TRUSTED_PROXY": "cloudflare-loopback"
+    },
+    "healthVersion": "0.10.1",
+    "parserVersion": "0.4.5",
+    "publicHealth": "pass",
+    "publicExtensionSha256": "efcb7b0750e5450969642a53ecf8b944b0e03867148baa9638110aabe35da3c5",
+    "releaseExtensionSha256": "efcb7b0750e5450969642a53ecf8b944b0e03867148baa9638110aabe35da3c5"
+  },
+  "privacy": {
+    "academicFixture": "tests/fixtures/apas-acceptance.html",
+    "fixtureClassification": "synthetic only",
+    "realStudentAuditUsed": false,
+    "rawAuthenticatedApasUploaded": false
+  },
+  "browserAcceptance": {
+    "freshProfile": true,
+    "web": {
+      "syntheticApasImport": true,
+      "unknownDegreeCreditsFailClosed": true,
+      "planningGoalPersistence": true,
+      "reload": true,
+      "liveSchedule": true,
+      "narrowViewportOverflow": false
+    },
+    "extension": {
+      "course": "MATH 1271",
+      "inline": true,
+      "instructorEvidence": true
+    }
+  },
+  "availabilityBoundary": "Stable Cloudflare hostname; laptop-backed origin remains dependent on the host being awake and connected."
+}
