@@ -7,7 +7,7 @@ Two official University of Minnesota sources are checked on every `npm run verif
 
 ## What a PASS means
 
-Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a ten-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, one policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that both supported routing and unsupported-rule containment survive for that identity.
+Every major name and every program-degree title below is sent through the same program-agnostic APAS parser with a seventeen-shape synthetic structural audit: seven strict course-authorizing forms (including exclusions, GPA wrapping and APAS Needs counts), one candidate-only capped pool, seven typed non-authorizing policy Rule IR families, one still-unclassified policy/accounting constraint, and one deliberately unsupported route that must remain fail-closed. A PASS proves that the title/college does not require a hardcoded allowlist and that supported routing, typed policy containment and unsupported-rule containment survive for that identity.
 
 It does **not** prove that every real, major-specific APAS policy for that program has been observed. Only identities with a locally saved real audit are labeled `real+synthetic`; every other identity remains `synthetic-structural-only` until a real or anonymized audit sample is available.
 

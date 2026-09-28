@@ -23,7 +23,14 @@ function structuralAudit(program:string){
  <div class="requirement Status_NO" rname="GPA" rqdhours="3" rqdgpa="2.0"><div class="reqTitle">GEN GPA route</div><table class="selectcourses"><tbody><tr><td><span class="course" department="1GEN" number="4001"></span></td></tr></tbody></table></div>
  <div class="requirement Status_NO" rname="NEEDS"><div class="reqTitle">Choose one approved GEN course</div><div class="reqNeeds"><span class="count">1</span></div><table class="selectcourses"><tbody><tr><td><span class="course" department="1GEN" number="4101"></span><span class="course" department="1GEN" number="4102"></span></td></tr></tbody></table></div>
  <div class="requirement Status_NO category_Total_Hours" rname="TOTAL" rqdhours="120"><div class="reqTitle">Minimum total degree credits</div><div class="reqBody"></div></div>
- <div class="requirement Status_NO" rname="RESIDENCY"><div class="reqTitle">Residency policy requires institutional review</div><div class="reqBody"></div></div>
+ <div class="requirement Status_NO" rname="P-DEGREE"><div class="reqTitle">You must complete at least 120 credits. This includes all University of Minnesota and transfer credits.</div></div>
+ <div class="requirement Status_NO" rname="P-GPA"><div class="reqTitle">You need a 2.00 GPA in University of Minnesota coursework upon graduating. This includes credits from all University of Minnesota campuses and excludes transfer credits.</div></div>
+ <div class="requirement Status_NO" rname="P-RES"><div class="reqTitle">You must complete at least 30 credits through University of Minnesota Twin Cities and Rochester.</div></div>
+ <div class="requirement Status_NO" rname="P-FINAL"><div class="reqTitle">You must complete at least 15 of your last 30 credits through University of Minnesota.</div></div>
+ <div class="requirement Status_NO" rname="P-MAJOR"><div class="reqTitle">You need at least 78 credits in this major. This GPA includes all major credits, including transfer credits.</div></div>
+ <div class="requirement Status_NO" rname="P-UPPER"><div class="reqTitle">You must complete at least 19 upper-division (3xxx-level or higher) credits for this major through University of Minnesota Twin Cities.</div></div>
+ <div class="requirement Status_NO" rname="P-DES"><div class="reqTitle">Of the 23 credits required for Technical Electives, 11 must have a CSCI designator.</div></div>
+ <div class="requirement Status_NO" rname="UNSUPPORTED"><div class="reqTitle">Residency policy requires institutional review</div><div class="reqBody"></div></div>
  </div></body>`;
 }
 
@@ -41,10 +48,12 @@ function assertStructuralIdentity(name:string){
   const summary=analyzeRequirementRouteCoverage(profile).overall;
   const discovery=degreeDiscoveryPlan(profile,'UMNTC');
   assert.equal(profile.program.name,name,name);
-  assert.equal(summary.totalActiveRemainingRequirements,10,name);
+  assert.equal(summary.totalActiveRemainingRequirements,17,name);
   assert.equal(summary.strictSupportedRequirements,7,name);
   assert.equal(summary.candidateRouteSupportedRequirements,1,name);
-  assert.equal(summary.policyConstraints,1,name);
+  assert.equal(summary.policyConstraints,8,name);
+  assert.equal(summary.recognizedPolicyRules,7,name);
+  assert.equal(summary.unclassifiedPolicyConstraints,1,name);
   assert.equal(summary.unknownUnroutedRequirements,1,name);
   assert.ok(discovery.explicitCodes.includes('GEN 1001'),name);
   assert.ok(discovery.subjects.includes('GEN'),name);
@@ -77,14 +86,16 @@ test('the official-inventory matrix exercises strict, candidate, policy and fail
     policy:summary.policyConstraints,
     unknown:summary.unknownUnroutedRequirements
    },
-   {total:10,strict:7,candidate:1,policy:1,unknown:1}
+   {total:17,strict:7,candidate:1,policy:8,unknown:1}
   );
+  assert.equal(summary.recognizedPolicyRules,7);
+  assert.equal(summary.unclassifiedPolicyConstraints,1);
   assert.equal(summary.breakdown.candidateOnly,1);
-  assert.equal(summary.breakdown.gpa,1);
+  assert.equal(summary.breakdown.gpa,2);
   assert.equal(summary.breakdown.unknown,1);
 
   const byCode=new Map(flattenRequirements(profile.requirements).map(r=>[r.code,r]));
-  const exclusion=byCode.get('EXCLUDE')!,gpa=byCode.get('GPA')!,needs=byCode.get('NEEDS')!,cap=byCode.get('CAP')!,residency=byCode.get('RESIDENCY')!;
+  const exclusion=byCode.get('EXCLUDE')!,gpa=byCode.get('GPA')!,needs=byCode.get('NEEDS')!,cap=byCode.get('CAP')!,unsupported=byCode.get('UNSUPPORTED')!;
   assert.equal(exclusion.rule.type,'count');
   assert.equal(matches(exclusion.rule,syntheticCourse('EXCL 3201')),'yes');
   assert.equal(matches(exclusion.rule,syntheticCourse('EXCL 3202')),'no','explicit exclusion overrides the matching 3xxx range');
@@ -97,7 +108,8 @@ test('the official-inventory matrix exercises strict, candidate, policy and fail
   assert.equal(degreeFit(syntheticCourse('EXCL 3202'),profile).some(x=>x.requirementId===exclusion.id&&x.result==='yes'),false);
   const discovery=degreeDiscoveryPlan(profile,'UMNTC');
   assert.ok(discovery.subjects.includes('EXCL'));
-  assert.equal(residency.rule.type,'unknown');
-  assert.equal(degreeFit(syntheticCourse('RES 3001'),profile).some(x=>x.requirementId===residency.id&&x.result==='yes'),false,'unsupported policy never authorizes a course');
+  for(const code of ['P-DEGREE','P-GPA','P-RES','P-FINAL','P-MAJOR','P-UPPER','P-DES'])assert.equal(byCode.get(code)?.rule.type,'policy',code);
+  assert.equal(unsupported.rule.type,'unknown');
+  assert.equal(degreeFit(syntheticCourse('RES 3001'),profile).some(x=>x.requirementId===unsupported.id&&x.result==='yes'),false,'unsupported policy never authorizes a course');
  }finally{dom.window.close();}
 });
