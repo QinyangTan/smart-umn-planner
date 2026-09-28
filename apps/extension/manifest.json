@@ -1,9 +1,16 @@
 {
  "manifest_version": 3,
  "name": "Smart UMN Planner",
- "version": "0.10.3",
+ "version": "0.10.4",
  "minimum_chrome_version": "120",
  "description": "Personalized Twin Cities APAS program context and source-labeled insights rendered directly inside UMN Schedule Builder.",
+ "homepage_url": "https://smartumn.qinyangtan.com",
+ "icons": {
+  "16": "icons/icon16.png",
+  "32": "icons/icon32.png",
+  "48": "icons/icon48.png",
+  "128": "icons/icon128.png"
+ },
  "permissions": [
   "storage",
   "alarms"
@@ -18,7 +25,11 @@
   "type": "module"
  },
  "action": {
-  "default_title": "Open Smart UMN Planner"
+  "default_title": "Open Smart UMN Planner",
+  "default_icon": {
+   "16": "icons/icon16.png",
+   "32": "icons/icon32.png"
+  }
  },
  "content_scripts": [
   {

@@ -1,5 +1,17 @@
 # Verification
 
+## v0.10.4 Chrome Web Store readiness candidate — 2026-09-28
+
+The v0.10.4 branch turns the reviewed ZIP into a Chrome Web Store-ready package without changing Smart UMN's local-first academic-data boundary. The Manifest V3 package declares Chrome 120+, `storage` and `alarms` only, exact host access for UMN uAchieve self-service, UMN Schedule Builder and `https://smartumn.qinyangtan.com/*`, a canonical homepage, and deterministic 16/32/48/128 pixel product icons. It contains no remotely hosted executable code, cookies/history/webRequest/all-sites permissions, Side Panel dependency, or credential API.
+
+The production package/release gate passes with ZIP SHA-256 `40aef90baaa36aa8949fbccaedb38cf013226376901d56d017aa97b003191555`. The build also deterministically generates the required 440×280 small promo tile and verifies both checked-in 1280×800 store screenshots. The screenshots come from fresh profiles: the Web onboarding screenshot has no imported APAS profile, and the Course Intelligence screenshot is the real public Spring 2027 Schedule Builder CSCI 5302 page loaded with v0.10.4 and no imported APAS profile. The generated product mark is independent artwork and does not use an official UMN mark.
+
+Privacy/support copy now discloses the extension's APAS page-content access as **Website content**, explains the bounded review-only policy phrase sent to the public-evidence API, identifies Netlify as the current host, documents Limited Use, and exposes public `/privacy.html` and `/support.html` targets. Raw authenticated APAS HTML, credentials, cookies, Duo/SAML material, complete student profiles and saved plans remain outside the public backend.
+
+The local gate passes 177/177 tests, TypeScript, zero production dependency vulnerabilities, production packaging and release verification. Fresh-profile browser acceptance passed on the final rebuilt v0.10.4 `dist/extension` after manifest duplicate-key cleanup. The final package/release gate also passed with exactly one `minimum_chrome_version` field. Machine-readable evidence is `docs/evidence/chrome-web-store-readiness-20260928-v0.10.4.json`.
+
+This is **package readiness, not publication**. The Chrome Web Store Developer Dashboard currently requires Google account reauthentication before a draft can be inspected/created. No password or 2FA material is stored or automated, and no claim is made that the extension has been uploaded, submitted, approved, or published.
+
 ## v0.10.3 canonical custom-domain production — 2026-09-28
 
 The canonical production origin is now `https://smartumn.qinyangtan.com`, served by Netlify deploy `6abacd41e1ae0bfd7e6d54b1`. Cloudflare authoritative DNS publishes `smartumn` as a DNS-only CNAME to `smart-umn-planner.netlify.app`; public Cloudflare and Google resolvers both returned that CNAME during acceptance. Netlify completed domain validation and installed a Let’s Encrypt certificate for `smartumn.qinyangtan.com`. Direct SNI checks against both observed Netlify IPs (`18.208.88.157` and `98.84.224.111`) returned that matching certificate and the v0.10.3 serverless health response.

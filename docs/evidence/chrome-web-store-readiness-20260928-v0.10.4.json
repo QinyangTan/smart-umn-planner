@@ -1,0 +1,104 @@
+{
+  "kind": "chrome-web-store-readiness",
+  "date": "2026-09-28",
+  "version": "0.10.4",
+  "branch": "feat/chrome-web-store-readiness",
+  "canonicalOrigin": "https://smartumn.qinyangtan.com",
+  "package": {
+    "path": "release/smart-umn-planner-extension-v0.10.4.zip",
+    "bytes": 32148,
+    "sha256": "40aef90baaa36aa8949fbccaedb38cf013226376901d56d017aa97b003191555",
+    "deterministic": true,
+    "manifestV3": true,
+    "minimumChromeVersion": "120",
+    "homepageUrl": "https://smartumn.qinyangtan.com",
+    "permissions": [
+      "storage",
+      "alarms"
+    ],
+    "hostPermissions": [
+      "https://umn.uachieve.com/selfservice/*",
+      "https://schedulebuilder.umn.edu/*",
+      "https://smartumn.qinyangtan.com/*"
+    ],
+    "remoteCode": false,
+    "packagedFiles": [
+      "apas.js",
+      "background.js",
+      "bridge.js",
+      "icons/icon128.png",
+      "icons/icon16.png",
+      "icons/icon32.png",
+      "icons/icon48.png",
+      "manifest.json",
+      "schedule.js"
+    ]
+  },
+  "storeAssets": {
+    "icon128": {
+      "path": "dist/extension/icons/icon128.png",
+      "width": 128,
+      "height": 128,
+      "sha256": "4774d648945ad7a7a390001e6dcecd2db3da3acad933ca68938bb0c59514772d"
+    },
+    "smallPromo": {
+      "path": "dist/store/promo-small-440x280.png",
+      "width": 440,
+      "height": 280,
+      "sha256": "05e6cc1981b23f8f43be3734c33f10ae049b1f61ec72be9deb06e643389e0d45",
+      "generated": true
+    },
+    "screenshots": [
+      {
+        "path": "docs/store/screenshot-web-onboarding-1280x800.png",
+        "width": 1280,
+        "height": 800,
+        "sha256": "dde084417a29634d1d3691de03ce426fc8dbf9157035f79b4c0b1ec30bb0a6ce",
+        "profile": "fresh canonical Web profile; no imported APAS profile"
+      },
+      {
+        "path": "docs/store/screenshot-course-intelligence-1280x800.png",
+        "width": 1280,
+        "height": 800,
+        "sha256": "6e1a120b7b666b1e9d6b741b6898699e43228a12415172b1abb7b9549051d233",
+        "profile": "fresh extension profile on public Schedule Builder CSCI 5302; no imported APAS profile"
+      }
+    ],
+    "officialUmnMarksUsed": false
+  },
+  "privacy": {
+    "policyPath": "apps/web/privacy.html",
+    "supportPath": "apps/web/support.html",
+    "publicPrivacyUrl": "https://smartumn.qinyangtan.com/privacy.html",
+    "publicSupportUrl": "https://smartumn.qinyangtan.com/support.html",
+    "storeDisclosure": [
+      "Website content"
+    ],
+    "academicProfileBackendStorage": false,
+    "rawAuthenticatedApasUploaded": false,
+    "credentialsHandled": false,
+    "advertising": false,
+    "analyticsScripts": false,
+    "limitedUseDocumented": true
+  },
+  "verification": {
+    "tests": {
+      "count": 177,
+      "pass": 177,
+      "fail": 0
+    },
+    "productionDependencyAudit": "0 vulnerabilities",
+    "typecheck": "passed",
+    "productionPackage": "passed",
+    "releaseGate": "passed",
+    "freshProfileBrowserAcceptance": "passed on the final rebuilt v0.10.4 dist/extension after manifest duplicate-key cleanup",
+    "manifestDuplicateMinimumChromeKeys": 1
+  },
+  "dashboard": {
+    "draftCreated": false,
+    "submittedForReview": false,
+    "published": false,
+    "externalBlocker": "Google Developer Dashboard requires account reauthentication before dashboard inspection or upload. Password/2FA must remain user-controlled."
+  },
+  "conclusion": "v0.10.4 is locally package-ready for Chrome Web Store upload after branch review/merge and canonical deployment of matching privacy/support pages. Store submission/review has not occurred."
+}

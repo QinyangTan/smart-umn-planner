@@ -18,7 +18,7 @@ The rule engine is deliberately conservative. AP/IB/test/transfer credit is reco
 
 - The primary public Web/public-evidence origin is `https://smartumn.qinyangtan.com`, served by Netlify Free. The Netlify service subdomain remains available as an alternate hostname. The backend has no student accounts, hosted academic-state storage, application sessions, or institutional SSO because personalized state intentionally stays in the browser.
 - The historical Mac/Cloudflare service remains available only as a rollback origin behind the previously recorded Tunnel CNAME. It is laptop-backed and can go offline when that host sleeps or disconnects; primary availability no longer depends on it.
-- The Chrome extension is currently distributed as a reviewed ZIP / unpacked Developer-mode build rather than through the Chrome Web Store.
+- The Chrome extension is currently distributed as a reviewed ZIP / unpacked Developer-mode build rather than through the Chrome Web Store. Version 0.10.4 adds the Store-ready manifest icons, required small promo asset, real-product screenshots, support/privacy pages, permission/privacy disclosures, and release gates; actual Developer Dashboard upload/review is still pending Google account reauthentication and Chrome Web Store review.
 - Academic state is local but not application-level encrypted; software with access to the same machine/browser profile may be able to read browser storage.
 - The extension initiates normal UMN/APAS navigation but never captures credentials, Duo codes, cookies, or SAML material.
 - Community references are displayed for human review and are never converted into a sentiment, difficulty, or professor-quality score.
@@ -26,7 +26,7 @@ The rule engine is deliberately conservative. AP/IB/test/transfer credit is reco
 
 ## Production work still required
 
-The primary Netlify HTTPS deployment has bounded public API inputs, exact host/origin checks, Netlify edge rate limiting, provider timeouts, an ephemeral public live cache, a reviewed public-evidence seed, synthetic fresh-browser acceptance, and fail-closed policy freshness. Remaining public-release work is primarily explicit provider/privacy/legal governance, Chrome Web Store packaging/review, schema-drift alerting, formal accessibility/UX review, and a larger anonymous real-APAS compatibility corpus. The serverless seed must be refreshed and redeployed when curated official policy snapshots expire; stale snapshots remain non-authoritative and disappear from current policy evidence.
+The primary Netlify HTTPS deployment has bounded public API inputs, exact host/origin checks, Netlify edge rate limiting, provider timeouts, an ephemeral public live cache, a reviewed public-evidence seed, synthetic fresh-browser acceptance, and fail-closed policy freshness. Remaining public-release work is primarily explicit provider/privacy/legal governance, Chrome Web Store account reauthentication/upload/review, schema-drift alerting, formal accessibility/UX review, and a larger anonymous real-APAS compatibility corpus. The serverless seed must be refreshed and redeployed when curated official policy snapshots expire; stale snapshots remain non-authoritative and disappear from current policy evidence.
 
 ## Checkpoint deployment note
 
