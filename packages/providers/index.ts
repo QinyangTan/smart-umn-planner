@@ -9,18 +9,20 @@ class ProviderHttpError extends Error{status:number;constructor(status:number){s
 const provenance=(source:string,url:string,period:string):Provenance=>({source,url,retrievedAt:iso(),period});
 export function resolveInstructor(name:string,internetId?:string):Instructor{return{id:internetId?`umn:${internetId.toLowerCase()}`:`unresolved:${name.trim().toLowerCase()}`,name,internetId,aliases:[name]};}
 export class CachedProvider {
- store:Store; source:string; fetcher:typeof fetch; ttl:number; pending=new Map<string,Promise<Evidence<any>>>(); lastRequest=0;
+ store:Store; source:string; fetcher:typeof fetch; ttl:number; pending=new Map<string,Promise<Evidence<any>>>(); lastRequest=0;stats={cacheHits:0,cacheMisses:0,failures:0,schemaDrift:0,overloaded:0};
  constructor(source:string,store:Store,ttl:number,fetcher:typeof fetch=fetch){this.source=source;this.store=store;this.ttl=ttl;this.fetcher=fetcher;}
  async request<T>(key:string,url:string,period:string,normalize:(r:unknown)=>T,force=false):Promise<Evidence<T>>{
  const cached=this.store.get(key); const age=cached?Date.now()-Date.parse(cached.retrievedAt):Infinity;
- if(cached&&age<this.ttl&&!force)return{data:cached.data,stale:false,provenance:{...provenance(this.source,url,period),retrievedAt:cached.retrievedAt},health:{source:this.source,status:'healthy',checkedAt:cached.retrievedAt,message:'Validated cache'}};
+ if(cached&&age>=0&&age<this.ttl&&!force){this.stats.cacheHits++;return{data:cached.data,stale:false,provenance:{...provenance(this.source,url,period),retrievedAt:cached.retrievedAt},health:{source:this.source,status:'healthy',checkedAt:cached.retrievedAt,message:'Validated cache'}};}
  if(this.pending.has(key))return this.pending.get(key)!;
+ this.stats.cacheMisses++;
+ if(this.pending.size>=32){this.stats.overloaded++;return{data:cached?.data||null,stale:!!cached,provenance:{...provenance(this.source,url,period),retrievedAt:cached?.retrievedAt||iso()},health:{source:this.source,status:'degraded',checkedAt:iso(),message:'Provider queue full; retry shortly'}};}
  const job=(async()=>{try{
  // Reserve one request slot per provider; no bursts when a batch arrives.
  const start=Math.max(Date.now(),this.lastRequest+350);this.lastRequest=start;await new Promise(r=>setTimeout(r,Math.max(0,start-Date.now())));
  const response=await this.fetcher(url,{signal:AbortSignal.timeout(12000),headers:{accept:'application/json'},redirect:'error'});
  if(!response.ok)throw new ProviderHttpError(response.status);const raw=await response.text();if(raw.length>8_000_000)throw new Error('Response too large');const data=normalize(JSON.parse(raw));const retrievedAt=iso();this.store.put(key,this.source,data,retrievedAt);const health:ProviderHealth={source:this.source,status:'healthy',checkedAt:retrievedAt};this.store.health(health);return{data,stale:false,provenance:{...provenance(this.source,url,period),retrievedAt},health};
- }catch(e){const health:ProviderHealth={source:this.source,status:cached?'degraded':'down',checkedAt:iso(),message:e instanceof Error?e.message:'Provider unavailable'};const recordLevelNotFound=e instanceof ProviderHttpError&&e.status===404;if(!recordLevelNotFound)this.store.health(health);return{data:cached?.data||null,stale:!!cached,provenance:{...provenance(this.source,url,period),retrievedAt:cached?.retrievedAt||iso()},health};}})();this.pending.set(key,job);try{return await job;}finally{this.pending.delete(key);}
+ }catch(e){this.stats.failures++;if(e instanceof Error&&/schema|mismatch|invalid/i.test(e.message))this.stats.schemaDrift++;const health:ProviderHealth={source:this.source,status:cached?'degraded':'down',checkedAt:iso(),message:e instanceof Error?e.message:'Provider unavailable'};const recordLevelNotFound=e instanceof ProviderHttpError&&e.status===404;if(!recordLevelNotFound)this.store.health(health);return{data:cached?.data||null,stale:!!cached,provenance:{...provenance(this.source,url,period),retrievedAt:cached?.retrievedAt||iso()},health};}})();this.pending.set(key,job);try{return await job;}finally{this.pending.delete(key);}
  }
 }
 function sbUrl(type:string,term:string,campus:UMNCampus,params:Record<string,string>){const c=campusContext(campus);return'https://schedulebuilder.umn.edu/api.php?'+new URLSearchParams({type,institution:c.institution,campus:c.campus,term:termCode(term),...params});}
