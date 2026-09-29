@@ -5,6 +5,7 @@ import {JSDOM} from 'jsdom';
 
 const bundle=await build({entryPoints:['apps/web/app.ts'],bundle:true,write:false,format:'iife',platform:'browser'});
 const source=bundle.outputFiles[0].text;
+const demoHTML=(await import('node:fs')).readFileSync('apps/web/demo-apas.html','utf8');
 const now=new Date().toISOString();
 const profile={
  program:{name:'Synthetic CS BS',campus:'UMNTC'},
@@ -27,8 +28,8 @@ const section={
  prerequisiteRule:course.prerequisiteRule,linkedClassNumbers:[],unresolvedLinks:false,scheduleKnown:true,provenance:{source:'fixture',retrievedAt:now,period:'1273'}
 };
 const evidence=(data:unknown)=>({data,stale:false,provenance:{source:'fixture',retrievedAt:now,period:'1273'},health:{source:'fixture',status:'healthy',checkedAt:now}});
-function setup(activeCourse:any=course,activeSection:any=section,activeProfile:any=profile){
- const dom=new JSDOM('<div id="app"></div><div id="toast"></div>',{url:'http://127.0.0.1:4317/',runScripts:'outside-only',pretendToBeVisual:true});
+function setup(activeCourse:any=course,activeSection:any=section,activeProfile:any=profile,url='http://127.0.0.1:4317/'){
+ const dom=new JSDOM('<div id="app"></div><div id="toast"></div>',{url,runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window;
  Object.assign(w,{CSS:{escape:(s:string)=>s.replace(/[^a-zA-Z0-9_-]/g,c=>'\\'+c)},matchMedia:()=>({matches:true})});
  w.localStorage.setItem('umn.profile',JSON.stringify(activeProfile));
@@ -39,7 +40,8 @@ function setup(activeCourse:any=course,activeSection:any=section,activeProfile:a
   else if(url.pathname==='/api/general-education')body={data:null,stale:false};
   else if(url.pathname==='/api/catalog/CSCI')body={data:[activeCourse],stale:false};
   else if(url.pathname==='/api/course-context/batch'&&init?.method==='POST')body=[{course:evidence(activeCourse),sections:evidence([activeSection]),grades:evidence(null),feedback:evidence(null),community:[]}];
-  else body={data:[]};
+  else if(url.pathname==='/demo-apas.html')return new Response(demoHTML,{status:200,headers:{'content-type':'text/html'}});
+ else body={data:[]};
   return new Response(JSON.stringify(body),{status:200,headers:{'content-type':'application/json'}});
  }) as typeof fetch;
  w.eval(source);
@@ -96,5 +98,33 @@ test('local APAS import closes the dialog and returns focus to the persistent co
   await waitFor(()=>doc.querySelector('#drawer')===null&&/APAS connected/.test(doc.querySelector('#connection')?.textContent||''));
   assert.equal(doc.activeElement?.id,'connection','focus must not be dropped to <body> after the dialog closes');
   const week=doc.querySelector('.week');if(week){assert.equal(week.getAttribute('tabindex'),'0');assert.equal(week.getAttribute('role'),'region');}
+ }finally{dom.window.close();}
+});
+
+test('demo student loads a clearly labeled synthetic audit through the real parser and can be exited',async()=>{
+ const dom=setup(course,section,null);
+ try{
+  const doc=dom.window.document;
+  (doc.querySelector('[data-demo]') as HTMLElement).click();
+  await waitFor(()=>doc.querySelector('.demo-banner')!==null);
+  assert.match(doc.querySelector('.demo-banner')?.textContent||'',/Synthetic APAS data/);
+  assert.match(doc.querySelector('#connection')?.textContent||'',/Demo student/,'header never claims a real APAS connection in demo mode');
+  const stored=JSON.parse(dom.window.localStorage.getItem('umn.profile')||'null');
+  assert.equal(stored.program.name,'Demo Student · Computer Science BS (synthetic)');
+  assert.deepEqual(stored.degreeCredits,{required:120,completed:62,inProgress:4,remaining:54});
+  assert.ok(stored.transferCourses.some((c:any)=>c.courseCode==='MATH 1271'),'AP credit is represented as articulated transfer credit');
+  const rules=stored.requirements.map((r:any)=>r.rule.type);assert.ok(rules.includes('policy')&&rules.includes('unknown'),'demo keeps review-only structures visible');
+  (doc.querySelector('[data-exit-demo]') as HTMLElement).click();
+  assert.equal(doc.querySelector('.demo-banner'),null);assert.equal(dom.window.localStorage.getItem('umn.profile'),null);
+ }finally{dom.window.close();}
+});
+
+test('?demo=1 never overwrites a real local APAS profile',async()=>{
+ const dom=setup(course,section,profile,'http://127.0.0.1:4317/?demo=1');
+ try{
+  const doc=dom.window.document;
+  await waitFor(()=>/Demo not loaded/.test(doc.querySelector('#toast')?.textContent||''));
+  assert.equal(JSON.parse(dom.window.localStorage.getItem('umn.profile')||'{}').program.name,'Synthetic CS BS');
+  assert.equal(doc.querySelector('.demo-banner'),null);assert.equal(dom.window.location.search,'','demo parameter is removed from the address bar');
  }finally{dom.window.close();}
 });
