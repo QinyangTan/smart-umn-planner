@@ -143,3 +143,25 @@ test('an outdated stored profile and an outdated extension are called out before
   assert.match(doc.querySelector('.health-notice')!.textContent||'',/Installed 0\.10\.6/);
  }finally{dom.window.close();}
 });
+
+test('an async re-render keeps text the student is still typing',async()=>{
+ const dom=setup();
+ try{
+  const doc=dom.window.document,w=dom.window as any;
+  (doc.querySelector('[data-nav="Explore"]') as HTMLElement).click();
+  const q=doc.querySelector('#query') as HTMLInputElement;q.focus();q.value='PSY 10';
+  w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'smart-umn-extension',type:'READY',payload:{version:'9.9.9'}},origin:w.location.origin,source:w}));// forces a render
+  const after=doc.querySelector('#query') as HTMLInputElement;assert.notEqual(after,q,'the input element was replaced');assert.equal(after.value,'PSY 10');assert.equal(doc.activeElement,after);
+ }finally{dom.window.close();}
+});
+
+test('an outdated extension is flagged even before any APAS profile is loaded',async()=>{
+ const dom=setup(course,section,null);
+ try{
+  const doc=dom.window.document,w=dom.window as any;assert.equal(doc.querySelector('.health-notice'),null);
+  w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'smart-umn-extension',type:'READY',payload:{}},origin:w.location.origin,source:w}));
+  await waitFor(()=>/extension is out of date/.test(doc.querySelector('.health-notice')?.textContent||''));
+  assert.match(doc.querySelector('.health-notice')!.textContent||'',/before 0\.10\.8/,'bridges that report no version predate 0.10.8');
+  assert.equal(doc.querySelector('.health-notice [data-connect]'),null,'no re-sync button without a profile issue');
+ }finally{dom.window.close();}
+});
