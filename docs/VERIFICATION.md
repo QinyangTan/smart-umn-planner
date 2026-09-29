@@ -1,5 +1,36 @@
 # Verification
 
+## v0.10.8–v0.10.9 zero-schedule fixes and student-perspective acceptance — 2026-09-28
+
+**Trigger.** A student with about 27 credits left saw 0 schedules. Replaying the same audit locally on current code produced 8 options on production. The student's Chrome was running an old unpacked v0.6.0 extension (localhost-only), whose profile can lack course campuses. Smart UMN never infers a campus, so every prerequisite became "needs review", and nothing in the UI explained this.
+
+**v0.10.8**
+- Profile-health notice (older parser, campus-less courses, no automatic routes) with a one-click Re-sync.
+- Extension version reporting, and an outdated-extension notice.
+- *Why no schedule?* stage diagnosis with counts, top blockers (campus-less prerequisites named explicitly) and next actions.
+- Parser 0.4.6 safe credit pools: Technical Electives-style aggregates promote only cap-free child lists whose caps cover the remaining need. Capped, gated and combined-cap courses stay review-only.
+- The pool is counted in allocation alongside its sub-requirements.
+- Schedule options show distinct course combinations first.
+
+**v0.10.9.** Two defects found by the v0.10.8 acceptance run:
+- An async re-render wiped Explore search text while the student was typing. The input now keeps its value and caret across re-renders.
+- The outdated-extension notice was hidden in demo mode and before a profile was loaded. It now shows for everyone.
+
+**Gates:** 200/200 tests, typecheck, audit 0, APAS corpus, course coverage, production package, release verification, PR #19 CI.
+
+**Production acceptance** (deploy `6abb2501b846eb5ba9201214`; fresh profiles; online-downloaded v0.10.9 extension):
+- Canary 22/22.
+- First visit: onboarding, demo button and public Explore work. Typing during a slowed subject load keeps "PSY 1001", and the search opens.
+- Demo: distinct top-3 options; the saved plan survives reload; Schedule Builder CSCI 4041 shows ✓ APAS fit; *Full planner* opens the course; Exit demo clears.
+- Real audit (imported locally; only counts recorded): 8 options for Spring 2027 and 8 for Fall 2026, distinct top-3 combinations of 12 credits each, Technical Electives mapped, no false notice.
+- Simulated old sync: the notice and the zero-schedule diagnosis both carry a Re-sync button.
+- An extension labelled 0.10.6 triggers the out-of-date notice.
+- 375 px: no overflow.
+- No console errors.
+- Accessibility acceptance: 0 axe violations across 15 scans, keyboard focus stops pass, and the extension toggle keeps focus. `verify:browser` passed.
+
+**Evidence:** `docs/evidence/user-acceptance-20260928-v0.10.9.json` (real-audit course combinations intentionally omitted), `production-canary-20260928-v0.10.9.json`, `accessibility-acceptance-20260928-v0.10.9.json`.
+
 ## v0.10.7 demo student / reviewer test drive — 2026-09-28
 
 Reviewers without a UMN login can now exercise the personalized product. `/?demo=1`, or **Try a demo student**, loads `apps/web/demo-apas.html`. It is a synthetic Computer Science BS audit in APAS semantic markup, and it is parsed by the real APAS parser.

@@ -1,0 +1,100 @@
+{
+  "checkedAt": "2026-09-29T02:43:21.689Z",
+  "origin": "https://smartumn.qinyangtan.com",
+  "version": "0.10.9",
+  "A_firstVisit": {
+    "onboarding": true,
+    "demoButton": true,
+    "installHelp": "Using Chrome? Load the Smart UMN extension first",
+    "healthNotice": 0,
+    "publicExplore": "\u2715 | PSY 1001 \u00b7 SPRING 2027 | Introduction to Psychology | For your APAS plan | No proven course route to a remaining APAS requirement. | Con"
+  },
+  "A2_typingDuringLoad": {
+    "valueKept": "PSY 1001",
+    "focused": "query",
+    "searchOpens": "Introduction to Psychology"
+  },
+  "C_demo": {
+    "extensionDetected": true,
+    "header": "Demo student",
+    "outdatedNotice": 0,
+    "creditsLeft": "54",
+    "options": [
+      {
+        "courses": "CSCI 2041 + CSCI 5302 + STAT 3021",
+        "credits": "10"
+      },
+      {
+        "courses": "CSCI 4061 + CSCI 5302 + STAT 3021",
+        "credits": "10"
+      },
+      {
+        "courses": "CSCI 4041 + CSCI 5302 + STAT 3021",
+        "credits": "10"
+      },
+      {
+        "courses": "CSCI 4041 + CSCI 4061 + STAT 3021",
+        "credits": "11"
+      }
+    ],
+    "distinctTop3": 3,
+    "whyThisPlan": "Why this plan? | Covers 1 of 4 supported remaining APAS targets in this term. | 11 credits across 5 campus days with no meeting overlap.",
+    "savedFooter": "Saved plans (1)",
+    "afterReload": {
+      "saved": "Saved plans (1)",
+      "banner": 1
+    },
+    "scheduleBuilderFit": "APAS FIT | \u2713 Upper-division computer science c\u2026 | Prerequisites satisfied by completed courses",
+    "fullPlannerLink": {
+      "href": "https://smartumn.qinyangtan.com/?course=CSCI%204041&term=1273&campus=UMNTC",
+      "opens": "\u2715 | CSCI 4041 \u00b7 SPRING 2027 | Algorithms and Data Structures | For your APAS plan | \u2713 Upper-division computer science co"
+    },
+    "exit": {
+      "banner": 0,
+      "header": "Connect APAS"
+    }
+  },
+  "D_realAudit": {
+    "source": "private audit imported locally through the file control; nothing uploaded",
+    "healthNotice": 0,
+    "demoBanner": 0,
+    "spring2027": {
+      "schedules": "8",
+      "distinctTop3": 3,
+      "creditsPerOption": [
+        "12",
+        "12",
+        "12",
+        "12"
+      ],
+      "diagnosisShown": false
+    },
+    "fall2026": {
+      "schedules": "8",
+      "distinctTop3": 3,
+      "creditsPerOption": [
+        "12",
+        "12",
+        "12",
+        "12"
+      ],
+      "diagnosisShown": false
+    },
+    "mapsTechnicalElectives": true,
+    "note": "Course combinations for the real audit are intentionally not recorded."
+  },
+  "E_staleProfile": {
+    "notice": "CHECK BEFORE PLANNING | Your APAS was read by an older Smart UMN version. Stored with parser 0.3.0; this site uses 0.4.6. Newer parsers recognize more requirements. Re-sync APAS to plan with the current rules. | 7 of 7 recorded courses have no campus. Smart UM",
+    "resyncButton": 1,
+    "schedules": 0,
+    "diagnosis": "Why no schedule? | 16 matching courses were found, but none has prerequisites Smart UMN can verify. | Remaining requirements Smart UMN can plan automatically | 4 of 7 | Current offerings matching those requirements | 32 of 230 checked | Loaded candidates with verified prerequisites | 0 of 16 \u00b7 16 need review | Most common blockers: Completed course has no recorded campus (5) \u00b7 Requires consent or department permissio",
+    "diagnosisResync": 1
+  },
+  "F_outdatedExtension": "CHECK BEFORE PLANNING | Your Smart UMN extension is out of date. Installed 0.10.6; this site is 0.10.9. Download the latest extension, replace the old one in chrome://extensions, then re-sync.",
+  "I_mobile": {
+    "scrollWidth": 375,
+    "schedule": 1,
+    "weekFocusable": 1
+  },
+  "consoleErrors": []
+}

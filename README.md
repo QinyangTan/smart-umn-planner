@@ -144,7 +144,7 @@ flowchart LR
 
 ## By the numbers
 
-- **190** automated tests, zero failures, run in CI on every change.
+- **200** automated tests, zero failures, run in CI on every change.
 - **22** production health checks every 6 hours: TLS, headers, API, data contracts, policy freshness, security and package integrity.
 - **0** axe-core violations across 15 scans of the live Web and extension UI.
 - **0** student records stored on any server.
@@ -157,7 +157,7 @@ flowchart LR
 3. In the planner, choose **Connect APAS**. Sign-in and Duo happen only on official UMN pages.
 4. Build your plan, then register in UMN's official systems.
 
-**Distribution status:** the v0.10.7 production ZIP is publicly downloadable. Chrome Web Store publication is pending, so there is no one-click store install yet. Managed browsers may block unpacked extensions.
+**Distribution status:** the v0.10.9 production ZIP is publicly downloadable. Chrome Web Store publication is pending, so there is no one-click store install yet. Managed browsers may block unpacked extensions.
 
 [Support](https://smartumn.qinyangtan.com/support.html) · [Privacy](https://smartumn.qinyangtan.com/privacy.html) · [Known limitations](docs/LIMITATIONS.md) · [More demos](docs/DEMOS.md)
 
