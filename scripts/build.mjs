@@ -4,7 +4,7 @@ const origin=plannerOrigin(process.env.PUBLIC_ORIGIN||'http://127.0.0.1:4317');
 const production=process.env.NODE_ENV==='production';
 if(production&&(!process.env.PUBLIC_ORIGIN||!origin.startsWith('https://')))throw Error('Production build requires HTTPS PUBLIC_ORIGIN');
 for(const dir of ['dist/web','dist/extension','dist/store']){await rm(dir,{recursive:true,force:true});await mkdir(dir,{recursive:true});}
-const options={bundle:true,target:'chrome120',sourcemap:!production,minify:production,define:{__SMART_UMN_WEB_ORIGIN__:JSON.stringify(origin)}};
+const options={bundle:true,target:'chrome120',sourcemap:!production,minify:production,define:{__SMART_UMN_WEB_ORIGIN__:JSON.stringify(origin),__SMART_UMN_VERSION__:JSON.stringify(JSON.parse(await readFile('package.json','utf8')).version)}};
 await build({...options,entryPoints:['apps/web/app.ts'],outfile:'dist/web/app.js',format:'esm'});
 for(const f of ['index.html','style.css','privacy.html','support.html','demo-apas.html'])await copyFile('apps/web/'+f,'dist/web/'+f);
 for(const name of ['background','apas','schedule','bridge'])await build({...options,entryPoints:[`apps/extension/${name}.ts`],outfile:`dist/extension/${name}.js`,format:name==='background'?'esm':'iife'});

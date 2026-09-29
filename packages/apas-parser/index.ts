@@ -1,6 +1,6 @@
 import {APAS_CAMPUS_DIGITS,courseCode,finite,parseCampusCourseCode,unknownRule} from '../schemas/index.ts';
 import type {StudentAcademicProfile,StudentCourse,DegreeRequirement,RequirementRule,AcademicProgramRoute} from '../schemas/index.ts';
-export const PARSER_VERSION='0.4.5';
+export const PARSER_VERSION='0.4.6';
 const text=(n:Element|null):string=>{if(!n)return'';const clone=n.cloneNode(true) as Element;clone.querySelectorAll('br').forEach(b=>b.replaceWith(' '));return(clone.textContent||'').replace(/\s+/g,' ').trim();};
 const num=(n:Element|null)=>finite(text(n));
 function status(el:Element):DegreeRequirement['status'] {const s=el.matches('.requirement')?el.className:el.querySelector('.subreqPretext .status')?.className||el.className;return /Status_OK/.test(s)?'complete':/Status_IP/.test(s)?'in_progress':/Status_NO\b/.test(s)?'incomplete':/Status_NONE/.test(s)?'informational':'unknown';}
@@ -58,13 +58,44 @@ function parseRule(el:Element,label:string):RequirementRule {
  else if(!deterministicLabelRule(label))return unknownRule(label,'Selectable list exists, but count/credit semantics are not proven');
  const gpa=finite(el.getAttribute('rqdgpa'));if(gpa&&gpa>0)rule={type:'gpa',minimum:gpa,rule};return rule;
 }
+// Aggregate credit pools ("take N credits from the lists below") have no direct course list; their courses live in
+// child lists that may carry caps. Only the cap-free subset is promoted, and only when every included list's own
+// credit cap is at least the remaining need, so any included course provably counts. Capped/gated lists and
+// courses named in a combined cap stay review-only.
+const CAP_GATE=/\b\d+\s*[-–]\s*\d+\s+courses?\b|\b(permission|approval|consent|audition|petition|department approval)\b/i;
+const COMBINED_CAP=/\b(?:up to|no more than|maximum of)\b[^.]*?\b(?:credits?|courses?)\b[^.]*?\bfrom\s+([^.]+?)\s+(?:combined|together)\b/i;
+function courseCodesIn(text:string):string[]{return[...text.matchAll(/\b([A-Z]{2,8})\s?(\d{4})[A-Z]?\b/gi)].map(m=>`${m[1].toUpperCase()} ${m[2]}`);}
+function safeCreditPoolRule(el:Element,label:string,required:number|undefined,remaining:number|undefined):{rule:RequirementRule;derivation:Record<string,unknown>}|undefined{
+ if(!required||!(required>0)||!remaining||!(remaining>0)||selectableRule(el))return;
+ if(CAP_GATE.test(label)||/\b(except|not count more|combined)\b/i.test(label))return;
+ const children=[...el.querySelectorAll('.subrequirement')].filter(c=>c.parentElement?.closest('.subrequirement,.requirement')===el);
+ const included:string[]=[],skipped:string[]=[],excluded=new Set<string>(),rules:RequirementRule[]=[];
+ for(const child of children){
+  const list=selectableRule(child);if(!list)continue;
+  const childLabel=text(child.querySelector('.subreqTitle'))||text(child.querySelector('.subreqBody'));
+  const note=COMBINED_CAP.exec(childLabel),rest=note?childLabel.replace(note[0],''):childLabel;
+  const cap=finite(child.getAttribute('maxhours')),statedCap=/\bup to (\d+(?:\.\d+)?) credits?\b/i.exec(rest);
+  const creditCap=statedCap?Number(statedCap[1]):cap!==undefined&&cap<999?cap:undefined;
+  if(CAP_GATE.test(rest)||/\b(except|not count more|no more than)\b/i.test(rest)||(creditCap!==undefined&&creditCap<remaining)){skipped.push(childLabel.slice(0,120));continue;}
+  if(note)for(const code of courseCodesIn(note[1]))excluded.add(code);
+  const flat=list.type==='anyOf'?list.rules:[list];
+  for(const r of flat)if(r.type==='course'||r.type==='range')rules.push(r);
+  included.push(childLabel.slice(0,120));
+ }
+ if(!rules.length)return;
+ const kept=rules.filter(r=>!(r.type==='course'&&[...excluded].some(x=>r.code===x||r.code.startsWith(x)&&/^[A-Z]$/.test(r.code.slice(x.length)))));
+ const excludedRules=[...excluded].map(code=>({type:'course',code,campus:'UMNTC'} as RequirementRule));
+ let pool:RequirementRule=kept.length===1?kept[0]:{type:'anyOf',rules:kept};
+ if(excludedRules.length&&kept.some(r=>r.type==='range'))pool={type:'exclude',rule:pool,excluded:excludedRules};
+ return{rule:{type:'credits',minimum:required,rule:pool},derivation:{kind:'safe-credit-pool',remainingCredits:remaining,includedLists:included,reviewOnlyLists:skipped,reviewOnlyCourses:[...excluded]}};
+}
 function requirement(el:Element,index:string):DegreeRequirement {
  const sub=el.matches('.subrequirement');const label=text(el.querySelector(sub?'.subreqTitle':'.reqTitle'))||text(el.querySelector(sub?'.subreqBody':'.reqText'))||el.getAttribute('rname')||'Untitled requirement';
  const children=[...el.querySelectorAll('.subrequirement')].filter(e=>e.parentElement?.closest('.subrequirement,.requirement')===el).map((e,i)=>requirement(e,`${index}.${i}`));
  const ownCandidate=selectableRule(el)||deterministicLabelRule(label),childCandidates=children.map(c=>c.candidateRule||(c.rule.type!=='unknown'&&c.rule.type!=='policy'&&c.rule.type!=='condition'?c.rule:undefined)).filter((r):r is RequirementRule=>!!r),candidateRule=ownCandidate||(childCandidates.length===1?childCandidates[0]:childCandidates.length?{type:'anyOf',rules:childCandidates} as RequirementRule:undefined);
  const rawMetadata:Record<string,unknown>={attributes:Object.fromEntries([...el.attributes].filter(a=>!/^on|href|src/i.test(a.name)).map(a=>[a.name,a.value])),sourceText:label,selectableCourses:[...el.querySelectorAll('.selectcourses .course[department][number]')].map(e=>({department:e.getAttribute('department'),number:e.getAttribute('number')})),candidateRoute:!!candidateRule};
  const requiredCount=finite(el.getAttribute('rqdcount'))||finite(el.getAttribute('rqdsubreq'));
- return{id:index,code:el.getAttribute(sub?'pseudo':'rname')||undefined,label,status:status(el),requiredCredits:finite(el.getAttribute('rqdhours')),appliedCredits:num(direct(el,'.reqEarned .hours,.subreqEarned .hours')),inProgressCredits:num(direct(el,'.reqIpDetail .hours,.subreqIpHours .hours')),remainingCredits:num(direct(el,'.reqNeeds .hours,.subreqNeeds .hours')),requiredCount,appliedCount:num(direct(el,'.reqEarned .count,.subreqEarned .count')),inProgressCount:num(direct(el,'.reqIpDetail .count,.subreqIpHours .count')),remainingCount:num(direct(el,'.reqNeeds .count,.subreqNeeds .count')),requiredGpa:finite(el.getAttribute('rqdgpa')),coursesUsed:[...new Set(taken(el).map(c=>c.courseCode!))],children,rule:parseRule(el,label),...(candidateRule?{candidateRule}:{}),rawMetadata};
+ return{id:index,code:el.getAttribute(sub?'pseudo':'rname')||undefined,label,status:status(el),requiredCredits:finite(el.getAttribute('rqdhours')),appliedCredits:num(direct(el,'.reqEarned .hours,.subreqEarned .hours')),inProgressCredits:num(direct(el,'.reqIpDetail .hours,.subreqIpHours .hours')),remainingCredits:num(direct(el,'.reqNeeds .hours,.subreqNeeds .hours')),requiredCount,appliedCount:num(direct(el,'.reqEarned .count,.subreqEarned .count')),inProgressCount:num(direct(el,'.reqIpDetail .count,.subreqIpHours .count')),remainingCount:num(direct(el,'.reqNeeds .count,.subreqNeeds .count')),requiredGpa:finite(el.getAttribute('rqdgpa')),coursesUsed:[...new Set(taken(el).map(c=>c.courseCode!))],children,...(()=>{let rule=parseRule(el,label);if(!sub&&rule.type==='unknown'&&/No explicit selectable course rule/.test(rule.reason)){const derived=safeCreditPoolRule(el,label,finite(el.getAttribute('rqdhours')),num(direct(el,'.reqNeeds .hours'))??undefined);if(derived){rule=derived.rule;rawMetadata.derivedRule=derived.derivation;}}return{rule};})(),...(candidateRule?{candidateRule}:{}),rawMetadata};
 }
 export function parseAPAS(doc:Document,history?:Document):StudentAcademicProfile {
  // UMN embeds a second copy of #audit for a responsive layout. Never count both.

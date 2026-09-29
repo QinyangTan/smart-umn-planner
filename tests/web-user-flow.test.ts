@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 import {JSDOM} from 'jsdom';
 
-const bundle=await build({entryPoints:['apps/web/app.ts'],bundle:true,write:false,format:'iife',platform:'browser'});
+const bundle=await build({entryPoints:['apps/web/app.ts'],bundle:true,write:false,format:'iife',platform:'browser',define:{__SMART_UMN_VERSION__:JSON.stringify(JSON.parse((await import('node:fs')).readFileSync('package.json','utf8')).version)}});
 const source=bundle.outputFiles[0].text;
 const demoHTML=(await import('node:fs')).readFileSync('apps/web/demo-apas.html','utf8');
 const now=new Date().toISOString();
@@ -83,6 +83,9 @@ test('Plan explains a completed search that cannot verify any candidate prerequi
   assert.match(empty.textContent||'',/need prerequisite review/);
   assert.match(doc.querySelector('.candidate-list')?.textContent||'',/CSCI 5103/);
   assert.match(doc.querySelector('.candidate-list summary')?.textContent||'',/0 selected/);
+  const diag=doc.querySelector('.plan-diagnosis');assert.ok(diag,'a zero-schedule run explains itself');
+  assert.match(diag!.textContent||'',/Why no schedule\?/);assert.match(diag!.querySelector('li.stop')?.textContent||'',/verified prerequisites/);
+  assert.match(diag!.textContent||'',/Next:/);
  }finally{dom.window.close();}
 });
 
@@ -126,5 +129,39 @@ test('?demo=1 never overwrites a real local APAS profile',async()=>{
   await waitFor(()=>/Demo not loaded/.test(doc.querySelector('#toast')?.textContent||''));
   assert.equal(JSON.parse(dom.window.localStorage.getItem('umn.profile')||'{}').program.name,'Synthetic CS BS');
   assert.equal(doc.querySelector('.demo-banner'),null);assert.equal(dom.window.location.search,'','demo parameter is removed from the address bar');
+ }finally{dom.window.close();}
+});
+
+test('an outdated stored profile and an outdated extension are called out before planning',async()=>{
+ const dom=setup();
+ try{
+  const doc=dom.window.document,w=dom.window as any;
+  const notice=doc.querySelector('.health-notice');assert.ok(notice,'profile parsed by another parser version is flagged');
+  assert.match(notice!.textContent||'',/older Smart UMN version/);assert.ok(notice!.querySelector('[data-connect]'),'offers a one-click re-sync');
+  w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'smart-umn-extension',type:'READY',payload:{version:'0.10.6'}},origin:w.location.origin,source:w}));
+  await waitFor(()=>/extension is out of date/.test(doc.querySelector('.health-notice')?.textContent||''));
+  assert.match(doc.querySelector('.health-notice')!.textContent||'',/Installed 0\.10\.6/);
+ }finally{dom.window.close();}
+});
+
+test('an async re-render keeps text the student is still typing',async()=>{
+ const dom=setup();
+ try{
+  const doc=dom.window.document,w=dom.window as any;
+  (doc.querySelector('[data-nav="Explore"]') as HTMLElement).click();
+  const q=doc.querySelector('#query') as HTMLInputElement;q.focus();q.value='PSY 10';
+  w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'smart-umn-extension',type:'READY',payload:{version:'9.9.9'}},origin:w.location.origin,source:w}));// forces a render
+  const after=doc.querySelector('#query') as HTMLInputElement;assert.notEqual(after,q,'the input element was replaced');assert.equal(after.value,'PSY 10');assert.equal(doc.activeElement,after);
+ }finally{dom.window.close();}
+});
+
+test('an outdated extension is flagged even before any APAS profile is loaded',async()=>{
+ const dom=setup(course,section,null);
+ try{
+  const doc=dom.window.document,w=dom.window as any;assert.equal(doc.querySelector('.health-notice'),null);
+  w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'smart-umn-extension',type:'READY',payload:{}},origin:w.location.origin,source:w}));
+  await waitFor(()=>/extension is out of date/.test(doc.querySelector('.health-notice')?.textContent||''));
+  assert.match(doc.querySelector('.health-notice')!.textContent||'',/before 0\.10\.8/,'bridges that report no version predate 0.10.8');
+  assert.equal(doc.querySelector('.health-notice [data-connect]'),null,'no re-sync button without a profile issue');
  }finally{dom.window.close();}
 });

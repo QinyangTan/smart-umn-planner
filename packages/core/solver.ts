@@ -60,5 +60,8 @@ export function generateSchedules(contexts:CourseContext[],profile:StudentAcadem
   }
   return(b.degreeProgress?.allocatedCredits||0)-(a.degreeProgress?.allocatedCredits||0)||(p.fewestDays?a.campusDays-b.campusDays:0)||(p.preferOnline?b.sections.filter(s=>/online/i.test(s.instructionMode)).length-a.sections.filter(s=>/online/i.test(s.instructionMode)).length:0)||preferredInstructorCount(b.sections,p.preferredInstructors)-preferredInstructorCount(a.sections,p.preferredInstructors)||b.credits-a.credits||a.id.localeCompare(b.id);
  });
- return{schedules:results.slice(0,8),rejected,explored,truncated:explored>maxNodes,candidateCourses:options.length};
+ // Show distinct course combinations first; section-only variants of an already shown combination follow.
+ const shown=new Set<string>(),distinct:Schedule[]=[],variants:Schedule[]=[];
+ for(const s of results){const key=[...new Set(s.sections.map(x=>x.courseCode))].sort().join('+');(shown.has(key)?variants:distinct).push(s);shown.add(key);}
+ return{schedules:[...distinct,...variants].slice(0,8),rejected,explored,truncated:explored>maxNodes,candidateCourses:options.length};
 }
