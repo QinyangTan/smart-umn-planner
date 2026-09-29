@@ -29,7 +29,8 @@
   "verify:release": "node scripts/verify-release.ts",
   "export:public-seed": "node scripts/export-public-evidence-seed.ts",
   "verify:production": "node scripts/verify-production.ts",
-  "verify:a11y": "node scripts/verify-a11y.ts"
+  "verify:a11y": "node scripts/verify-a11y.ts",
+  "record:readme-gifs": "node scripts/record-readme-gifs.ts"
  },
  "devDependencies": {
   "@netlify/functions": "^6.0.0",
