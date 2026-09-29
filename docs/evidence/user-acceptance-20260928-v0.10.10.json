@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-09-29T03:48:16Z",
+  "origin": "https://smartumn.qinyangtan.com",
+  "version": "0.10.10",
+  "deploy": "6abb3036016355af5a8586be",
+  "note": "Real student audit; course combinations intentionally omitted, only counts and yes/no recorded.",
+  "v0_10_9_realAudit": {
+    "extension": "fresh unpacked 0.10.9 (empty extension storage, site held a parser-0.4.5 profile)",
+    "auditList": "2 degree-classified programs (honors program + major)",
+    "refreshApas": "stuck: 'Multiple APAS program audits found' on every retry; dropdown only fed Add program",
+    "workaround": "Add program with the major selected",
+    "afterSync": {
+      "olderParserNotice": false,
+      "spring2027Options": 8,
+      "distinctCombinations": 8,
+      "creditsRange": "17-18 (student prefs 12-18)",
+      "technicalElectivesMapped": true,
+      "consoleErrors": 0
+    }
+  },
+  "v0_10_10_production": {
+    "canary": "passed",
+    "healthVersion": "0.10.10",
+    "downloadZipSha256": "4987d796ba12295db01e5dc8a9f141fbe0329a0e6bff7fd045d554138e3555ad",
+    "downloadMatchesRelease": true,
+    "installedExtension": "0.10.10 (reloaded in place)",
+    "outdatedNotice": false,
+    "refreshConnectPayloadNamesProgram": true,
+    "syncCompleted": true,
+    "olderParserNotice": false
+  }
+}
