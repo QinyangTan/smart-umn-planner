@@ -22,12 +22,11 @@ async function record(name:string,withExtension:boolean,flow:(p:Page)=>Promise<v
  const p=ctx.pages()[0]||await ctx.newPage();try{await flow(p);}finally{await ctx.close();}
  const video=fs.readdirSync(dir).find(f=>f.endsWith('.webm'))!;toGif(path.join(dir,video),name,trim);
 }
-// 1. APAS import → personalized plan → generated week.
+// 1. Demo student (synthetic audit, same parser) → personalized plan → generated week.
 await record('feature-apas-to-plan.gif',false,async p=>{
  await p.goto(base+'/');await p.getByRole('button',{name:'Connect APAS',exact:true}).waitFor();await pause(p,900);
- await click(p,p.getByRole('button',{name:'Connect APAS',exact:true}));await pause(p,500);
- await click(p,p.getByText('Advanced / recovery',{exact:true}));await p.getByLabel('Import local APAS HTML').setInputFiles(fixture);
- await p.getByRole('heading',{name:'Smart UMN Synthetic BA',exact:true}).waitFor();await pause(p,1400);
+ await click(p,p.getByRole('button',{name:/Try a demo student/}));
+ await p.locator('.demo-banner').waitFor();await pause(p,1800);
  await click(p,p.getByRole('radio',{name:/Make degree progress/}));await pause(p,500);
  const build=p.getByRole('button',{name:'Build my plan',exact:true});await click(p,build);
  await p.locator('.schedule').first().waitFor({timeout:90000});await pause(p,600);

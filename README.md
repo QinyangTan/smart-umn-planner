@@ -7,13 +7,39 @@
 An APAS-aware course planner and Chrome extension for **University of Minnesota Twin Cities** students.
 It reads the degree audit you already have, finds the courses that actually move you forward, builds a conflict-free week, and brings course intelligence straight into UMN Schedule Builder.
 
-**[Open the planner](https://smartumn.qinyangtan.com)** · **[Download the Chrome extension](https://smartumn.qinyangtan.com/smart-umn-extension.zip)** · **[Watch it work](#see-it-work)** · **[Under the hood](#under-the-hood)**
+**[▶ Try the demo student](https://smartumn.qinyangtan.com/?demo=1)** · **[Download the Chrome extension](https://smartumn.qinyangtan.com/smart-umn-extension.zip)** · **[3-minute test drive](#try-it-in-3-minutes-no-umn-account-needed)** · **[Under the hood](#under-the-hood)**
 
 `Live in production` · `Browser-local academic data` · `Symbolic rule engine: AI explains, never decides` · `WCAG 2.2 AA tested` · `Monitored every 6 hours`
 
 ![From APAS audit to a generated, explained semester plan](docs/demos/feature-apas-to-plan.gif)
 
 </div>
+
+## Try it in 3 minutes (no UMN account needed)
+
+APAS lives behind UMN login, so the planner includes a **demo student**: a clearly labeled synthetic Computer Science audit. It runs through the *same* parser, rule engine and scheduler as a real audit. Nothing is uploaded; the demo lives only in your browser. Use desktop Chrome.
+
+**Step 1 — Install the extension (optional, 30 seconds).** Download **[smart-umn-extension.zip](https://smartumn.qinyangtan.com/smart-umn-extension.zip)** and unzip it. Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and pick the unzipped folder. Chrome Web Store publication is pending; this ZIP is the same reviewed build. You can skip this step to try the Web app only.
+
+**Step 2 — Load the demo student.** Open **[smartumn.qinyangtan.com/?demo=1](https://smartumn.qinyangtan.com/?demo=1)**. You should see:
+- a gold **Demo student** banner;
+- **54 credits left**, with 62 of 120 completed including AP calculus credit;
+- a graduation horizon;
+- review items that Smart UMN refuses to decide automatically: a residency-credit policy, and a research-credit rule that needs advisor approval.
+
+**Step 3 — Build a plan.** Click **Build my plan**. Smart UMN matches live Spring 2027 offerings to the remaining requirements, checks prerequisites against the demo transcript, and searches section combinations. You get conflict-free options (for example CSCI 2041 + STAT 3021 + CSCI 5302, 10 credits), **Why this plan?**, class numbers, and a map of which requirement each course fills.
+
+**Step 4 — Explore a course.** Switch to **Explore**, search `CSCI 5302`, and open **Optional course experience evidence** to see instructor-specific and course-wide grade history.
+
+**Step 5 — See it inside UMN Schedule Builder** (needs Step 1). These are public UMN pages; no login needed:
+
+| Open | What to look for |
+|---|---|
+| [CSCI 4041 — Algorithms](https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/4041/) | **APAS FIT ✓ Upper-division computer science core · Prerequisites satisfied**, personalized from the demo transcript |
+| [CSCI 5302 — Numerical Algorithms](https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/) | Grade history with its trend, professor context and a reviewed Reddit thread. Click any cell to expand it |
+| [PSY 1001 — Intro Psychology](https://schedulebuilder.umn.edu/explore/2027Spring/PSY/1001/) | **✓ Social sciences core**, but its extra prerequisite condition is flagged **Needs review** instead of being assumed away. Also large-sample grade history (19,704 students) |
+
+Click **Full planner ↗** on any row to jump back to the Web app with that course open. When you're done, **Exit demo** in the banner removes it. The demo never overwrites a real student's APAS already stored in the browser.
 
 ## The problem
 
@@ -118,7 +144,7 @@ flowchart LR
 
 ## By the numbers
 
-- **188** automated tests, zero failures, run in CI on every change.
+- **190** automated tests, zero failures, run in CI on every change.
 - **22** production health checks every 6 hours: TLS, headers, API, data contracts, policy freshness, security and package integrity.
 - **0** axe-core violations across 15 scans of the live Web and extension UI.
 - **0** student records stored on any server.
@@ -126,12 +152,12 @@ flowchart LR
 
 ## Use it now
 
-1. **[Open Smart UMN](https://smartumn.qinyangtan.com)** in Chrome. Public course exploration works immediately.
+1. **[Open Smart UMN](https://smartumn.qinyangtan.com)** in Chrome. Public course exploration works immediately, and **[the demo student](https://smartumn.qinyangtan.com/?demo=1)** works without a UMN account.
 2. **[Download the extension ZIP](https://smartumn.qinyangtan.com/smart-umn-extension.zip)** and unzip it. Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the folder that contains `manifest.json`.
 3. In the planner, choose **Connect APAS**. Sign-in and Duo happen only on official UMN pages.
 4. Build your plan, then register in UMN's official systems.
 
-**Distribution status:** the v0.10.6 production ZIP is publicly downloadable. The Chrome Web Store listing is an uploaded draft that has not been submitted or reviewed yet, so there is no one-click store install yet. Managed browsers may block unpacked extensions.
+**Distribution status:** the v0.10.7 production ZIP is publicly downloadable. Chrome Web Store publication is pending, so there is no one-click store install yet. Managed browsers may block unpacked extensions.
 
 [Support](https://smartumn.qinyangtan.com/support.html) · [Privacy](https://smartumn.qinyangtan.com/privacy.html) · [Known limitations](docs/LIMITATIONS.md) · [More demos](docs/DEMOS.md)
 

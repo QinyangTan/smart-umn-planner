@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-09-29T00:50:49.494Z",
+  "origin": "https://smartumn.qinyangtan.com",
+  "extensionVersion": "0.10.7",
+  "step2": {
+    "url": "https://smartumn.qinyangtan.com/",
+    "banner": "DEMO STUDENT\nSynthetic APAS data for trying Smart UMN — not a real student or audit.\nExit demo",
+    "header": "Demo student",
+    "toast": "Demo student loaded (synthetic data) and synced to the extension. Open a Schedule Builder course to see APAS fit.",
+    "credits": "54",
+    "roadmap": "GRADUATION ROADMAP | Fall 2029 | About 6 planning terms to the recorded degree-credit total at up to 12 credits/term. | BOUNDED"
+  },
+  "step3": {
+    "week": "← | Option 1 of 8 | → | 10 credits · 4 campus days | Save this plan | MON | CSCI 5302 | 16:00–17:15 | Keller Hall 3-115 | STAT 3021 | 09:05–09:55 | Mayo Bldg & Additions C231 | CSCI 2041 | 11:15–12:05 | Bruininks Hall 330 | TUE | CSCI 2041 | 09:05–09:55 | Lab TBA | WED | CSCI 5302 | 16:00–17:15 | Keller Hall 3-115 | STAT 3021 | 09:05–09:55 | Mayo Bldg & Additions C231 | CSCI 2041 | 11:15–12:05 | Bruininks Hall 330 | THU | FRI | STAT 3021 | 09:05–09:55 | Mayo Bldg & Additions C231 | CSCI 2041 | 1"
+  },
+  "step4": {
+    "dialog": "✕ | CSCI 5302 · SPRING 2027 | Analysis of Numerical Algorithms | For your APAS plan | ✓ Graduate-level computer science electives | Prerequisites satisfied by completed courses | Major, minor, certificate, college and degree-wide policies can add caps or conditions. APAS remains the final authority.",
+    "hasGrades": true
+  },
+  "step5": {
+    "CSCI 4041": {
+      "cells": [
+        "APAS FIT | ✓ Upper-division computer science c… | Prerequisites satisfied by completed cou",
+        "GRADE HISTORY | B+ avg · 3.35 GPA | 7,803 students · latest term 3.67 GPA",
+        "PROFESSORS | 2 listed instructors | RMP quality and course grade history by instructor | A",
+        "OFFERING HISTORY | Spring / Fall / Summer | 20 observed terms · strong signal"
+      ],
+      "planner": "https://smartumn.qinyangtan.com/?course=CSCI%204041&term=1273&campus=UMNTC"
+    },
+    "CSCI 5302": {
+      "cells": [
+        "APAS FIT | ✓ Graduate-level computer science e… | Prerequisites satisfied by completed cou",
+        "GRADE HISTORY | B+ avg · 3.37 GPA | 383 students · latest term 3.48 GPA",
+        "PROFESSOR | 2.2/5 RMP · Daniel Boley | 383 grade-history students · RMP count unavailable",
+        "OFFERING HISTORY | Spring | 10 observed terms · strong signal"
+      ],
+      "planner": "https://smartumn.qinyangtan.com/?course=CSCI%205302&term=1273&campus=UMNTC"
+    },
+    "PSY 1001": {
+      "cells": [
+        "APAS FIT | ✓ Social sciences core | Needs review: Other prerequisite condition",
+        "GRADE HISTORY | B+ avg · 3.25 GPA | 19,704 students · latest term 3.18 GPA",
+        "PROFESSOR | 4.8/5 RMP · Liza Meredith | 9,576 grade-history students · RMP count unavailab",
+        "OFFERING HISTORY | Spring / Summer / Fall | 28 observed terms · strong signal"
+      ],
+      "planner": "https://smartumn.qinyangtan.com/?course=PSY%201001&term=1273&campus=UMNTC"
+    }
+  },
+  "errors": []
+}

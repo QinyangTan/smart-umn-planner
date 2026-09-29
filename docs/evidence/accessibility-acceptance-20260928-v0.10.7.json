@@ -1,0 +1,112 @@
+{
+  "checkedAt": "2026-09-29T00:52:23.122Z",
+  "origin": "https://smartumn.qinyangtan.com",
+  "axe": [
+    {
+      "label": "/privacy.html @1280",
+      "violations": []
+    },
+    {
+      "label": "/support.html @1280",
+      "violations": []
+    },
+    {
+      "label": "/ @1280",
+      "violations": []
+    },
+    {
+      "label": "/privacy.html @375",
+      "violations": []
+    },
+    {
+      "label": "/support.html @375",
+      "violations": []
+    },
+    {
+      "label": "/ @375",
+      "violations": []
+    },
+    {
+      "label": "/privacy.html @320",
+      "violations": []
+    },
+    {
+      "label": "/support.html @320",
+      "violations": []
+    },
+    {
+      "label": "/ @320",
+      "violations": []
+    },
+    {
+      "label": "connect dialog",
+      "violations": []
+    },
+    {
+      "label": "imported plan",
+      "violations": []
+    },
+    {
+      "label": "built schedule @1280",
+      "violations": []
+    },
+    {
+      "label": "built schedule @375",
+      "violations": []
+    },
+    {
+      "label": "explore",
+      "violations": []
+    },
+    {
+      "label": "Schedule Builder inline insight",
+      "violations": []
+    }
+  ],
+  "keyboard": {
+    "home": [
+      "a:Smart UMN Planner",
+      "button:Plan",
+      "button:Explore",
+      "button:Connect APAS",
+      "select:Fall 2026Spring 2027Summer 2027",
+      "button:Connect UMN ↗",
+      "button:No UMN account? Try a demo student",
+      "summary:Extension detected",
+      "a:Privacy",
+      "a:Support",
+      "button:Saved plans"
+    ],
+    "plan": [
+      "select:Fall 2026Spring 2027Summer 2027",
+      "button:See requirements",
+      "summary:GRADUATION ROADMAPNot enough evidenceDegree-credit",
+      "input:",
+      "summary:Make it yours3–12 credits · fewer campus days",
+      "button:Build my plan ↗",
+      "a:Privacy",
+      "a:Support",
+      "button:Saved plans",
+      "a:Smart UMN Planner",
+      "button:Plan",
+      "button:Explore",
+      "button:APAS connected"
+    ]
+  },
+  "extension": {
+    "focusRetained": {
+      "tab": "Degree",
+      "expanded": "true"
+    },
+    "links": [
+      "https://smartumn.qinyangtan.com/?course=CSCI%205302&term=1273&campus=UMNTC",
+      "https://www.reddit.com/r/uofmn/comments/kal74z/",
+      "https://smartumn.qinyangtan.com/?course=CSCI%205302&term=1273&campus=UMNTC"
+    ],
+    "consoleErrors": []
+  },
+  "web": {
+    "consoleErrors": []
+  },
+  "findings": []
+}

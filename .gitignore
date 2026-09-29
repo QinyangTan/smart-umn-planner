@@ -14,6 +14,9 @@ docs/evidence/*
 !docs/evidence/accessibility-acceptance-20260928-v0.10.5.json
 !docs/evidence/production-canary-20260928-v0.10.6.json
 !docs/evidence/accessibility-acceptance-20260928-v0.10.6.json
+!docs/evidence/production-canary-20260928-v0.10.7.json
+!docs/evidence/demo-test-drive-20260928-v0.10.7.json
+!docs/evidence/accessibility-acceptance-20260928-v0.10.7.json
 !docs/evidence/netlify-serverless-acceptance-20260928.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md
