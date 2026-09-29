@@ -27,7 +27,7 @@ APAS lives behind UMN login, so the planner includes a **demo student**: a clear
 - a graduation horizon;
 - review items that Smart UMN refuses to decide automatically: a residency-credit policy, and a research-credit rule that needs advisor approval.
 
-**Step 3 — Build a plan.** Click **Build my plan**. Smart UMN matches live Spring 2027 offerings to the remaining requirements, checks prerequisites against the demo transcript, and searches section combinations. You get conflict-free options (for example CSCI 2041 + STAT 3021 + CSCI 5302, 10 credits), **Why this plan?**, class numbers, and a map of which requirement each course fills.
+**Step 3 — Build a plan.** Click **Build my plan** and give it about 15 seconds. Smart UMN matches live Spring 2027 offerings to the remaining requirements, checks prerequisites against the demo transcript, and searches section combinations. You get conflict-free options (for example CSCI 2041 + STAT 3021 + CSCI 5302, 10 credits), **Why this plan?**, class numbers, and a map of which requirement each course fills.
 
 **Step 4 — Explore a course.** Switch to **Explore**, search `CSCI 5302`, and open **Optional course experience evidence** to see instructor-specific and course-wide grade history.
 
@@ -40,6 +40,21 @@ APAS lives behind UMN login, so the planner includes a **demo student**: a clear
 | [PSY 1001 — Intro Psychology](https://schedulebuilder.umn.edu/explore/2027Spring/PSY/1001/) | **✓ Social sciences core**, but its extra prerequisite condition is flagged **Needs review** instead of being assumed away. Also large-sample grade history (19,704 students) |
 
 Click **Full planner ↗** on any row to jump back to the Web app with that course open. When you're done, **Exit demo** in the banner removes it. The demo never overwrites a real student's APAS already stored in the browser.
+
+<details>
+<summary><b>If something looks off</b></summary>
+
+| You see | Do this |
+|---|---|
+| No Smart UMN row in Schedule Builder | Check that the extension is **on** in `chrome://extensions`, then reload the Schedule Builder tab. Pages opened before installing don't get the row. |
+| "Load unpacked" rejects the folder | Pick the folder that directly contains `manifest.json`, not the folder above it. |
+| "Your Smart UMN extension is out of date" | Download the ZIP again, then click **reload ↻** on the extension card (or remove it and load the new folder). |
+| Schedule Builder row says **Connect UMN to show how this course fits…** | The demo isn't loaded in this Chrome profile. Don't click *Connect UMN* (it needs a UMN login). Open Step 2's demo link, then reload the Schedule Builder tab. |
+| Your Chrome is managed by an organization | Unpacked extensions may be blocked; the Web demo (Steps 2–4) still works without the extension. |
+
+Course offerings and grade history are fetched live from UMN Schedule Builder and GopherGrades. The exact plan options can shift as sections fill, but the flow stays the same. This whole path is checked against production by `npm run verify:judge`.
+
+</details>
 
 ## The problem
 
