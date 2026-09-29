@@ -1,5 +1,27 @@
 # Verification
 
+## v0.10.7 demo student / reviewer test drive — 2026-09-28
+
+Reviewers without a UMN login can now exercise the personalized product. `/?demo=1`, or **Try a demo student**, loads `apps/web/demo-apas.html`. It is a synthetic Computer Science BS audit in APAS semantic markup, and it is parsed by the real APAS parser.
+- The parser yields 120 required / 62 completed / 4 in progress / 54 remaining credits, MATH 1271 as AP transfer credit, count, credit and range rules, a residency `policy` rule and an approval-gated `unknown` rule, with no warnings.
+- The demo is labelled by an `aside` banner and a "Demo student" header, and it never overwrites a real local profile. Regression tests cover both. The demo syncs to the extension, including when the extension is installed after the demo was loaded.
+
+**Gates:** 190/190 tests, TypeScript, audit 0, corpus, coverage, production package, release verification, and PR #18 CI.
+
+**Canonical production** (Netlify deploy `6abb0b23cd07cfcb373fd2c4`): canary 22/22. `/demo-apas.html` returns 200. The Store extension origin returns 200.
+
+**README test drive**, run on production with a fresh profile and the online-downloaded v0.10.7 ZIP:
+- Demo banner and header shown, 54 credits left, roadmap Fall 2029.
+- **Build my plan** produced 8 options. The first is CSCI 5302 + STAT 3021 + CSCI 2041, 10 credits.
+- Explore CSCI 5302 showed "✓ Graduate-level computer science electives · Prerequisites satisfied" and its grade evidence.
+- Schedule Builder APAS fit:
+  - CSCI 4041: ✓ Upper-division computer science core, prerequisites satisfied.
+  - CSCI 5302: ✓ Graduate-level electives.
+  - PSY 1001: ✓ Social sciences core, with its prerequisite condition flagged **Needs review**.
+- Every "Full planner" link pointed to the canonical origin. There were no console errors.
+
+**Evidence:** `docs/evidence/production-canary-20260928-v0.10.7.json` and `docs/evidence/demo-test-drive-20260928-v0.10.7.json`. The README GIFs were re-recorded on v0.10.7 using the demo-student entry point.
+
 ## v0.10.6 Chrome Web Store package + Store ID — 2026-09-28
 
 The Chrome Web Store rejected the v0.10.5 upload ("key field is not allowed in manifest"). Packaging now also emits a deterministic key-free `release/*-webstore.zip`, which `verify:release` checks is key-free, reproducible, contains the same files, and has a manifest that differs only by `key`. The Store assigned item ID `ocbpkaiefaaboeiliopklleejlfnegbd`, and v0.10.6 adds it to the exact API origin allowlist next to the Developer-mode ID.

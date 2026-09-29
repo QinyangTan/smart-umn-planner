@@ -1,8 +1,8 @@
 # Smart UMN demos
 
-## Feature GIFs — v0.10.6
+## Feature GIFs — v0.10.7
 
-Recorded by `npm run record:readme-gifs` against the canonical production site, with a fresh browser profile and the online-downloaded extension. The APAS flow uses the checked-in synthetic fixture only.
+Recorded by `npm run record:readme-gifs` against the canonical production site, with a fresh browser profile and the online-downloaded extension. The plan flow uses the synthetic **demo student** (`/?demo=1`).
 
 ![APAS import to explained plan](demos/feature-apas-to-plan.gif)
 

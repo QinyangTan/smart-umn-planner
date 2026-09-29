@@ -27,7 +27,7 @@ APAS lives behind UMN login, so the planner includes a **demo student**: a clear
 - a graduation horizon;
 - review items that Smart UMN refuses to decide automatically: a residency-credit policy, and a research-credit rule that needs advisor approval.
 
-**Step 3 — Build a plan.** Click **Build my plan**. Smart UMN matches live Spring 2027 offerings to the remaining requirements, checks prerequisites against the demo transcript, and searches section combinations. You get a conflict-free week, **Why this plan?**, class numbers, and a map of which requirement each course fills.
+**Step 3 — Build a plan.** Click **Build my plan**. Smart UMN matches live Spring 2027 offerings to the remaining requirements, checks prerequisites against the demo transcript, and searches section combinations. You get conflict-free options (for example CSCI 2041 + STAT 3021 + CSCI 5302, 10 credits), **Why this plan?**, class numbers, and a map of which requirement each course fills.
 
 **Step 4 — Explore a course.** Switch to **Explore**, search `CSCI 5302`, and open **Optional course experience evidence** to see instructor-specific and course-wide grade history.
 
@@ -37,7 +37,7 @@ APAS lives behind UMN login, so the planner includes a **demo student**: a clear
 |---|---|
 | [CSCI 4041 — Algorithms](https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/4041/) | **APAS FIT ✓ Upper-division computer science core · Prerequisites satisfied**, personalized from the demo transcript |
 | [CSCI 5302 — Numerical Algorithms](https://schedulebuilder.umn.edu/explore/2027Spring/CSCI/5302/) | Grade history with its trend, professor context and a reviewed Reddit thread. Click any cell to expand it |
-| [PSY 1001 — Intro Psychology](https://schedulebuilder.umn.edu/explore/2027Spring/PSY/1001/) | Fits the demo's social-sciences requirement, with large-sample grade history |
+| [PSY 1001 — Intro Psychology](https://schedulebuilder.umn.edu/explore/2027Spring/PSY/1001/) | **✓ Social sciences core**, but its extra prerequisite condition is flagged **Needs review** instead of being assumed away. Also large-sample grade history (19,704 students) |
 
 Click **Full planner ↗** on any row to jump back to the Web app with that course open. When you're done, **Exit demo** in the banner removes it. The demo never overwrites a real student's APAS already stored in the browser.
 
@@ -144,7 +144,7 @@ flowchart LR
 
 ## By the numbers
 
-- **188** automated tests, zero failures, run in CI on every change.
+- **190** automated tests, zero failures, run in CI on every change.
 - **22** production health checks every 6 hours: TLS, headers, API, data contracts, policy freshness, security and package integrity.
 - **0** axe-core violations across 15 scans of the live Web and extension UI.
 - **0** student records stored on any server.
