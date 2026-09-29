@@ -45,7 +45,9 @@ function targets(rs:DegreeRequirement[]):Target[]{
  for(const req of rs){
   const child=targets(req.children);
   if(child.length)out.push(...child);
-  else{const t=targetFor(req);if(t)out.push(t);}
+  // A parser-derived safe credit pool is a real parent target alongside its sub-requirements; one course is still
+  // assigned to only one target, which can under-count shared credit but never over-counts it.
+  if(!child.length||(req.rawMetadata as Record<string,any>)?.derivedRule?.kind==='safe-credit-pool'){const t=targetFor(req);if(t)out.push(t);}
  }
  return out;
 }

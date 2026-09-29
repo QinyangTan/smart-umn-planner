@@ -519,7 +519,7 @@ fieldset.preference-grid{border:0;padding:0;margin:0;min-width:0}fieldset.prefer
 .planning-goal-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .planning-goal{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);background:#fff;border-radius:4px;cursor:pointer;font-size:.9rem;line-height:1.4}
 .planning-goal.selected{border-color:var(--maroon);box-shadow:inset 0 3px var(--maroon);background:var(--maroon-soft)}
-.planning-goal input{width:17px;height:17px;min-height:17px;margin:2px 0 0;accent-color:var(--maroon);flex:none}
+.planning-goal input{width:24px;height:24px;min-height:24px;margin:0;accent-color:var(--maroon);flex:none}
 .planning-goal span{display:block;margin:0}.planning-goal strong{display:block;color:var(--ink)}.planning-goal small{display:block;margin-top:5px;font-weight:400;color:var(--muted)}
 .planning-goals>p{margin:12px 0 0;font-size:.8rem}
 @media(max-width:800px){.planning-goal-options{grid-template-columns:1fr}}
@@ -533,3 +533,13 @@ fieldset.preference-grid{border:0;padding:0;margin:0;min-width:0}fieldset.prefer
 .demo-banner{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:10px clamp(20px,4vw,54px);background:var(--gold-soft);border-bottom:2px solid var(--gold-deep);font-size:.85rem;color:var(--ink)}
 .demo-banner strong{color:var(--maroon);text-transform:uppercase;letter-spacing:.04em;font-size:.75rem}
 .demo-banner .text-button{margin-left:auto}
+
+.health-notice{margin:0;padding:14px clamp(20px,4vw,54px);background:#fff;border-bottom:1px solid var(--line);border-left:5px solid var(--maroon);display:grid;gap:8px;font-size:.88rem}
+.health-notice strong{color:var(--maroon);text-transform:uppercase;letter-spacing:.04em;font-size:.75rem}
+.health-notice ul{margin:0;padding-left:18px;display:grid;gap:4px}.health-notice .primary{justify-self:start}
+.plan-diagnosis{margin-top:18px;padding:16px 18px;text-align:left;background:#fff;border:1px solid var(--line);border-top:3px solid var(--maroon)}
+.plan-diagnosis h4{margin:0 0 4px;font-size:1rem}.diagnosis-headline{font-weight:700;margin:0 0 10px}
+.diagnosis-steps{margin:0 0 10px;padding:0;list-style:none;display:grid;gap:6px}
+.diagnosis-steps li{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;border-left:4px solid var(--good);background:#f7faf8;font-size:.86rem}
+.diagnosis-steps li.stop{border-left-color:var(--maroon);background:var(--maroon-soft)}
+.diagnosis-actions{margin:4px 0 0;padding-left:18px;font-size:.86rem}
