@@ -61,7 +61,9 @@ test('onboarding has one connection action and no decorative fake dashboard',()=
  assert.match(app,/Build \+ hand off/);
  assert.match(app,/does not ask an AI model whether a course counts/);
  assert.doesNotMatch(app,/mock-week|onboarding-visual/);
- assert.match(readme,/docs\/demos\/smart-umn-readme-demo\.gif/,'README opens with an inline autoplaying demo rather than requiring a video click');
+ assert.ok(readme.indexOf('docs/demos/feature-apas-to-plan.gif')>-1&&readme.indexOf('docs/demos/feature-apas-to-plan.gif')<readme.indexOf('\n## '),'README opens with an inline autoplaying current-product demo rather than requiring a video click');
+ for(const gif of['feature-apas-to-plan','feature-schedule-builder-insights','feature-explore-evidence'])assert.match(readme,new RegExp(`docs/demos/${gif}\\.gif`));
+ assert.match(readme,/Earlier animated walkthrough \(historical UI\)/,'historical media stays explicitly labeled');
  assert.doesNotMatch(readme,/Three synthetic-profile screen-recorded demos are checked into GitHub/,'README should not lead with a file-list style demo section');
 });
 

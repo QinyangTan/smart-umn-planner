@@ -1,6 +1,16 @@
 # Smart UMN demos
 
-## Current production — v0.10.5
+## Feature GIFs — v0.10.6
+
+Recorded by `npm run record:readme-gifs` against the canonical production site, with a fresh browser profile and the online-downloaded extension. The APAS flow uses the checked-in synthetic fixture only.
+
+![APAS import to explained plan](demos/feature-apas-to-plan.gif)
+
+![Course intelligence inside Schedule Builder](demos/feature-schedule-builder-insights.gif)
+
+![Explore a course and its evidence](demos/feature-explore-evidence.gif)
+
+## Keyboard and screenshots — v0.10.5
 
 [Open the live planner](https://smartumn.qinyangtan.com) · [Download the production extension](https://smartumn.qinyangtan.com/smart-umn-extension.zip)
 
