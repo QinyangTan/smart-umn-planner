@@ -144,6 +144,19 @@ test('an outdated stored profile and an outdated extension are called out before
  }finally{dom.window.close();}
 });
 
+test('Refresh APAS names the stored program so a freshly installed extension can pick among several audits',async()=>{
+ const dom=setup();
+ try{
+  const doc=dom.window.document,w=dom.window as any,sent:any[]=[];
+  w.addEventListener('message',(ev:any)=>{if(ev.data?.channel==='smart-umn-web')sent.push(ev.data);});
+  w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'smart-umn-extension',type:'READY',payload:{version:'9.9.9'}},origin:w.location.origin,source:w}));
+  await waitFor(()=>!!doc.querySelector('.health-notice [data-connect]'));
+  (doc.querySelector('.health-notice [data-connect]') as HTMLElement).click();
+  await waitFor(()=>sent.some(m=>m.type==='CONNECT'));
+  assert.equal(JSON.stringify(sent.find(m=>m.type==='CONNECT').payload),JSON.stringify({program:'Synthetic CS BS'}));
+ }finally{dom.window.close();}
+});
+
 test('an async re-render keeps text the student is still typing',async()=>{
  const dom=setup();
  try{

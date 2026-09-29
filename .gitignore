@@ -22,6 +22,8 @@ docs/evidence/*
 !docs/evidence/production-canary-20260928-v0.10.9.json
 !docs/evidence/accessibility-acceptance-20260928-v0.10.9.json
 !docs/evidence/netlify-serverless-acceptance-20260928.json
+!docs/evidence/production-canary-20260928-v0.10.10.json
+!docs/evidence/user-acceptance-20260928-v0.10.10.json
 docs/CHECKPOINT-*.md
 docs/STATE_FOLLOWUP_*.md
 *.log

@@ -1,5 +1,21 @@
 # Verification
 
+## v0.10.10 multi-program Refresh fix — 2026-09-28
+
+**Trigger.** Real-audit acceptance of v0.10.9 after a fresh extension install (upgrade from v0.6.0). The APAS list held two degree-classified audits (an honors program beside the major). The new extension's storage had no program, Refresh APAS sent `CONNECT` without one, and the audit chooser stopped with "Multiple APAS program audits found" on every retry. The program dropdown only fed *Add program*.
+
+**Fix.** Refresh APAS sends the site's stored program name (never the demo program). Extension JS is byte-identical to v0.10.9; only the manifest version changed.
+
+**Gates:** 202/202 tests (new: Refresh names the program; honors + major list selects the newest named audit), typecheck, production package (deterministic, 9 files, no source maps), PR #20 CI.
+
+**Production acceptance** (deploy `6abb3036016355af5a8586be`; the student's own Chrome):
+- Canary passed; `/api/health` reports 0.10.10; the download ZIP is byte-identical to `release/smart-umn-planner-extension-v0.10.10.zip`.
+- The reloaded 0.10.10 extension raises no out-of-date notice.
+- Refresh APAS posts `CONNECT {program}` with the stored major and the sync completes; no older-parser notice.
+- Real audit on v0.10.9 after the workaround (counts only): 8 Spring 2027 options, 8 distinct combinations, 17–18 credits under the student's 12–18 preference, Technical Electives mapped, no console errors.
+
+**Evidence:** `docs/evidence/user-acceptance-20260928-v0.10.10.json`, `production-canary-20260928-v0.10.10.json`.
+
 ## v0.10.8–v0.10.9 zero-schedule fixes and student-perspective acceptance — 2026-09-28
 
 **Trigger.** A student with about 27 credits left saw 0 schedules. Replaying the same audit locally on current code produced 8 options on production. The student's Chrome was running an old unpacked v0.6.0 extension (localhost-only), whose profile can lack course campuses. Smart UMN never infers a campus, so every prerequisite became "needs review", and nothing in the UI explained this.

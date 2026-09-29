@@ -1,7 +1,7 @@
 import{test}from'node:test';
 import assert from'node:assert/strict';
 import{JSDOM}from'jsdom';
-import{asAdditionalProgram,discoverAuditChoices,mergeProgramAudit,parseAPAS}from'../packages/apas-parser/index.ts';
+import{asAdditionalProgram,discoverAuditChoices,mergeProgramAudit,parseAPAS,selectLatestAudit}from'../packages/apas-parser/index.ts';
 import{degreeCandidateFit,degreeDiscoveryPlan,degreeFit,flattenRequirements}from'../packages/core/rules.ts';
 import type{Course}from'../packages/schemas/index.ts';
 
@@ -63,6 +63,13 @@ test('primary degree can retain a second major, minor, and certificate without d
 test('completed APAS audit choices keep only the newest audit per program title',()=>{
  const html='<body><table><thead><tr><th>Title</th><th>Created</th><th>Action</th></tr></thead><tbody><tr><td>Psychology BA</td><td>09/20/2026 10:00 AM</td><td><a href="/selfservice/audit/read.html?id=old">View APAS</a></td></tr><tr><td>Psychology BA</td><td>09/26/2026 10:00 AM</td><td><a href="/selfservice/audit/read.html?id=new">View APAS</a></td></tr><tr><td>History Minor</td><td>09/26/2026 10:01 AM</td><td><a href="/selfservice/audit/read.html?id=minor">View APAS</a></td></tr></tbody></table></body>';
  const dom=new JSDOM(html,{url:'https://umn.uachieve.com/selfservice/audit/list.html'}),choices=discoverAuditChoices(dom.window.document,dom.window.location.href);assert.deepEqual(choices.map(x=>x.title),['Psychology BA','History Minor']);assert.match(choices.find(x=>x.title==='Psychology BA')!.href,/id=new/);dom.window.close();
+});
+
+test('an honors audit beside the major needs a named program, which then selects the newest matching audit',()=>{
+ const html='<body><table><thead><tr><th>Title</th><th>Created</th><th>Action</th></tr></thead><tbody><tr><td>University Honors Program</td><td>09/28/2026 10:13 PM</td><td><a href="/selfservice/audit/read.html?id=honors">View APAS</a></td></tr><tr><td>Computer Science BSCompSc</td><td>09/28/2026 10:13 PM</td><td><a href="/selfservice/audit/read.html?id=cs-new">View APAS</a></td></tr><tr><td>Computer Science BSCompSc</td><td>09/28/2026 10:12 PM</td><td><a href="/selfservice/audit/read.html?id=cs-old">View APAS</a></td></tr></tbody></table></body>';
+ const dom=new JSDOM(html,{url:'https://umn.uachieve.com/selfservice/audit/list.html'}),doc=dom.window.document,base=dom.window.location.href;
+ assert.throws(()=>selectLatestAudit(doc,base),/Multiple APAS program audits found/,'a fresh extension without a program cannot guess');
+ assert.match(selectLatestAudit(doc,base,'Computer Science BSCompSc'),/id=cs-new/);dom.window.close();
 });
 
 test('degree totals are discovered from APAS semantic category without a program-specific code',()=>{
