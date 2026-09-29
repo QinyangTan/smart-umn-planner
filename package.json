@@ -30,7 +30,8 @@
   "export:public-seed": "node scripts/export-public-evidence-seed.ts",
   "verify:production": "node scripts/verify-production.ts",
   "verify:a11y": "node scripts/verify-a11y.ts",
-  "record:readme-gifs": "node scripts/record-readme-gifs.ts"
+  "record:readme-gifs": "node scripts/record-readme-gifs.ts",
+  "verify:judge": "node scripts/verify-judge-path.ts"
  },
  "devDependencies": {
   "@netlify/functions": "^6.0.0",
