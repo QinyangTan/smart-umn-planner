@@ -45,6 +45,6 @@
  },
  "dependencies": {
   "@huggingface/transformers": "^4.3.0",
-  "motion": "^13.4.4"
+  "motion": "^13.5.0"
  }
 }
